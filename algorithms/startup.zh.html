@@ -94,12 +94,12 @@
 <tr class="row-even"><td><p>慢加速（<code class="docutils literal notranslate"><span class="pre">ACCEL0</span></code>）</p></td>
 <td><p>固定， <code class="docutils literal notranslate"><span class="pre">MCAF_STARTUP_CURRENT</span></code></p></td>
 <td><p>恒定加速度的二次（线性速度斜坡） <code class="docutils literal notranslate"><span class="pre">STARTUP_ACCELERATION0</span></code></p></td>
-<td><p>允许有源阻尼。齿槽转矩可能是主要的机械负载。当达到 <code class="docutils literal notranslate"><span class="pre">STARTUP_ACCEL0_VELOCITY_THRESHOLD</span></code> 时进入下一状态。（参见 <span class="math notranslate nohighlight">\(\omega_0\)</span> in <a class="reference internal" href="#fig-startup-sequence"><span class="std std-numref">图 5.50</span></a>。）</p></td>
+<td><p>允许有源阻尼。齿槽转矩可能是主要的机械负载。当达到 <code class="docutils literal notranslate"><span class="pre">STARTUP_ACCEL0_VELOCITY_THRESHOLD</span></code> 时进入下一状态。（参见 <a class="reference internal" href="#fig-startup-sequence"><span class="std std-numref">图 5.50</span></a>中的<span class="math notranslate nohighlight">\(\omega_0\)</span>。）</p></td>
 </tr>
 <tr class="row-odd"><td><p>快加速（<code class="docutils literal notranslate"><span class="pre">ACCEL1</span></code>）</p></td>
 <td><p>固定， <code class="docutils literal notranslate"><span class="pre">MCAF_STARTUP_CURRENT</span></code></p></td>
 <td><p>恒定加速度的二次（线性速度斜坡） <code class="docutils literal notranslate"><span class="pre">STARTUP_ACCELERATION1</span></code></p></td>
-<td><p>允许有源阻尼。齿槽转矩可能是主要的机械负载。当达到 <code class="docutils literal notranslate"><span class="pre">STARTUP_ACCEL1_VELOCITY_THRESHOLD</span></code> 时进入下一状态。（参见 <span class="math notranslate nohighlight">\(\omega_1\)</span> in <a class="reference internal" href="#fig-startup-sequence"><span class="std std-numref">图 5.50</span></a>。）</p></td>
+<td><p>允许有源阻尼。齿槽转矩可能是主要的机械负载。当达到 <code class="docutils literal notranslate"><span class="pre">STARTUP_ACCEL1_VELOCITY_THRESHOLD</span></code> 时进入下一状态。（参见 <a class="reference internal" href="#fig-startup-sequence"><span class="std std-numref">图 5.50</span></a>中的<span class="math notranslate nohighlight">\(\omega_1\)</span>。）</p></td>
 </tr>
 <tr class="row-even"><td><p>稳速（<code class="docutils literal notranslate"><span class="pre">HOLD</span></code>）</p></td>
 <td><p>固定， <code class="docutils literal notranslate"><span class="pre">MCAF_STARTUP_CURRENT</span></code></p></td>
@@ -130,7 +130,7 @@
 <p><span class="caption-number">图 5.50 </span><span class="caption-text">启动序列中电流和电气频率的曲线图。（所示为风向标启动算法。）</span><a class="headerlink" href="#id2" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
-<p>MCAF R4 和 R5 增加了在 motorBench 的 Customize（自定义）页面中调整各种启动参数的功能 Development Suite（开发套件）。参见 <a class="reference internal" href="../implementation/ui-customization.zh.html#impl-customization"><span class="std std-ref">参数自定义</span></a> 了解更多信息。</p>
+<p>MCAF R4 和 R5 增加了在 motorBench<sup>®</sup> Development Suite（开发套件）的 Customize（自定义）页面中调整各种启动参数的功能。参见 <a class="reference internal" href="../implementation/ui-customization.zh.html#impl-customization"><span class="std std-ref">参数自定义</span></a> 了解更多信息。</p>
 <section id="startup-status-codes">
 <span id="id1"></span><h3><span class="section-number">5.2.2.1. </span>启动状态码<a class="headerlink" href="#startup-status-codes" title="本标题的永久链接">¶</a></h3>
 <p>为便于可能不共享完全相同状态序列的不同启动算法，已创建了一组通用的状态码。状态码可通过 <code class="docutils literal notranslate"><span class="pre">MCAF_StartupGetStatus()</span></code> 读取，其值将为以下之一：</p>
@@ -192,7 +192,7 @@
 </section>
 <section id="zs-mt-ipc-startup">
 <span id="startup-zsmt-ipc"></span><span id="index-2"></span><h2><span class="section-number">5.2.5. </span>ZS/MT + IPC 启动<a class="headerlink" href="#zs-mt-ipc-startup" title="本标题的永久链接">¶</a></h2>
-<p><a class="reference internal" href="zsmt.zh.html#algorithm-zsmt"><span class="std std-ref">零速/最大转矩（ZS/MT）</span></a> 运行需要不同的启动技术。这作为 <a class="reference internal" href="zsmt.zh.html#zsmt-further-information"><span class="std std-ref">ZS/MT 详细信息</span></a>。</p>
+<p><a class="reference internal" href="zsmt.zh.html#algorithm-zsmt"><span class="std std-ref">零速/最大转矩（ZS/MT）</span></a> 运行需要不同的启动技术。这在 <a class="reference internal" href="zsmt.zh.html#zsmt-further-information"><span class="std std-ref">ZS/MT 详细信息</span></a>中有所描述。</p>
 </section>
 <section id="active-damping">
 <h2><span class="section-number">5.2.6. </span>有源阻尼<a class="headerlink" href="#active-damping" title="本标题的永久链接">¶</a></h2>

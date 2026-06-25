@@ -233,7 +233,7 @@
 </figure>
 <p>的右图 <a class="reference internal" href="#fig-dtc-deadtime-distortion4a"><span class="std std-numref">图 5.103</span></a> 在同步（dq）坐标系中显示相同信息，其中反电动势是一个紧密簇，沿 q 轴变化很小，由微小速度波动引起。 <span class="math notranslate nohighlight">\(V_{dq}\)</span> 的测量和预测数据近似遵循弧线，显示 q 轴电压的增加和 d 轴电压的扫掠。</p>
 <p><a class="reference internal" href="#fig-dtc-deadtime-distortion4b"><span class="std std-numref">图 5.104</span></a> 展示了相同的测量电压，但预测电压考虑了断续导通的影响，通过使用线性模型 <span class="math notranslate nohighlight">\(f_{nl1}(u) = u\)</span> 用于 <span class="math notranslate nohighlight">\(u = I/I_\delta\)</span> 在范围内 <span class="math notranslate nohighlight">\(|I| &lt; I_\delta\)</span> 以处理过零附近的行为（参见 <a class="reference internal" href="#fig-dtc-nonlinearity-functions"><span class="std std-numref">图 5.100</span></a>）。此图中使用的过零范围为 <span class="math notranslate nohighlight">\(I_\delta\)</span> = 0.12A.</p>
-<p>注意与 <a class="reference internal" href="#fig-dtc-deadtime-distortion4a"><span class="std std-numref">图 5.103</span></a>。</p>
+<p>注意与 <a class="reference internal" href="#fig-dtc-deadtime-distortion4a"><span class="std std-numref">图 5.103</span></a>相比，静止和同步坐标系中的匹配度均有所提高。</p>
 <figure class="align-center" id="id14">
 <span id="fig-dtc-deadtime-distortion4b"></span><img alt="../_images/deadtime-4512-240-voltage1.png" src="../_images/deadtime-4512-240-voltage1.png"/>
 <figcaption>
@@ -273,7 +273,7 @@
 <p><span class="caption-number">图 5.109 </span><span class="caption-text">不同死区下静止和同步坐标系中的电流图。（参见 <a class="reference internal" href="#fig-dtc-deadtime-distortion4c"><span class="std std-numref">图 5.105</span></a> 了解此类图的更多信息。）</span><a class="headerlink" href="#id19" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
-<p>中的直流电压偏移 <span class="math notranslate nohighlight">\(V_{dq}\)</span> visible in <a class="reference internal" href="#fig-dtc-deadtime-distortion5a"><span class="std std-numref">图 5.106</span></a> 和 <a class="reference internal" href="#fig-dtc-deadtime-distortion6a"><span class="std std-numref">图 5.108</span></a> （预测电压和测量电压之间的偏移）可能由以下三个效应引起：</p>
+<p>在 <a class="reference internal" href="#fig-dtc-deadtime-distortion5a"><span class="std std-numref">图 5.106</span></a> 和 <a class="reference internal" href="#fig-dtc-deadtime-distortion6a"><span class="std std-numref">图 5.108</span></a> 中可见的 <span class="math notranslate nohighlight">\(V_{dq}\)</span> 直流电压偏移（预测电压和测量电压之间的偏移）可能由以下三个效应引起：</p>
 <ul class="simple">
 <li><p>电阻压降 — <span class="math notranslate nohighlight">\(IR \approx\)</span> 沿 q 轴 0.19V</p></li>
 <li><p>电感压降 — <span class="math notranslate nohighlight">\(I\omega_e L \approx\)</span> 1200 RPM 时 0.11V，1800 RPM 时 0.17V，沿 d 轴</p></li>
@@ -357,7 +357,7 @@
 <p><span class="caption-number">图 5.117 </span><span class="caption-text">MCAF 中的逐相死区补偿。</span><a class="headerlink" href="#id27" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
-<p>死区补偿模块的上半部分，即 <a class="reference internal" href="#fig-dtc-blockdiag"><span class="std std-numref">图 5.117</span></a>中虚线上方部分，处理用于位置和速度估计器的反馈电压。占空比通过 Clarke 变换转换为静止（αβ）坐标系，然后延迟两个周期以匹配电流采样延迟（待补链接）。 Dead-time compensation vector <span class="math notranslate nohighlight">\(\Delta D_{\alpha\beta f}\)</span>，它是静止坐标系中的占空比矢量，被加到延迟匹配的占空比上，然后乘以直流母线电压 <span class="math notranslate nohighlight">\(V_{dc}\)</span> 以计算估计器反馈电压 <span class="math notranslate nohighlight">\(V_{\alpha\beta f}\)</span>。</p>
+<p>死区补偿模块的上半部分，即 <a class="reference internal" href="#fig-dtc-blockdiag"><span class="std std-numref">图 5.117</span></a>中虚线上方部分，处理用于位置和速度估计器的反馈电压。占空比通过 Clarke 变换转换为静止（αβ）坐标系，然后延迟两个周期以匹配电流采样延迟（待补链接）。 死区补偿矢量 <span class="math notranslate nohighlight">\(\Delta D_{\alpha\beta f}\)</span>，它是静止坐标系中的占空比矢量，被加到延迟匹配的占空比上，然后乘以直流母线电压 <span class="math notranslate nohighlight">\(V_{dc}\)</span> 以计算估计器反馈电压 <span class="math notranslate nohighlight">\(V_{\alpha\beta f}\)</span>。</p>
 <p>死区补偿模块的下半部分展示了死区补偿算法的核心，分为三个部分：</p>
 <ul class="simple">
 <li><p>计算估计单位扰动信号 <span class="math notranslate nohighlight">\(\hat{s}_{abc}\)</span></p></li>

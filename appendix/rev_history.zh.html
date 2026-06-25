@@ -197,7 +197,7 @@
 <td><p>为 MCAF R8 更新：</p>
 <ul class="simple">
 <li><p>添加了 <a class="reference internal" href="../implementation/custom-board-support/index.zh.html#custom-board"><span class="std std-ref">自定义板级支持</span></a> 节</p></li>
-<li><p>移除了 <a class="reference internal" href="../implementation/integration.zh.html#integration"><span class="std std-ref">集成</span></a> 节</p></li>
+<li><p>移除了 <a class="reference internal" href="../implementation/integration.zh.html#integration"><span class="std std-ref">集成</span></a> 一节中关于自定义板卡的过时内容</p></li>
 <li><p>更新了 <a class="reference internal" href="../implementation/ui-customization.zh.html#impl-customization"><span class="std std-ref">可定制参数</span></a> 节</p></li>
 <li><p>更新了 <a class="reference internal" href="../implementation/resource-usage.zh.html#resource-usage"><span class="std std-ref">资源使用</span></a> 节</p></li>
 <li><p>更新了 <a class="reference internal" href="../components/diagnostics.zh.html#diag-kernel"><span class="std std-ref">诊断内核</span></a> 节以描述“none”选项并移除 RTDM 支持</p></li>
@@ -217,7 +217,7 @@
 <li><p>添加了 MCHV-230VAC-1.5kW 电机控制高压开发板的信息</p></li>
 <li><p>添加了 <a class="reference internal" href="../algorithms/smo.zh.html#algorithm-smo"><span class="std std-ref">滑模观测器 (SMO)</span></a> 节</p></li>
 <li><p>更新了 <a class="reference internal" href="../components/ext-interface.zh.html#ext-interface"><span class="std std-ref">外部接口</span></a> 节以精简开发板上 MCAF 外部 UI 的信息</p></li>
-<li><p>添加了在 <a class="reference internal" href="../components/hal.zh.html#hardware-adc"><span class="std std-ref">模数转换</span></a></p></li>
+<li><p>添加了在 <a class="reference internal" href="../components/hal.zh.html#hardware-adc"><span class="std std-ref">模数转换</span></a> 中选择 ADC 转换 PWM 触发源的指导</p></li>
 <li><p>更新了 <a class="reference internal" href="../components/supervisory.zh.html#fault-clearing"><span class="std std-ref">故障清除逻辑</span></a> 节以提供过流故障和 MCAPI 交互的指导</p></li>
 <li><p>更新了 <a class="reference internal" href="../implementation/custom-board-support/configuration.zh.html#custom-board-configuration"><span class="std std-ref">创建自定义板级配置</span></a> 节以澄清自定义板级 schema 的修改</p></li>
 <li><p>更新了 <a class="reference internal" href="../implementation/custom-board-support/overview.zh.html#custom-board-configuration-features"><span class="std std-ref">板级配置功能表</span></a> 在 <a class="reference internal" href="../implementation/custom-board-support/overview.zh.html#custom-board-overview"><span class="std std-ref">motorBench Development Suite 中的板级支持概述</span></a></p></li>
@@ -484,7 +484,7 @@
 <section id="id3">
 <h4><span class="section-number">7.5.2.2.6. </span>核心 FOC<a class="headerlink" href="#id3" title="本标题的永久链接">¶</a></h4>
 <ul class="simple">
-<li><p>PLL 现在使用 <code class="docutils literal notranslate"><span class="pre">motor.valphabetaOut</span></code> rather than <code class="docutils literal notranslate"><span class="pre">motor.valphabeta</span></code>。（DB_MC-1164）这些状态变量之间的区别在于 <code class="docutils literal notranslate"><span class="pre">motor.valphabeta</span></code> 表示在 <span class="math notranslate nohighlight">\(V_{\alpha\beta}\)</span> 在...之前 <a class="reference internal" href="../components/foc.zh.html#foc-zsm"><span class="std std-ref">零序调制</span></a>, 而 <code class="docutils literal notranslate"><span class="pre">motor.valphabetaOut</span></code> 表示基于 PWM 占空比计算的实际 <span class="math notranslate nohighlight">\(V_{\alpha\beta}\)</span> 的最佳估计。两者在电流控制器 进入 <a class="reference internal" href="../algorithms/foc/overmodulation.zh.html#algorithm-overmodulation"><span class="std std-ref">过调制</span></a>之前是相同的。另请参见 <code class="docutils literal notranslate"><span class="pre">MCAF_ComputeVAlphaBetaAtOutput()</span></code>。</p></li>
+<li><p>PLL 现在使用 <code class="docutils literal notranslate"><span class="pre">motor.valphabetaOut</span></code> 而非 <code class="docutils literal notranslate"><span class="pre">motor.valphabeta</span></code>。（DB_MC-1164）这些状态变量之间的区别在于 <code class="docutils literal notranslate"><span class="pre">motor.valphabeta</span></code> 表示在零序调制之前 <span class="math notranslate nohighlight">\(V_{\alpha\beta}\)</span> 的预期值，而 <code class="docutils literal notranslate"><span class="pre">motor.valphabetaOut</span></code> 表示基于 PWM 占空比计算的实际 <span class="math notranslate nohighlight">\(V_{\alpha\beta}\)</span> 的最佳估计。两者在电流控制器进入 <a class="reference internal" href="../algorithms/foc/overmodulation.zh.html#algorithm-overmodulation"><span class="std std-ref">过调制</span></a>之前是相同的。另请参见 <code class="docutils literal notranslate"><span class="pre">MCAF_ComputeVAlphaBetaAtOutput()</span></code>。</p></li>
 </ul>
 </section>
 <section id="id4">

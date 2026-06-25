@@ -118,9 +118,9 @@
 </section>
 <section id="calculation-of-q-axis-current-limit">
 <span id="algorithm-fluxctrl-iqlim"></span><h2><span class="section-number">5.5.3.3. </span>Q 轴电流限制的计算<a class="headerlink" href="#calculation-of-q-axis-current-limit" title="本标题的永久链接">¶</a></h2>
-<p>与 d 轴电流限制类似，电机的 q 轴电流也施加了限制。实现了两种不同的电流限制方法，即矩形限制和二次限制。此选择可以在 <a class="reference internal" href="../../implementation/ui-customization.zh.html#impl-customization"><span class="std std-ref">参数自定义</span></a>。</p>
+<p>与 d 轴电流限制类似，电机的 q 轴电流也施加了限制。实现了两种不同的电流限制方法，即矩形限制和二次限制。此选择可以在 <a class="reference internal" href="../../implementation/ui-customization.zh.html#impl-customization"><span class="std std-ref">参数自定义</span></a>中进行。</p>
 <ul>
-<li><p>矩形电流限制：在此方法中，d 轴和 q 轴电流的限制独立定义。限制在 <a class="reference internal" href="../../implementation/ui-customization.zh.html#impl-customization"><span class="std std-ref">参数自定义</span></a>。</p></li>
+<li><p>矩形电流限制：在此方法中，d 轴和 q 轴电流的限制独立定义。限制在 <a class="reference internal" href="../../implementation/ui-customization.zh.html#impl-customization"><span class="std std-ref">参数自定义</span></a>中指定。</p></li>
 <li><p>二次电流限制：在此方法中，生成 d 轴电流参考（<span class="math notranslate nohighlight">\(I_{d\_ref}\)</span>）后，q 轴电流限制通过下面给出的圆函数的二次近似来计算。</p>
 <div class="math notranslate nohighlight" id="equation-quadratic-approx">
 <span class="eqno">(5.55)<a class="headerlink" href="#equation-quadratic-approx" title="本公式的永久链接">¶</a></span>\[\begin{split}\begin{aligned}
