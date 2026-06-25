@@ -20,10 +20,10 @@
 <script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../../_static/svgcrop.js"></script>
 <script src="../../_static/mcaf-styling.js"></script>
-<link href="../../genindex.zh.html" rel="index" title="Index"/>
-<link href="../../search.zh.html" rel="search" title="Search"/>
-<link href="comparison-6step.zh.html" rel="next" title="5.1.7. Comparison between FOC and six-step control"/>
-<link href="dclink-comp.zh.html" rel="prev" title="5.1.5. DC link compensation"/>
+<link href="../../genindex.zh.html" rel="index" title="索引"/>
+<link href="../../search.zh.html" rel="search" title="搜索"/>
+<link href="comparison-6step.zh.html" rel="next" title="5.1.7. FOC 与六步控制的比较"/>
+<link href="dclink-comp.zh.html" rel="prev" title="5.1.5. 母线电压补偿"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -31,9 +31,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="comparison-6step.zh.html" title="5.1.7. Comparison between FOC and six-step control">下一页</a> |</li>
+<a accesskey="N" href="comparison-6step.zh.html" title="5.1.7. FOC 与六步控制的比较">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="dclink-comp.zh.html" title="5.1.5. DC link compensation">上一页</a> |</li>
+<a accesskey="P" href="dclink-comp.zh.html" title="5.1.5. 母线电压补偿">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -53,8 +53,8 @@
 <ul class="simple">
 <li><p>什么构成一个整定良好的电流控制器？</p></li>
 <li><p>如何在 MCAF 中调整电流控制环增益？</p></li>
-<li><p>如何使用 motorBench 的 Tune（整定）页面中的自动整定<sup>®</sup> Development Suite 来简化增益整定？</p></li>
-<li><p>motorBench 中默认的电流控制环整定准则<sup>®</sup> Development Suite 是否足以满足大多数系统的要求？</p></li>
+<li><p>如何使用 motorBench 的 Tune（整定）页面中的motorBench<sup>®</sup> Development Suite 的自动整定 来简化增益整定？</p></li>
+<li><p>motorBench 中默认的电流控制环motorBench<sup>®</sup> Development Suite 的整定准则 是否足以满足大多数系统的要求？</p></li>
 </ul>
 <section id="background">
 <h2><span class="section-number">5.1.6.1. </span>背景<a class="headerlink" href="#background" title="本标题的永久链接">¶</a></h2>
@@ -94,7 +94,7 @@
 </figcaption>
 </figure>
 </li>
-<li><p><strong>扰动抑制</strong> ——噪声、反电动势谐波和死区畸变都是扰动电机电流的效应。整定良好的电流控制环会将电流误差保持在较小水平。扰动抑制可以用刚度传递函数 <span class="math notranslate nohighlight">\(H(s) = \partial V/\partial I\)</span> 定量描述，它表示产生特定电流变化所需的电压扰动。 <a class="footnote-reference brackets" href="#fn-ituning-briz99" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> 在闭环下、频率远低于电流环带宽时，该刚度可以非常大；但在开环和 high frequency 下，它就是定子的每相阻抗 <span class="math notranslate nohighlight">\((R+j\omega_e L)\)</span> 。</p></li>
+<li><p><strong>扰动抑制</strong> ——噪声、反电动势谐波和死区畸变都是扰动电机电流的效应。整定良好的电流控制环会将电流误差保持在较小水平。扰动抑制可以用刚度传递函数 <span class="math notranslate nohighlight">\(H(s) = \partial V/\partial I\)</span> 定量描述，它表示产生特定电流变化所需的电压扰动。 <a class="footnote-reference brackets" href="#fn-ituning-briz99" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> 在闭环下、频率远低于电流环带宽时，该刚度可以非常大；但在开环和高频下，它就是定子的每相阻抗 <span class="math notranslate nohighlight">\((R+j\omega_e L)\)</span> 。</p></li>
 <li><p><strong>稳定性</strong> ——我们希望电流振荡能衰减而非持续或增长。稳定性的一个重要指标是相位裕量 <span class="math notranslate nohighlight">\(\phi_m\)</span>。</p></li>
 </ul>
 <p>更具体地说，整定目标是 <strong>限制误差</strong>， <strong>限制超调</strong>，和<strong>最大化带宽</strong>：</p>
@@ -107,7 +107,7 @@
 </ul>
 </section>
 <section id="examples-of-poorly-tuned-and-well-tuned-current-loops">
-<span id="ituning-examples"></span><h2><span class="section-number">5.1.6.3. </span>整定不良与整定良好电流环的示例<a class="headerlink" href="#examples-of-poorly-tuned-and-well-tuned-current-loops" title="本标题的永久链接">¶</a></h2>
+<span id="ituning-examples"></span><h2><span class="section-number">5.1.6.3. </span>整定不良与整定良好的电流环的示例<a class="headerlink" href="#examples-of-poorly-tuned-and-well-tuned-current-loops" title="本标题的永久链接">¶</a></h2>
 <p>评估电流环性能的最佳方法是在恒定速度下进行阶跃响应测试。在 MCAF 中最简单的方法是使用 <a class="reference internal" href="../../components/testharness.zh.html#test-perturbation"><span class="std std-ref">测试框架的方波扰动</span></a> （见 <a class="reference internal" href="../../components/testharness.zh.html#test-velctrl-idqpert"><span class="std std-ref">对固定速度指令的速度控制器施加方波速度指令扰动</span></a>）并采用以下方式之一：</p>
 <ul class="simple">
 <li><p>夹紧转子以阻止运动</p></li>
@@ -119,7 +119,7 @@
 <p>如果 <a class="reference internal" href="../startup.zh.html#algorithm-startup"><span class="std std-ref">正常的 MCAF 启动序列</span></a> 无法正常运行或无法正确过渡到闭环换相，则电流环整定也可能需要开环换相运行。</p>
 <section id="current-loop-tuning-at-zero-velocity">
 <span id="ituning-zero-velocity"></span><h3><span class="section-number">5.1.6.3.1. </span>零速下的电流环整定<a class="headerlink" href="#current-loop-tuning-at-zero-velocity" title="本标题的永久链接">¶</a></h3>
-<p><a class="reference internal" href="#fig-ituning-0"><span class="std std-numref">图 5.19</span></a> 展示了 <a class="reference external" href="https://www.microchip.com/DevelopmentTools/ProductDetails/AC300022">Nidec Hurst DMA0204024B101</a> 电机在 MCAF 上、使用 <a class="reference external" href="https://www.microchip.com/DevelopmentTools/ProductDetails/dm330021-2">dsPICDEM<sup>®</sup> MCLV‑2 开发板</a>运行时的电流环阶跃响应示例，采用 motorBench<sup>®</sup> Development Suite.</p>
+<p><a class="reference internal" href="#fig-ituning-0"><span class="std std-numref">图 5.19</span></a> 展示了 <a class="reference external" href="https://www.microchip.com/DevelopmentTools/ProductDetails/AC300022">Nidec Hurst DMA0204024B101</a> 电机在 MCAF 上、使用 <a class="reference external" href="https://www.microchip.com/DevelopmentTools/ProductDetails/dm330021-2">dsPICDEM<sup>®</sup> MCLV‑2 开发板</a>运行时的电流环阶跃响应示例，采用 motorBench<sup>®</sup> Development Suite 的默认整定值。</p>
 <figure class="align-center" id="id4">
 <span id="fig-ituning-0"></span><img alt="../../_images/3001-hurst300-0-0.png" src="../../_images/3001-hurst300-0-0.png"/>
 <figcaption>
@@ -238,26 +238,26 @@
 <figure class="align-center" id="id10">
 <span id="fig-ituning-1-1200"></span><img alt="../../_images/3001-hurst300-1-1200.png" src="../../_images/3001-hurst300-1-1200.png"/>
 <figcaption>
-<p><span class="caption-number">图 5.25 </span><span class="caption-text">情形 1：低增益控制器的电流环阶跃响应， <span class="math notranslate nohighlight">\(\phi_m = 70^\circ,\;\phi_z = 25^\circ\)</span> （<span class="math notranslate nohighlight">\(K_p =\)</span> 1.226 V/A， <span class="math notranslate nohighlight">\(K_i =\)</span> 2121 V/As) at 1200 RPM.</span><a class="headerlink" href="#id10" title="本图片的永久链接">¶</a></p>
+<p><span class="caption-number">图 5.25 </span><span class="caption-text">情形 1：低增益控制器的电流环阶跃响应， <span class="math notranslate nohighlight">\(\phi_m = 70^\circ,\;\phi_z = 25^\circ\)</span> （<span class="math notranslate nohighlight">\(K_p =\)</span> 1.226 V/A， <span class="math notranslate nohighlight">\(K_i =\)</span> 2121 V/As) 在 1200 RPM 下。</span><a class="headerlink" href="#id10" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id11">
 <span id="fig-ituning-1-2400"></span><img alt="../../_images/3001-hurst300-1-2400.png" src="../../_images/3001-hurst300-1-2400.png"/>
 <figcaption>
-<p><span class="caption-number">图 5.26 </span><span class="caption-text">情形 1：低增益控制器的电流环阶跃响应， <span class="math notranslate nohighlight">\(\phi_m = 70^\circ,\;\phi_z = 25^\circ\)</span> （<span class="math notranslate nohighlight">\(K_p =\)</span> 1.226 V/A， <span class="math notranslate nohighlight">\(K_i =\)</span> 2121 V/As) at 2400 RPM.</span><a class="headerlink" href="#id11" title="本图片的永久链接">¶</a></p>
+<p><span class="caption-number">图 5.26 </span><span class="caption-text">情形 1：低增益控制器的电流环阶跃响应， <span class="math notranslate nohighlight">\(\phi_m = 70^\circ,\;\phi_z = 25^\circ\)</span> （<span class="math notranslate nohighlight">\(K_p =\)</span> 1.226 V/A， <span class="math notranslate nohighlight">\(K_i =\)</span> 2121 V/As) 在 2400 RPM 下。</span><a class="headerlink" href="#id11" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
 <p>在整定良好的情形 <a class="reference internal" href="#fig-ituning-2-1200"><span class="std std-numref">图 5.27</span></a> 和 <a class="reference internal" href="#fig-ituning-2-2400"><span class="std std-numref">图 5.28</span></a>中，增大的增益改善了扰动抑制，减小了相对于电流参考的误差。</p>
 <figure class="align-center" id="id12">
 <span id="fig-ituning-2-1200"></span><img alt="../../_images/3001-hurst300-2-1200.png" src="../../_images/3001-hurst300-2-1200.png"/>
 <figcaption>
-<p><span class="caption-number">图 5.27 </span><span class="caption-text">情形 2：整定良好的电流环阶跃响应， <span class="math notranslate nohighlight">\(\phi_m = 45^\circ,\;\phi_z = 12^\circ\)</span> （<span class="math notranslate nohighlight">\(K_p =\)</span> 4.487 V/A， <span class="math notranslate nohighlight">\(K_i =\)</span> 12168 V/As) at 1200 RPM.</span><a class="headerlink" href="#id12" title="本图片的永久链接">¶</a></p>
+<p><span class="caption-number">图 5.27 </span><span class="caption-text">情形 2：整定良好的电流环阶跃响应， <span class="math notranslate nohighlight">\(\phi_m = 45^\circ,\;\phi_z = 12^\circ\)</span> （<span class="math notranslate nohighlight">\(K_p =\)</span> 4.487 V/A， <span class="math notranslate nohighlight">\(K_i =\)</span> 12168 V/As) 在 1200 RPM 下。</span><a class="headerlink" href="#id12" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id13">
 <span id="fig-ituning-2-2400"></span><img alt="../../_images/3001-hurst300-2-2400.png" src="../../_images/3001-hurst300-2-2400.png"/>
 <figcaption>
-<p><span class="caption-number">图 5.28 </span><span class="caption-text">情形 2：整定良好的电流环阶跃响应， <span class="math notranslate nohighlight">\(\phi_m = 45^\circ,\;\phi_z = 12^\circ\)</span> （<span class="math notranslate nohighlight">\(K_p =\)</span> 4.487 V/A， <span class="math notranslate nohighlight">\(K_i =\)</span> 12168 V/As) at 2400 RPM.</span><a class="headerlink" href="#id13" title="本图片的永久链接">¶</a></p>
+<p><span class="caption-number">图 5.28 </span><span class="caption-text">情形 2：整定良好的电流环阶跃响应， <span class="math notranslate nohighlight">\(\phi_m = 45^\circ,\;\phi_z = 12^\circ\)</span> （<span class="math notranslate nohighlight">\(K_p =\)</span> 4.487 V/A， <span class="math notranslate nohighlight">\(K_i =\)</span> 12168 V/As) 在 2400 RPM 下。</span><a class="headerlink" href="#id13" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
 <p>在高增益的情形 <a class="reference internal" href="#fig-ituning-3-1200"><span class="std std-numref">图 5.29</span></a> 和 <a class="reference internal" href="#fig-ituning-3-2400"><span class="std std-numref">图 5.30</span></a>中，电流超调随速度升高而增大，在 2400 RPM 时达到 20% 超调。这是不希望的，且可能因以下几种原因变得比此处所示更糟：</p>
@@ -271,13 +271,13 @@
 <figure class="align-center" id="id14">
 <span id="fig-ituning-3-1200"></span><img alt="../../_images/3001-hurst300-3-1200.png" src="../../_images/3001-hurst300-3-1200.png"/>
 <figcaption>
-<p><span class="caption-number">图 5.29 </span><span class="caption-text">情形 3：高增益电流环阶跃响应， <span class="math notranslate nohighlight">\(\phi_m = 30^\circ,\;\phi_z = 5^\circ\)</span> （<span class="math notranslate nohighlight">\(K_p =\)</span> 7.038 V/A， <span class="math notranslate nohighlight">\(K_i =\)</span> 12107 V/As) at 1200 RPM.</span><a class="headerlink" href="#id14" title="本图片的永久链接">¶</a></p>
+<p><span class="caption-number">图 5.29 </span><span class="caption-text">情形 3：高增益电流环阶跃响应， <span class="math notranslate nohighlight">\(\phi_m = 30^\circ,\;\phi_z = 5^\circ\)</span> （<span class="math notranslate nohighlight">\(K_p =\)</span> 7.038 V/A， <span class="math notranslate nohighlight">\(K_i =\)</span> 12107 V/As) 在 1200 RPM 下。</span><a class="headerlink" href="#id14" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id15">
 <span id="fig-ituning-3-2400"></span><img alt="../../_images/3001-hurst300-3-2400.png" src="../../_images/3001-hurst300-3-2400.png"/>
 <figcaption>
-<p><span class="caption-number">图 5.30 </span><span class="caption-text">情形 3：高增益电流环阶跃响应， <span class="math notranslate nohighlight">\(\phi_m = 30^\circ,\;\phi_z = 5^\circ\)</span> （<span class="math notranslate nohighlight">\(K_p =\)</span> 7.038 V/A， <span class="math notranslate nohighlight">\(K_i =\)</span> 12107 V/As) at 2400 RPM.</span><a class="headerlink" href="#id15" title="本图片的永久链接">¶</a></p>
+<p><span class="caption-number">图 5.30 </span><span class="caption-text">情形 3：高增益电流环阶跃响应， <span class="math notranslate nohighlight">\(\phi_m = 30^\circ,\;\phi_z = 5^\circ\)</span> （<span class="math notranslate nohighlight">\(K_p =\)</span> 7.038 V/A， <span class="math notranslate nohighlight">\(K_i =\)</span> 12107 V/As) 在 2400 RPM 下。</span><a class="headerlink" href="#id15" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -325,7 +325,7 @@
 </section>
 <section id="default-values-of-performance-criteria">
 <h3><span class="section-number">5.1.6.4.3. </span>性能准则的默认值<a class="headerlink" href="#default-values-of-performance-criteria" title="本标题的永久链接">¶</a></h3>
-<p>motorBench 中为电流环选择的默认值<sup>®</sup> Development Suite 1.15–2.35 版本，即 <span class="math notranslate nohighlight">\(\phi_m = 80^\circ,\;\phi_z = 45^\circ\)</span>，对非常宽范围的电机都是稳定的。但它们也极其保守，导致电流环带宽相当低。</p>
+<p>motorBench 中为电流环选择的motorBench<sup>®</sup> Development Suite 1.15–2.35 版本的默认值，即 <span class="math notranslate nohighlight">\(\phi_m = 80^\circ,\;\phi_z = 45^\circ\)</span>，对非常宽范围的电机都是稳定的。但它们也极其保守，导致电流环带宽相当低。</p>
 <p>Microchip 人员正在重新评估这些默认值以给出更高性能的建议。在此期间，如果可以进行仔细的阶跃响应测试，可考虑将相位裕量降至 50°–70° 范围，并将交叉频率处 PI 相位滞后降至 8°–20° 范围。 <strong>未经测试，不要将这些值降到默认值以下。</strong> 未经仔细研究，不建议将 PI 相位滞后降到 5° 以下。</p>
 <p>自动整定使用这些性能准则，而非 PI 增益或环路带宽，作为一种归一化指标，它在较宽范围的电机和驱动组合中具有一定的适用性。此处整定良好情形（<span class="math notranslate nohighlight">\(\phi_m = 45^\circ,\;\phi_z = 12^\circ\)</span>）中所示的 Nidec Hurst DMA0204024B101 的相位裕量和交叉频率处 PI 相位滞后的确切值是否适用于所有电机？否。每个电机和驱动组合都有不同的特性，且常常存在可能需要更高或更低设置的微妙二阶效应。</p>
 <p>如果您的电机似乎难以整定，请 <a class="reference internal" href="../../faq.zh.html#faq-support"><span class="std std-ref">联系 Microchip</span></a> 以便我们改进建议。</p>
@@ -357,11 +357,11 @@ motor.iqCtrl.ki
 </li>
 <li><p>通过实验确定所需的软件增益</p></li>
 <li><p>计算与软件增益对应的实际工程增益</p></li>
-<li><p>调整 <span class="math notranslate nohighlight">\(\phi_m\)</span> 和 <span class="math notranslate nohighlight">\(\phi_z\)</span> 在 motorBench 的 Tune（整定）页面中<sup>®</sup> Development Suite，以产生接近所需实际工程增益的值。（目前 Tune 页面尚不支持直接输入 PI 增益，但未来版本可能会考虑。）</p></li>
+<li><p>调整 <span class="math notranslate nohighlight">\(\phi_m\)</span> 和 <span class="math notranslate nohighlight">\(\phi_z\)</span> 在 motorBench<sup>®</sup> Development Suite 的 Tune（整定）页面中，以产生接近所需实际工程增益的值。（目前 Tune 页面尚不支持直接输入 PI 增益，但未来版本可能会考虑。）</p></li>
 </ul>
 <section id="example">
 <h3><span class="section-number">5.1.6.5.1. </span>示例<a class="headerlink" href="#example" title="本标题的永久链接">¶</a></h3>
-<p><a class="reference internal" href="#code-ituning-example1"><span class="std std-numref">代码清单 5.2</span></a> 展示了 <code class="docutils literal notranslate"><span class="pre">foc_params.h</span></code> 中由 motorBench<sup>®</sup> Development Suite.</p>
+<p><a class="reference internal" href="#code-ituning-example1"><span class="std std-numref">代码清单 5.2</span></a> 展示了 <code class="docutils literal notranslate"><span class="pre">foc_params.h</span></code> 中由 motorBench<sup>®</sup> Development Suite 生成的初始增益。</p>
 <div class="literal-block-wrapper docutils container" id="code-ituning-example1">
 <div class="code-block-caption"><span class="caption-number">代码清单 5.2 </span><span class="caption-text">foc_params.h</span><a class="headerlink" href="#code-ituning-example1" title="本代码块的永久链接">¶</a></div>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">//************** PI 系数 **************</span>
@@ -450,7 +450,7 @@ motor.iqCtrl.ki
 <li><a class="reference internal" href="#">5.1.6. 电流环整定</a><ul>
 <li><a class="reference internal" href="#background">5.1.6.1. 背景</a></li>
 <li><a class="reference internal" href="#evaluating-control-performance">5.1.6.2. 评估控制性能</a></li>
-<li><a class="reference internal" href="#examples-of-poorly-tuned-and-well-tuned-current-loops">5.1.6.3. 整定不良与整定良好电流环的示例</a><ul>
+<li><a class="reference internal" href="#examples-of-poorly-tuned-and-well-tuned-current-loops">5.1.6.3. 整定不良与整定良好的电流环的示例</a><ul>
 <li><a class="reference internal" href="#current-loop-tuning-at-zero-velocity">5.1.6.3.1. 零速下的电流环整定</a></li>
 <li><a class="reference internal" href="#current-loop-tuning-at-nonzero-velocity">5.1.6.3.2. 非零速下的电流环整定</a></li>
 <li><a class="reference internal" href="#effects-of-sample-to-update-delay">5.1.6.3.3. 采样到更新延迟的影响</a></li>
@@ -486,7 +486,7 @@ motor.iqCtrl.ki
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../../search.html" class="search" method="get">
+<form action="../../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -503,9 +503,9 @@ motor.iqCtrl.ki
 <li class="right" style="margin-right: 10px">
 <a href="../../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="comparison-6step.zh.html" title="5.1.7. Comparison between FOC and six-step control">下一页</a> |</li>
+<a href="comparison-6step.zh.html" title="5.1.7. FOC 与六步控制的比较">下一页</a> |</li>
 <li class="right">
-<a href="dclink-comp.zh.html" title="5.1.5. DC link compensation">上一页</a> |</li>
+<a href="dclink-comp.zh.html" title="5.1.5. 母线电压补偿">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »

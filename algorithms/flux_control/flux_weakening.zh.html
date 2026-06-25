@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="zh">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
@@ -20,10 +20,10 @@
 <script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../../_static/svgcrop.js"></script>
 <script src="../../_static/mcaf-styling.js"></script>
-<link href="../../genindex.zh.html" rel="index" title="Index"/>
-<link href="../../search.zh.html" rel="search" title="Search"/>
-<link href="fw_types/fw_eq_based.zh.html" rel="next" title="5.5.1.3.1. Equation based flux-weakening"/>
-<link href="index.zh.html" rel="prev" title="5.5. Flux control"/>
+<link href="../../genindex.zh.html" rel="index" title="索引"/>
+<link href="../../search.zh.html" rel="search" title="搜索"/>
+<link href="fw_types/fw_eq_based.zh.html" rel="next" title="5.5.1.3.1. 基于方程的弱磁控制"/>
+<link href="index.zh.html" rel="prev" title="5.5. 磁链控制"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>Navigation</h3>
@@ -31,9 +31,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../../genindex.zh.html" title="General Index">index</a></li>
 <li class="right">
-<a accesskey="N" href="fw_types/fw_eq_based.zh.html" title="5.5.1.3.1. Equation based flux-weakening">next</a> |</li>
+<a accesskey="N" href="fw_types/fw_eq_based.zh.html" title="5.5.1.3.1. 基于方程的弱磁控制">next</a> |</li>
 <li class="right">
-<a accesskey="P" href="index.zh.html" title="5.5. Flux control">previous</a> |</li>
+<a accesskey="P" href="index.zh.html" title="5.5. 磁链控制">previous</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -73,17 +73,17 @@ V_{qs} &amp;= R_{s}I_{q} + \omega_e L_{d} I_{d} + E_{\mathrm{mag}}
 <p><span class="caption-number">图 5.80 </span><span class="caption-text">PMSM 矢量图： <span class="math notranslate nohighlight">\(I_{d} &lt; 0\)</span></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
-<p>值下。由于注入负的 <span class="math notranslate nohighlight">\(I_{d}\)</span> 会有效地削弱气隙磁链，因此称为弱磁（FW）。FW 算法的功能是计算适当的负 <span class="math notranslate nohighlight">\(I_{d}\)</span> 参考值，以使电机在特定速度和负载下运行。</p>
+<p>值下运行。由于注入负的 <span class="math notranslate nohighlight">\(I_{d}\)</span> 会有效地削弱气隙磁链，因此称为弱磁（FW）。FW 算法的功能是计算适当的负 <span class="math notranslate nohighlight">\(I_{d}\)</span> 参考值，以使电机在特定速度和负载下运行。</p>
 </section>
 <section id="effect-on-torque-capability">
 <h2><span class="section-number">5.5.1.2. </span>对转矩能力的影响<a class="headerlink" href="#effect-on-torque-capability" title="Permalink to this heading">¶</a></h2>
-<p>在 <a class="reference internal" href="../../appendix/glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a> 中产生的电磁转矩（无凸性）由 <a class="reference internal" href="#equation-torque-equation-nonsalient">5.43</a>. Here, <span class="math notranslate nohighlight">\(P\)</span> 为电机的极对数。当 <span class="math notranslate nohighlight">\(I_{d} = 0\)</span> （即无弱磁）时，q 轴电流 <span class="math notranslate nohighlight">\(I_{q}\)</span> 允许增加到电机的总额定电流。这使电机输出额定转矩。</p>
+<p>在 <a class="reference internal" href="../../appendix/glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a> 中产生的电磁转矩（无凸极）由 <a class="reference internal" href="#equation-torque-equation-nonsalient">5.43</a>. Here, <span class="math notranslate nohighlight">\(P\)</span> 为电机的极对数。当 <span class="math notranslate nohighlight">\(I_{d} = 0\)</span> （即无弱磁）时，q 轴电流 <span class="math notranslate nohighlight">\(I_{q}\)</span> 允许增加到电机的总额定电流。这使电机输出额定转矩。</p>
 <div class="math notranslate nohighlight" id="equation-torque-equation-nonsalient">
 <span class="eqno">(5.43)<a class="headerlink" href="#equation-torque-equation-nonsalient" title="Permalink to this equation">¶</a></span>\[    T_{em} = \frac{3}{2} \frac{P}{2} \Psi_{\mathrm{PM}}I_{q}\]</div>
 <p>然而，当存在负的 <span class="math notranslate nohighlight">\(I_{d}\)</span>时，q 轴电流的最大允许值会减小，以根据 <a class="reference internal" href="#equation-iq-limit">5.44</a> 限制电机的总电流幅值。这里， <span class="math notranslate nohighlight">\(I_{\max}\)</span> 为最大电流幅值，由电机或驱动器的额定电流决定。</p>
 <div class="math notranslate nohighlight" id="equation-iq-limit">
 <span class="eqno">(5.44)<a class="headerlink" href="#equation-iq-limit" title="Permalink to this equation">¶</a></span>\[    I_{q\_limit} = \sqrt{I_{\max}{}^2 - I_{d}{}^2}\]</div>
-<p>随着 <span class="math notranslate nohighlight">\(I_{q\_limit}\)</span>的减小，电机的转矩能力也会降低。电机速度越高，这种降低越明显。 <a class="reference internal" href="#fig-torque-capability-nonsalient"><span class="std std-numref">图 5.81</span></a> 展示了非凸性电机的转矩与速度的归一化曲线。标么值电机参数标注在图的顶部。 <a class="reference internal" href="#equation-r-l-normalisation">5.45</a> 用于计算电机参数的标义值。这里， <span class="math notranslate nohighlight">\(I_{1}\)</span> 为最大电流， <span class="math notranslate nohighlight">\(V_{1}\)</span> 为额定速度下的额定反电动势电压。</p>
+<p>随着 <span class="math notranslate nohighlight">\(I_{q\_limit}\)</span>的减小，电机的转矩能力也会降低。电机速度越高，这种降低越明显。 <a class="reference internal" href="#fig-torque-capability-nonsalient"><span class="std std-numref">图 5.81</span></a> 展示了非凸极电机的转矩与速度的归一化曲线。标么值电机参数标注在图的顶部。 <a class="reference internal" href="#equation-r-l-normalisation">5.45</a> 用于计算电机参数的标幺值。这里， <span class="math notranslate nohighlight">\(I_{1}\)</span> 为最大电流， <span class="math notranslate nohighlight">\(V_{1}\)</span> 为额定速度下的额定反电动势电压。</p>
 <div class="math notranslate nohighlight" id="equation-r-l-normalisation">
 <span class="eqno">(5.45)<a class="headerlink" href="#equation-r-l-normalisation" title="Permalink to this equation">¶</a></span>\[\begin{split}    \begin{aligned}
     \bar{R} &amp;= \frac{I_{1} R}{V_{1}}\\
@@ -93,13 +93,13 @@ V_{qs} &amp;= R_{s}I_{q} + \omega_e L_{d} I_{d} + E_{\mathrm{mag}}
 <figure class="align-center" id="id3">
 <span id="fig-torque-capability-nonsalient"></span><a class="reference internal image-reference" href="../../_images/fw_torque_capability_nonsalient.png"><img alt="../../_images/fw_torque_capability_nonsalient.png" src="../../_images/fw_torque_capability_nonsalient.png" style="width: 500px;"/></a>
 <figcaption>
-<p><span class="caption-number">图 5.81 </span><span class="caption-text">转矩-速度曲线：非凸性电机</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+<p><span class="caption-number">图 5.81 </span><span class="caption-text">转矩-速度曲线：非凸极电机</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
-<p>对于凸性电机，转矩方程由 <a class="reference internal" href="#equation-torque-equation-salient">5.46</a>给出。在此方程中，有一个由电机凸性产生的额外磁阻转矩项。</p>
+<p>对于凸极电机，转矩方程由 <a class="reference internal" href="#equation-torque-equation-salient">5.46</a>给出。在此方程中，有一个由电机凸性产生的额外磁阻转矩项。</p>
 <div class="math notranslate nohighlight" id="equation-torque-equation-salient">
 <span class="eqno">(5.46)<a class="headerlink" href="#equation-torque-equation-salient" title="Permalink to this equation">¶</a></span>\[    T_{em} = \frac{3}{2} \frac{P}{2} \Psi_{\mathrm{PM}}I_{q} + \frac{3}{2} \frac{P}{2} (L_{d}-L_{q}) I_{q} I_{d}\]</div>
-<p>当存在负的 <span class="math notranslate nohighlight">\(I_{d}\)</span>时，尽管磁阻转矩项给出正值，但由于 <span class="math notranslate nohighlight">\(I_{q\_limit}\)</span>的减小，第一项会减小。第一项的减小主导第二项的增加，从而降低了电机的整体转矩能力。凸性电机的转矩-速度曲线与非凸性电机类似。</p>
+<p>当存在负的 <span class="math notranslate nohighlight">\(I_{d}\)</span>时，尽管磁阻转矩项给出正值，但由于 <span class="math notranslate nohighlight">\(I_{q\_limit}\)</span>的减小，第一项会减小。第一项的减小主导第二项的增加，从而降低了电机的整体转矩能力。凸极电机的转矩-速度曲线与非凸极电机类似。</p>
 </section>
 <section id="flux-weakening-algorithms">
 <h2><span class="section-number">5.5.1.3. </span>弱磁算法<a class="headerlink" href="#flux-weakening-algorithms" title="Permalink to this heading">¶</a></h2>
@@ -145,7 +145,7 @@ V_{qs} &amp;= R_{s}I_{q} + \omega_e L_{d} I_{d} + E_{\mathrm{mag}}
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">Quick search</h3>
 <div class="searchformwrapper">
-<form action="../../search.html" class="search" method="get">
+<form action="../../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -162,9 +162,9 @@ V_{qs} &amp;= R_{s}I_{q} + \omega_e L_{d} I_{d} + E_{\mathrm{mag}}
 <li class="right" style="margin-right: 10px">
 <a href="../../genindex.zh.html" title="General Index">index</a></li>
 <li class="right">
-<a href="fw_types/fw_eq_based.zh.html" title="5.5.1.3.1. Equation based flux-weakening">next</a> |</li>
+<a href="fw_types/fw_eq_based.zh.html" title="5.5.1.3.1. 基于方程的弱磁控制">next</a> |</li>
 <li class="right">
-<a href="index.zh.html" title="5.5. Flux control">previous</a> |</li>
+<a href="index.zh.html" title="5.5. 磁链控制">previous</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »

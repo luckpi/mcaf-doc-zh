@@ -20,10 +20,10 @@
 <script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../../_static/svgcrop.js"></script>
 <script src="../../_static/mcaf-styling.js"></script>
-<link href="../../genindex.zh.html" rel="index" title="Index"/>
-<link href="../../search.zh.html" rel="search" title="Search"/>
-<link href="overmodulation.zh.html" rel="next" title="5.1.4. Overmodulation"/>
-<link href="fundamentals.zh.html" rel="prev" title="5.1.2. Fundamentals of FOC"/>
+<link href="../../genindex.zh.html" rel="index" title="索引"/>
+<link href="../../search.zh.html" rel="search" title="搜索"/>
+<link href="overmodulation.zh.html" rel="next" title="5.1.4. 过调制"/>
+<link href="fundamentals.zh.html" rel="prev" title="5.1.2. FOC 基础"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -31,9 +31,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="overmodulation.zh.html" title="5.1.4. Overmodulation">下一页</a> |</li>
+<a accesskey="N" href="overmodulation.zh.html" title="5.1.4. 过调制">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="fundamentals.zh.html" title="5.1.2. Fundamentals of FOC">上一页</a> |</li>
+<a accesskey="P" href="fundamentals.zh.html" title="5.1.2. FOC 基础">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -90,17 +90,17 @@
 <li><p>相电流 <span class="math notranslate nohighlight">\(I_a, I_b,\)</span> 和 <span class="math notranslate nohighlight">\(I_c\)</span> 在电流从桥的输出端子流入电机时为正。</p></li>
 <li><p>母线电流 <span class="math notranslate nohighlight">\(I_{dc}\)</span> 在电流从桥的正母线端子流入、从负母线端子流出时为正。</p></li>
 </ul>
-<p>如 <a class="reference internal" href="#fig-curr-measure-bridge"><span class="std std-numref">图 5.9</span></a>所示，正的相电流对应于相分流电流 <span class="math notranslate nohighlight">\(I_{sa}, I_{sb}, I_{sc}\)</span>。</p>
+<p>如 <a class="reference internal" href="#fig-curr-measure-bridge"><span class="std std-numref">图 5.9</span></a>所示，正的相电流对应于相分流电流的负值 <span class="math notranslate nohighlight">\(I_{sa}, I_{sb}, I_{sc}\)</span>。</p>
 </section>
 <section id="validity-of-lower-leg-shunt-resistors">
 <h3><span class="section-number">5.1.3.3.2. </span>下桥臂分流电阻的有效性<a class="headerlink" href="#validity-of-lower-leg-shunt-resistors" title="本标题的永久链接">¶</a></h3>
-<p>如 <a class="reference internal" href="#fig-curr-measure-bridge"><span class="std std-numref">图 5.9</span></a>, shunt resistor <span class="math notranslate nohighlight">\(R_{sa}\)</span> 测量电流 <span class="math notranslate nohighlight">\(I_{sa}\)</span>，等于 <span class="math notranslate nohighlight">\(-I_a\)</span> 只要下桥臂晶体管 Q<sub>AL</sub> 已导通。</p>
+<p>如 <a class="reference internal" href="#fig-curr-measure-bridge"><span class="std std-numref">图 5.9</span></a>, 分流电阻 <span class="math notranslate nohighlight">\(R_{sa}\)</span> 测量电流 <span class="math notranslate nohighlight">\(I_{sa}\)</span>，等于 <span class="math notranslate nohighlight">\(-I_a\)</span> 只要下桥臂晶体管 Q<sub>AL</sub> 已导通。</p>
 <p>这有几个次要缺点：</p>
 <ul class="simple">
-<li><p>低侧晶体管必须导通足够长时间以使任何瞬变稳定下来，以便 ADC 能够获得良好的电流采样。（这通常不是大问题，特别是如果使用自举栅极驱动，其中低侧晶体管需要导通足够长时间以给自举电容充电。）</p></li>
-<li><p>信号调理所需的信号带宽远大于相电流的有用带宽；通常至少 500 kHz，以使建立时间短且低侧晶体管导通时间可以较短。用于信号调理的运算放大器必须具有适当的增益带宽积（GBWP）来支持这一点，例如增益为 20 时需要 10 MHz GBWP，以达到 500 kHz 的信号带宽。</p></li>
+<li><p>下桥臂晶体管必须导通足够长时间以使任何暂态稳定下来，以便 ADC 能够获得良好的电流采样。（这通常不是大问题，特别是如果使用自举栅极驱动，其中下桥臂晶体管需要导通足够长时间以给自举电容充电。）</p></li>
+<li><p>信号调理所需的信号带宽远大于相电流的有用带宽；通常至少 500 kHz，以使建立时间短且下桥臂晶体管导通时间可以较短。用于信号调理的运算放大器必须具有适当的增益带宽积（GBWP）来支持这一点，例如增益为 20 时需要 10 MHz GBWP，以达到 500 kHz 的信号带宽。</p></li>
 <li><p>栅极充电电流流经分流电阻，因此在导通和关断期间，电流传感器上的电压会经历额外的尖峰</p></li>
-<li><p>分流电阻上所需的电压占用了部分可用于导通低侧晶体管的电压。确保剩余的栅极电压足够，以保证在驱动器以其最高额定输出电流运行时低侧晶体管完全导通——这也是最需要晶体管完全导通的时候。</p></li>
+<li><p>分流电阻上所需的电压占用了部分可用于导通下桥臂晶体管的电压。确保剩余的栅极电压足够，以保证在驱动器以其最高额定输出电流运行时下桥臂晶体管完全导通——这也是最需要晶体管完全导通的时候。</p></li>
 </ul>
 </section>
 <section id="triple-channel-current-measurement">
@@ -125,7 +125,7 @@
 </figcaption>
 </figure>
 <p>如果在单通道方式下重建相电流时不调整占空比，零序调制（ZSM）的输出可能导致三相电流畸变，从而给 FOC 的执行带来挑战。这发生在低调制指数区域以及中高调制指数区域的部分区段，因为在这些区域单分流电阻可用于采样电流的时间较少。</p>
-<p>通过调整 ZSM 输出以满足最小时间窗口要求可解决此问题，从而获得更好的（正弦的）电流信息。这里我们需要确保每个有效矢量有足够的时间通过单通道采样电流。为此，我们将有效矢量与一个最小时间窗口 <span class="math notranslate nohighlight">\(t_{\rm sample}\)</span>进行比较，并在需要时进行补偿。该 <a class="reference internal" href="../../implementation/ui-customization.zh.html#customize-current-measure-single-channel-minimumtime"><span class="std std-ref">最小时间窗口</span></a> 可在 motorBench<sup>®</sup> Development Suite 的 Customize（定制）页面中调整。</p>
+<p>通过调整 ZSM 输出以满足最小时间窗口要求可解决此问题，从而获得更好的（正弦的）电流信息。这里我们需要确保每个有效矢量有足够的时间通过单通道采样电流。为此，我们将有效矢量与一个最小时间窗口 <span class="math notranslate nohighlight">\(t_{\rm sample}\)</span>进行比较，并在需要时进行补偿。该 <a class="reference internal" href="../../implementation/ui-customization.zh.html#customize-current-measure-single-channel-minimumtime"><span class="std std-ref">最小时间窗口</span></a> 可在 motorBench<sup>®</sup> Development Suite 的 定制（Customize）页面中调整。</p>
 <p>在下方 <a class="reference internal" href="#fig-single-channel-t2"><span class="std std-numref">图 5.11</span></a>所示的使用场景中，时间窗口 T2 不足以通过单通道采样电流。为了给电流测量留出最小时间窗口，我们对该时间进行修改：增大有效矢量时间 T2 以满足最小时间窗口，并在下降沿（PWM 周期的后半段）进行相应补偿。</p>
 <p>如果有效矢量时间 T2 已足够宽，使电流测量有效且准确，则无需此调整。</p>
 <figure class="align-center" id="id5">
@@ -135,7 +135,7 @@
 </figcaption>
 </figure>
 <p>当在 PWM 周期的前半段修改输出（占空比）时，也会在 PWM 周期后半段的下降沿进行补偿，以确保平均电压矢量（占空比）保持不变。</p>
-<p>在栅极驱动器传播延迟和运放压摆率导致的延迟较大的某些板卡上，ADC 触发延迟 <span class="math notranslate nohighlight">\(t_{\rm delay}\)</span> 需要调整以满足延迟要求。该 <a class="reference internal" href="../../implementation/ui-customization.zh.html#customize-current-measure-single-channel-sampledelay"><span class="std std-ref">ADC 触发延迟</span></a> 可在 motorBench<sup>®</sup> Development Suite 的 Customize（定制）页面中调整。</p>
+<p>在栅极驱动器传播延迟和运放压摆率导致的延迟较大的某些板卡上，ADC 触发延迟 <span class="math notranslate nohighlight">\(t_{\rm delay}\)</span> 需要调整以满足延迟要求。该 <a class="reference internal" href="../../implementation/ui-customization.zh.html#customize-current-measure-single-channel-sampledelay"><span class="std std-ref">ADC 触发延迟</span></a> 可在 motorBench<sup>®</sup> Development Suite 的 定制（Customize）页面中调整。</p>
 <p>关于 FOC 中基于单通道的电流重建实现细节的更多信息，请参见 Microchip 的应用笔记 <a class="reference external" href="https://www.microchip.com/en-us/application-notes/an1299">AN1299</a>。</p>
 </section>
 <section id="microchip-development-board-support">
@@ -257,7 +257,7 @@
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../../search.html" class="search" method="get">
+<form action="../../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -274,9 +274,9 @@
 <li class="right" style="margin-right: 10px">
 <a href="../../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="overmodulation.zh.html" title="5.1.4. Overmodulation">下一页</a> |</li>
+<a href="overmodulation.zh.html" title="5.1.4. 过调制">下一页</a> |</li>
 <li class="right">
-<a href="fundamentals.zh.html" title="5.1.2. Fundamentals of FOC">上一页</a> |</li>
+<a href="fundamentals.zh.html" title="5.1.2. FOC 基础">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »

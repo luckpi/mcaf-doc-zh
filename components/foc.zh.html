@@ -20,10 +20,10 @@
 <script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../_static/svgcrop.js"></script>
 <script src="../_static/mcaf-styling.js"></script>
-<link href="../genindex.zh.html" rel="index" title="Index"/>
-<link href="../search.zh.html" rel="search" title="Search"/>
-<link href="testharness.zh.html" rel="next" title="4.5. Test Harness"/>
-<link href="statemach.zh.html" rel="prev" title="4.3. State Machine"/>
+<link href="../genindex.zh.html" rel="index" title="索引"/>
+<link href="../search.zh.html" rel="search" title="搜索"/>
+<link href="testharness.zh.html" rel="next" title="4.5. 测试框架"/>
+<link href="statemach.zh.html" rel="prev" title="4.3. 状态机"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -31,9 +31,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="testharness.zh.html" title="4.5. Test Harness">下一页</a> |</li>
+<a accesskey="N" href="testharness.zh.html" title="4.5. 测试框架">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="statemach.zh.html" title="4.3. State Machine">上一页</a> |</li>
+<a accesskey="P" href="statemach.zh.html" title="4.3. 状态机">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> » <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">4. </span>组件</a> »</li>
@@ -75,7 +75,7 @@
 <span id="posvelest"></span><h2><span class="section-number">4.4.3. </span>位置和速度估计器<a class="headerlink" href="#position-and-velocity-estimator" title="本标题的永久链接">¶</a></h2>
 <p>MCAF 提供了多种 <a class="reference internal" href="../algorithms/estimators.zh.html#algorithm-estimators"><span class="std std-ref">位置和速度估计器</span></a> 用于换相和速度控制：</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../algorithms/pll.zh.html#algorithm-pll"><span class="std std-ref">AN1292 Phase-locked loop (PLL)</span></a></p></li>
+<li><p><a class="reference internal" href="../algorithms/pll.zh.html#algorithm-pll"><span class="std std-ref">AN1292 锁相环（PLL）</span></a></p></li>
 <li><p><a class="reference internal" href="../algorithms/atpll.zh.html#algorithm-atpll"><span class="std std-ref">角度跟踪锁相环（ATPLL）</span></a></p></li>
 <li><p><a class="reference internal" href="../algorithms/qei.zh.html#algorithm-qei"><span class="std std-ref">正交编码器（QEI）</span></a></p></li>
 <li><p><a class="reference internal" href="../algorithms/zsmt.zh.html#algorithm-zsmt"><span class="std std-ref">零速/最大转矩（ZS/MT）</span></a></p></li>
@@ -113,11 +113,11 @@
 <span id="foc-impl-sat-antiwindup"></span><h4><span class="section-number">4.4.4.1.6. </span>饱和和反饱和<a class="headerlink" href="#saturation-and-anti-windup" title="本标题的永久链接">¶</a></h4>
 <p>当某些速度反饱和条件发生时，速度环路误差积分被抑制。</p>
 <p>在 MCAF R1 – R5 中，速度反饱和条件包括电流和电压饱和的检测。</p>
-<p>从 MCAF R6 开始，当启用 <a class="reference internal" href="../algorithms/flux_control/flux_weakening.zh.html#algorithm-flux-weakening"><span class="std std-ref">flux weakening</span></a> 时，电压饱和不用于速度反饱和，以允许进入弱磁区域。当弱磁控制禁用时，电压饱和用于速度反饱和。</p>
+<p>从 MCAF R6 开始，当启用 <a class="reference internal" href="../algorithms/flux_control/flux_weakening.zh.html#algorithm-flux-weakening"><span class="std std-ref">弱磁控制</span></a> 时，电压饱和不用于速度反饱和，以允许进入弱磁区域。当弱磁控制禁用时，电压饱和用于速度反饱和。</p>
 </section>
 <section id="flux-control">
 <h4><span class="section-number">4.4.4.1.7. </span>磁通控制<a class="headerlink" href="#flux-control" title="本标题的永久链接">¶</a></h4>
-<p><a class="reference internal" href="../algorithms/flux_control/index.zh.html#algorithm-flux-control"><span class="std std-ref">磁通控制</span></a>，包括 <a class="reference internal" href="../algorithms/flux_control/flux_weakening.zh.html#algorithm-flux-weakening"><span class="std std-ref">flux weakening</span></a> 和 <a class="reference internal" href="../algorithms/flux_control/mtpa.zh.html#algorithm-mtpa"><span class="std std-ref">MTPA</span></a>，作为选项在 MCAF R6 中添加。</p>
+<p><a class="reference internal" href="../algorithms/flux_control/index.zh.html#algorithm-flux-control"><span class="std std-ref">磁通控制</span></a>，包括 <a class="reference internal" href="../algorithms/flux_control/flux_weakening.zh.html#algorithm-flux-weakening"><span class="std std-ref">弱磁控制</span></a> 和 <a class="reference internal" href="../algorithms/flux_control/mtpa.zh.html#algorithm-mtpa"><span class="std std-ref">MTPA</span></a>，作为选项在 MCAF R6 中添加。</p>
 </section>
 <section id="current-measurement-gain-and-offset-compensation">
 <h4><span class="section-number">4.4.4.1.8. </span>电流测量/增益和偏移补偿<a class="headerlink" href="#current-measurement-gain-and-offset-compensation" title="本标题的永久链接">¶</a></h4>
@@ -281,7 +281,7 @@ D_{BMAX} &amp;= \min (1 - 0.03, 0.9 + 0.04) = 0.94
 <p>在这种情况下，限制由最大占空比决定；H 和 L 波形的最小占空比远高于其所需的最小值。</p>
 </section>
 <section id="recommended-values-for-use-with-mb-and-mclv-2">
-<h4><span class="section-number">4.4.4.2.4. </span>motorBench 推荐值<sup>®</sup> 开发套件和 MCLV-2<a class="headerlink" href="#recommended-values-for-use-with-mb-and-mclv-2" title="本标题的永久链接">¶</a></h4>
+<h4><span class="section-number">4.4.4.2.4. </span>motorBench<sup>®</sup> Development Suite 的推荐值和 MCLV-2<a class="headerlink" href="#recommended-values-for-use-with-mb-and-mclv-2" title="本标题的永久链接">¶</a></h4>
 <ul class="simple">
 <li><p>高侧晶体管必须限制在 <span class="math notranslate nohighlight">\(D_{HMIN} = 0.5\%\)</span> 占空比和 <span class="math notranslate nohighlight">\(D_{HMAX} = 99.5\%\)</span> 占空比之间</p></li>
 <li><p>低侧晶体管必须限制在 <span class="math notranslate nohighlight">\(D_{LMIN} = 2.23\%\)</span> 占空比和 <span class="math notranslate nohighlight">\(D_{LMAX} = 99.5\%\)</span> 占空比之间</p></li>
@@ -505,7 +505,7 @@ D_{BMAX} &amp;= \min (1 - 0.0223, 0.995 + 0.04) = 0.9777
 <div class="line"><code class="docutils literal notranslate"><span class="pre">parameters/pll_params.h</span></code></div>
 </div>
 </td>
-<td><p><a class="reference internal" href="../algorithms/pll.zh.html#algorithm-pll"><span class="std std-ref">AN1292 Phase-locked Loop (PLL)</span></a></p></td>
+<td><p><a class="reference internal" href="../algorithms/pll.zh.html#algorithm-pll"><span class="std std-ref">AN1292 锁相环（PLL）</span></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-odd"><td class="longcolumn-1"><code class="docutils literal notranslate"><span class="pre">commutation/qei</span></code></td>
@@ -583,7 +583,7 @@ D_{BMAX} &amp;= \min (1 - 0.0223, 0.995 + 0.04) = 0.9777
 <li><a class="reference internal" href="#pwm-peripheral-in-dspic33-devices">4.4.4.2.1. dsPIC33 器件中的 PWM 外设</a></li>
 <li><a class="reference internal" href="#example-1">4.4.4.2.2. 示例 1</a></li>
 <li><a class="reference internal" href="#example-2">4.4.4.2.3. 示例 2</a></li>
-<li><a class="reference internal" href="#recommended-values-for-use-with-mb-and-mclv-2">4.4.4.2.4. motorBench 推荐值<sup>®</sup> 开发套件和 MCLV-2</a></li>
+<li><a class="reference internal" href="#recommended-values-for-use-with-mb-and-mclv-2">4.4.4.2.4. motorBench<sup>®</sup> Development Suite 的推荐值和 MCLV-2</a></li>
 <li><a class="reference internal" href="#affected-source-code-files">4.4.4.2.5. 受影响的源代码文件</a></li>
 <li><a class="reference internal" href="#support-for-full-on-off-time-in-mcaf">4.4.4.2.6. MCAF 对全导通/关断时间的支持</a></li>
 </ul>
@@ -610,7 +610,7 @@ D_{BMAX} &amp;= \min (1 - 0.0223, 0.995 + 0.04) = 0.9777
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../search.html" class="search" method="get">
+<form action="../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -627,9 +627,9 @@ D_{BMAX} &amp;= \min (1 - 0.0223, 0.995 + 0.04) = 0.9777
 <li class="right" style="margin-right: 10px">
 <a href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="testharness.zh.html" title="4.5. Test Harness">下一页</a> |</li>
+<a href="testharness.zh.html" title="4.5. 测试框架">下一页</a> |</li>
 <li class="right">
-<a href="statemach.zh.html" title="4.3. State Machine">上一页</a> |</li>
+<a href="statemach.zh.html" title="4.3. 状态机">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> » <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">4. </span>组件</a> »</li>

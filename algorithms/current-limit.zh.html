@@ -20,10 +20,10 @@
 <script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../_static/svgcrop.js"></script>
 <script src="../_static/mcaf-styling.js"></script>
-<link href="../genindex.zh.html" rel="index" title="Index"/>
-<link href="../search.zh.html" rel="search" title="Search"/>
-<link href="dynlimit-simple.zh.html" rel="next" title="5.6.5.1. Simple dynamic current limit"/>
-<link href="flux_control/flux_weakening_mtpa_integration.zh.html" rel="prev" title="5.5.3. D-axis current reference generation"/>
+<link href="../genindex.zh.html" rel="index" title="索引"/>
+<link href="../search.zh.html" rel="search" title="搜索"/>
+<link href="dynlimit-simple.zh.html" rel="next" title="5.6.5.1. 简单动态电流限制"/>
+<link href="flux_control/flux_weakening_mtpa_integration.zh.html" rel="prev" title="5.5.3. D 轴电流参考生成"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -31,9 +31,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="dynlimit-simple.zh.html" title="5.6.5.1. Simple dynamic current limit">下一页</a> |</li>
+<a accesskey="N" href="dynlimit-simple.zh.html" title="5.6.5.1. 简单动态电流限制">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="flux_control/flux_weakening_mtpa_integration.zh.html" title="5.5.3. D-axis current reference generation">上一页</a> |</li>
+<a accesskey="P" href="flux_control/flux_weakening_mtpa_integration.zh.html" title="5.5.3. D 轴电流参考生成">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -53,7 +53,7 @@
 <p>外环控制器（<a class="reference internal" href="../components/foc.zh.html#velocity-control"><span class="std std-ref">速度控制</span></a>，例如）命令 q 轴电流，该电流在明确定义的限制处饱和。这些限制可配置，可以是固定的或动态的。当需要短暂峰值暂态电流时，动态电流限制是合适的。</p>
 </section>
 <section id="implications-of-operating-at-the-current-limit">
-<h2><span class="section-number">5.6.2. </span>在电流限制下运行的引申<a class="headerlink" href="#implications-of-operating-at-the-current-limit" title="本标题的永久链接">¶</a></h2>
+<h2><span class="section-number">5.6.2. </span>在电流限制下运行的影响<a class="headerlink" href="#implications-of-operating-at-the-current-limit" title="本标题的永久链接">¶</a></h2>
 <p>当外环控制器在电流限制处饱和时，它无法再实现其控制目标，而是在不超过电流限制的前提下尽可能接近该目标。</p>
 <p>例如，MCAF 速度控制器在达到电流限制时将不再调节速度，而是在控制饱和时命令电流限制。如果速度命令为 3000 RPM，但在 10 A 电流限制下电机只能达到 2400 RPM，则速度控制器将在 2400 RPM 时维持 10 A。</p>
 <p>在矢量控制中，恒定的 q 轴电流在宽范围内产生近乎恒定的转矩—因此，在实际应用中，电机速度将由电机转矩与负载转矩之间的平衡决定。如果负载转矩变化并超过电流限制，速度可以相当快地变化。</p>
@@ -83,7 +83,7 @@
 <ul class="simple">
 <li><p>结点小而薄，升温很快（通常在毫秒或几十毫秒的数量级），但结点与外壳之间的热阻通常很小；在许多情况下，结点可能只比外壳热几度。</p></li>
 <li><p>晶体管外壳，尤其是在较大的封装中，如 TO-252 (DPAK)、TO-263 (D²PAK)、TO-220 和 TO-247，包含一个金属标签，其热容足以作为短暂的临时散热器。</p></li>
-<li><p>外部散热器——如果存在，它提供额外的热容和热量流向环境的路径。（注意：在印制电路板上，带有热通孔的铜管是从 PCB 本身提供至少一些额外热容和导热性的有效方法。参见 <a class="reference external" href="https://www.microchip.com/en-us/application-notes/an8826">AN8826 表面贴装封装 PCB 安装指南</a> 了解更多信息。）</p></li>
+<li><p>外部散热器——如果存在，它提供额外的热容和热量流向环境的路径。（注意：在印制电路板上，带有散热过孔的敷铜区域是从 PCB 本身提供至少一些额外热容和导热性的有效方法。参见 <a class="reference external" href="https://www.microchip.com/en-us/application-notes/an8826">AN8826 表面贴装封装 PCB 安装指南</a> 了解更多信息。）</p></li>
 </ul>
 <p><a class="reference internal" href="#fig-dyn-ilimit-sim1"><span class="std std-numref">图 5.91</span></a> 展示了 MOSFET 在时间 <span class="math notranslate nohighlight">\(t=0\)</span>后以恒定功率损耗散热的热仿真。结点到外壳的温度升高到最终值的速度非常快。晶体管外壳和散热器升温较慢。晶体管外壳和散热器的热容允许暂态电流超过连续电流容量。</p>
 <figure class="align-center" id="id1">
@@ -136,7 +136,7 @@
 <ul>
 <li><a class="reference internal" href="#">5.6. 电流限制</a><ul>
 <li><a class="reference internal" href="#overview">5.6.1. 概述</a></li>
-<li><a class="reference internal" href="#implications-of-operating-at-the-current-limit">5.6.2. 在电流限制下运行的引申</a></li>
+<li><a class="reference internal" href="#implications-of-operating-at-the-current-limit">5.6.2. 在电流限制下运行的影响</a></li>
 <li><a class="reference internal" href="#dynamic-current-limit">5.6.3. 动态电流限制</a></li>
 <li><a class="reference internal" href="#thermal-modeling-background">5.6.4. 热模型背景</a></li>
 <li><a class="reference internal" href="#available-current-limit-algorithms-in-mcaf">5.6.5. MCAF 中可用的电流限制算法</a></li>
@@ -157,7 +157,7 @@
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../search.html" class="search" method="get">
+<form action="../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -174,9 +174,9 @@
 <li class="right" style="margin-right: 10px">
 <a href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="dynlimit-simple.zh.html" title="5.6.5.1. Simple dynamic current limit">下一页</a> |</li>
+<a href="dynlimit-simple.zh.html" title="5.6.5.1. 简单动态电流限制">下一页</a> |</li>
 <li class="right">
-<a href="flux_control/flux_weakening_mtpa_integration.zh.html" title="5.5.3. D-axis current reference generation">上一页</a> |</li>
+<a href="flux_control/flux_weakening_mtpa_integration.zh.html" title="5.5.3. D 轴电流参考生成">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »

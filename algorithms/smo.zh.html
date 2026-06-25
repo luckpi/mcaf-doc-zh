@@ -20,10 +20,10 @@
 <script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../_static/svgcrop.js"></script>
 <script src="../_static/mcaf-styling.js"></script>
-<link href="../genindex.zh.html" rel="index" title="Index"/>
-<link href="../search.zh.html" rel="search" title="Search"/>
-<link href="flux_control/index.zh.html" rel="next" title="5.5. Flux control"/>
-<link href="zsmt.zh.html" rel="prev" title="5.4.5. Zero-Speed / Maximum Torque (ZS/MT)"/>
+<link href="../genindex.zh.html" rel="index" title="索引"/>
+<link href="../search.zh.html" rel="search" title="搜索"/>
+<link href="flux_control/index.zh.html" rel="next" title="5.5. 磁链控制"/>
+<link href="zsmt.zh.html" rel="prev" title="5.4.5. 零速/最大转矩（ZS/MT）"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -31,9 +31,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="flux_control/index.zh.html" title="5.5. Flux control">下一页</a> |</li>
+<a accesskey="N" href="flux_control/index.zh.html" title="5.5. 磁链控制">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="zsmt.zh.html" title="5.4.5. Zero-Speed / Maximum Torque (ZS/MT)">上一页</a> |</li>
+<a accesskey="P" href="zsmt.zh.html" title="5.4.5. 零速/最大转矩（ZS/MT）">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -51,7 +51,7 @@
 <span id="algorithm-smo"></span><span id="index-0"></span><h1><span class="section-number">5.4.6. </span>滑模观测器（SMO）<a class="headerlink" href="#sliding-mode-observer-smo" title="本标题的永久链接">¶</a></h1>
 <section id="overview">
 <h2><span class="section-number">5.4.6.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
-<p>滑模观测器（SMO）在此用于 <a class="reference internal" href="../appendix/glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a> 的速度和转子角度估计，以实现无传感器控制。该算法使用 PMSM 电流动态学，并通过滑模增益强制估计电流匹配测量电流。估计的反电动势用于计算位置和速度，如实现方框图所示。实现基于 <a class="reference external" href="https://www.microchip.com/en-us/application-notes/an1078">AN1078</a>，在参数计算方面有一些改进。</p>
+<p>滑模观测器（SMO）在此用于 <a class="reference internal" href="../appendix/glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a> 的速度和转子角度估计，以实现无传感器控制。该算法使用 PMSM 电流动态特性，并通过滑模增益强制估计电流匹配测量电流。估计的反电动势用于计算位置和速度，如实现方框图所示。实现基于 <a class="reference external" href="https://www.microchip.com/en-us/application-notes/an1078">AN1078</a>，在参数计算方面有一些改进。</p>
 </section>
 <section id="implementation-block-diagram-and-description">
 <h2><span class="section-number">5.4.6.2. </span>实现方框图和描述<a class="headerlink" href="#implementation-block-diagram-and-description" title="本标题的永久链接">¶</a></h2>
@@ -59,7 +59,7 @@
 <div><figure class="align-center" id="id1">
 <img alt="SMO: High-level Block Diagram" src="../_images/smo_high_level.png"/>
 <figcaption>
-<p><span class="caption-number">图 5.75 </span><span class="caption-text">SMO：高层方框图</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+<p><span class="caption-number">图 5.75 </span><span class="caption-text">SMO：概要方框图</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
 </div></blockquote>
@@ -104,7 +104,7 @@
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../search.html" class="search" method="get">
+<form action="../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -121,9 +121,9 @@
 <li class="right" style="margin-right: 10px">
 <a href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="flux_control/index.zh.html" title="5.5. Flux control">下一页</a> |</li>
+<a href="flux_control/index.zh.html" title="5.5. 磁链控制">下一页</a> |</li>
 <li class="right">
-<a href="zsmt.zh.html" title="5.4.5. Zero-Speed / Maximum Torque (ZS/MT)">上一页</a> |</li>
+<a href="zsmt.zh.html" title="5.4.5. 零速/最大转矩（ZS/MT）">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »

@@ -20,10 +20,10 @@
 <script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../_static/svgcrop.js"></script>
 <script src="../_static/mcaf-styling.js"></script>
-<link href="../genindex.zh.html" rel="index" title="Index"/>
-<link href="../search.zh.html" rel="search" title="Search"/>
-<link href="qei_sync/common.zh.html" rel="next" title="5.4.3.3.1. Implementation issues common to all methods"/>
-<link href="pll.zh.html" rel="prev" title="5.4.2. AN1292 Phase-locked Loop (PLL)"/>
+<link href="../genindex.zh.html" rel="index" title="索引"/>
+<link href="../search.zh.html" rel="search" title="搜索"/>
+<link href="qei_sync/common.zh.html" rel="next" title="5.4.3.3.1. 所有方法共有的实现问题"/>
+<link href="pll.zh.html" rel="prev" title="5.4.2. AN1292 锁相环（PLL）"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -31,9 +31,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="qei_sync/common.zh.html" title="5.4.3.3.1. Implementation issues common to all methods">下一页</a> |</li>
+<a accesskey="N" href="qei_sync/common.zh.html" title="5.4.3.3.1. 所有方法共有的实现问题">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="pll.zh.html" title="5.4.2. AN1292 Phase-locked Loop (PLL)">上一页</a> |</li>
+<a accesskey="P" href="pll.zh.html" title="5.4.2. AN1292 锁相环（PLL）">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -86,7 +86,7 @@
 <span id="id1"></span><h2><span class="section-number">5.4.3.2. </span>跟踪环<a class="headerlink" href="#index-1" title="本标题的永久链接">¶</a></h2>
 <section id="id2">
 <h3><span class="section-number">5.4.3.2.1. </span>概述<a class="headerlink" href="#id2" title="本标题的永久链接">¶</a></h3>
-<p>从编码器位置估计速度有很多方法。一种简单的实现会尝试对速度信号求导，但由于编码器对转子位置进行量化，在中等速度下结果将是一堆零和一。（例如，考虑一个 1024 每转脉冲数的编码器在以 1000 RPM = 16.667 转/秒运行的电机上。这产生大约 17067 脉冲/秒的编码器脉冲率。以 20 kHz 运行的控制 ISR 每次 ISR 会看到 0 或 1 个脈冲的变化。在 10000 RPM 时，同一电机/编码器将产生 170667 脉冲/秒，控制 ISR 每次会看到 8 或 9 个脉冲的变化。在两种情况下，速度的最大量化误差都等于 0.5 脉冲/ISR = 1/2048 轪c * 20 kHz = 9.77 转/秒 = 586 RPM。）</p>
+<p>从编码器位置估计速度有很多方法。一种简单的实现会尝试对速度信号求导，但由于编码器对转子位置进行量化，在中等速度下结果将是一堆零和一。（例如，考虑一个 1024 每转脉冲数的编码器在以 1000 RPM = 16.667 转/秒运行的电机上。这产生大约 17067 脉冲/秒的编码器脉冲率。以 20 kHz 运行的控制 ISR 每次 ISR 会看到 0 或 1 个脉冲的变化。在 10000 RPM 时，同一电机/编码器将产生 170667 脉冲/秒，控制 ISR 每次会看到 8 或 9 个脉冲的变化。在两种情况下，速度的最大量化误差都等于 0.5 脉冲/ISR = 1/2048 转 * 20 kHz = 9.77 转/秒 = 586 RPM。）</p>
 <p>估计速度的一种方法是计算每个控制周期的位置变化，并使用低通滤波器确定速度。MCAF 使用的是略有不同的方法，称为跟踪环。</p>
 <p>跟踪环本质上只是以状态变量形式实现的低通滤波器，以产生有用的估计。在 <a class="reference internal" href="#fig-tracking-loop"><span class="std std-numref">图 5.56</span></a>所示的跟踪环中，输入角度 <span class="math notranslate nohighlight">\(\theta\)</span> 可能含有噪声，无论是模拟噪声还是（对于编码器）量化噪声。环本身仅包含一个 PI 控制器来估计速度 <span class="math notranslate nohighlight">\(\hat{\omega}\)</span> ，然后积分形成估计角度 <span class="math notranslate nohighlight">\(\hat{\theta}\)</span> 用于形成 PI 环的误差项。</p>
 <figure class="align-center" id="id3">
@@ -122,9 +122,9 @@ H_{\omega\rightarrow\hat{\omega}}(s) &amp;= \frac{K_ps+K_i}{1+K_p/s+K_i/s^2} = \
 </section>
 <section id="implementation-notes">
 <h3><span class="section-number">5.4.3.2.3. </span>实现说明<a class="headerlink" href="#implementation-notes" title="本标题的永久链接">¶</a></h3>
-<p>MCAF 用于正交编码器支持的跟踪环对机械角度 <span class="math notranslate nohighlight">\(\theta_m\)</span>运行，输出为估计机械角速度 <span class="math notranslate nohighlight">\(\omega_m\)</span>。此选择保留了一个完整机械轮内的角度位置，以支持未来的位置控制应用。</p>
+<p>MCAF 用于正交编码器支持的跟踪环对机械角度 <span class="math notranslate nohighlight">\(\theta_m\)</span>运行，输出为估计机械角速度 <span class="math notranslate nohighlight">\(\omega_m\)</span>。此选择保留了一个完整的机械转内的角度位置，以支持未来的位置控制应用。</p>
 <p>MCAF 使用滤波后的速度， <span class="math notranslate nohighlight">\(\hat{\omega}_{LPF}\)</span>用于速度估计。</p>
-<p>MCAF 的跟踪环实现添加了一个限庅器模块，如 <a class="reference internal" href="#fig-tracking-loop-impl"><span class="std std-numref">图 5.57</span></a>所示，防止计算 <span class="math notranslate nohighlight">\(\hat\omega\)</span>。</p>
+<p>MCAF 的跟踪环实现添加了一个限幅器模块，如 <a class="reference internal" href="#fig-tracking-loop-impl"><span class="std std-numref">图 5.57</span></a>所示，防止计算 <span class="math notranslate nohighlight">\(\hat\omega\)</span>。</p>
 <figure class="align-center" id="id4">
 <span id="fig-tracking-loop-impl"></span><img alt="../_images/tracking-loop-impl-bdiag.png" src="../_images/tracking-loop-impl-bdiag.png"/>
 <figcaption>
@@ -154,7 +154,7 @@ H_{\omega\rightarrow\hat{\omega}}(s) &amp;= \frac{K_ps+K_i}{1+K_p/s+K_i/s^2} = \
 <ul class="simple">
 <li><p><strong>align（对齐）</strong> — 对齐方法在启动的对齐阶段以固定角度施加固定电流，并期望转子在低速时具有最小的机械负载，会旋转使其 d 轴与施加的电流矢量对齐。（此方法依赖 d 轴转矩性质。）这是 MCAF 的默认方法，速度很快，对大多数电机效果良好，只要齿槽转矩或其他机械负载相对较低，且在低转矩负载下转子凸性的影响较小。</p></li>
 <li><p><strong>pullout（失步）</strong> — 失步方法减小启动稳速阶段使用的电流，直到观察到转子角度开始从施加电流的角度显著减小。（此方法依赖 MTPA 性质。）此方法不受齿槽转矩误差的影响，但对强制换相的动态特性敏感。</p></li>
-<li><p><strong>align-and-sweep（对齐并扫描）</strong> — 对齐并扫描方法在启动的对齐阶段以缓慢变化的角度施加固定电流。施加的电气角度在正向和反向旋转一个完整的机械轮，在两个结果区间内，对施加的电气角度与测量的编码器角度之差取平均，以获得换相偏移的估计。此方法较慢，但可以在大多数电机中产生非常准确的换相偏移估计。</p></li>
+<li><p><strong>align-and-sweep（对齐并扫描）</strong> — 对齐并扫描方法在启动的对齐阶段以缓慢变化的角度施加固定电流。施加的电气角度在正向和反向旋转一个完整的机械转，在两个结果区间内，对施加的电气角度与测量的编码器角度之差取平均，以获得换相偏移的估计。此方法较慢，但可以在大多数电机中产生非常准确的换相偏移估计。</p></li>
 </ul>
 <p>这些方法在以下章节中有更详细的描述。</p>
 <p>在所有情况下，换相偏移仅在一次启动迭代中估计；一旦完成，结果值被重复使用，后续的启动序列将跳过反电动势同步。</p>
@@ -230,7 +230,7 @@ H_{\omega\rightarrow\hat{\omega}}(s) &amp;= \frac{K_ps+K_i}{1+K_p/s+K_i/s^2} = \
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../search.html" class="search" method="get">
+<form action="../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -247,9 +247,9 @@ H_{\omega\rightarrow\hat{\omega}}(s) &amp;= \frac{K_ps+K_i}{1+K_p/s+K_i/s^2} = \
 <li class="right" style="margin-right: 10px">
 <a href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="qei_sync/common.zh.html" title="5.4.3.3.1. Implementation issues common to all methods">下一页</a> |</li>
+<a href="qei_sync/common.zh.html" title="5.4.3.3.1. 所有方法共有的实现问题">下一页</a> |</li>
 <li class="right">
-<a href="pll.zh.html" title="5.4.2. AN1292 Phase-locked Loop (PLL)">上一页</a> |</li>
+<a href="pll.zh.html" title="5.4.2. AN1292 锁相环（PLL）">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »

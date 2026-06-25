@@ -20,10 +20,10 @@
 <script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../../_static/svgcrop.js"></script>
 <script src="../../_static/mcaf-styling.js"></script>
-<link href="../../genindex.zh.html" rel="index" title="Index"/>
-<link href="../../search.zh.html" rel="search" title="Search"/>
-<link href="configuration.zh.html" rel="next" title="6.6.5. Creating a custom board configuration"/>
-<link href="index.zh.html" rel="prev" title="6.6. Custom Board Support"/>
+<link href="../../genindex.zh.html" rel="index" title="索引"/>
+<link href="../../search.zh.html" rel="search" title="搜索"/>
+<link href="configuration.zh.html" rel="next" title="6.6.5. 创建自定义板级配置"/>
+<link href="index.zh.html" rel="prev" title="6.6. 定制板卡支持"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -31,9 +31,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="configuration.zh.html" title="6.6.5. Creating a custom board configuration">下一页</a> |</li>
+<a accesskey="N" href="configuration.zh.html" title="6.6.5. 创建自定义板级配置">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="index.zh.html" title="6.6. Custom Board Support">上一页</a> |</li>
+<a accesskey="P" href="index.zh.html" title="6.6. 定制板卡支持">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -218,7 +218,7 @@
 </section>
 <section id="board-definition-file-structure">
 <h1><span class="section-number">6.6.3. </span>板卡定义文件结构<a class="headerlink" href="#board-definition-file-structure" title="本标题的永久链接">¶</a></h1>
-<p>板卡定义文件是一个描述各种配置设置的层次化数据模型。motorBench 使用的序列化格式为 YAML；未来版本的 motorBench<sup>®</sup> Development Suite 可能扩展为支持 JSON 和/或 TOML。</p>
+<p>板卡定义文件是一个描述各种配置设置的层次化数据模型。motorBench 使用的序列化格式为 YAML；未来版本的 motorBench<sup>®</sup> Development Suite 。</p>
 <p>更多信息请参见 <a class="reference internal" href="custom_board_definitions.zh.html#custom-board-definitions"><span class="std std-ref">定制板卡定义格式</span></a>。</p>
 </section>
 <section id="system-parameters">
@@ -300,7 +300,7 @@
 <p class="admonition-title">注</p>
 <p>MCAF 保留了两个硬件定时器，由 MCC 配置，不属于定制板卡定义文件：</p>
 <ul class="simple">
-<li><p><strong>Tick 定时器</strong>：用于内部 <a class="reference internal" href="../../components/hal.zh.html#board-service-module"><span class="std std-ref">板卡服务</span></a> 定时器 ISR；定时器周期通过 motorBench <a class="reference internal" href="../ui-customization.zh.html#customize-board-service-uiservicetiming"><span class="std std-ref">UI 服务周期</span></a> 的 Customize（定制）页面上的<sup>®</sup> Development Suite 可能扩展为支持 JSON 和/或 TOML。</p></li>
+<li><p><strong>Tick 定时器</strong>：用于内部 <a class="reference internal" href="../../components/hal.zh.html#board-service-module"><span class="std std-ref">板卡服务</span></a> 定时器 ISR；定时器周期通过 motorBench <a class="reference internal" href="../ui-customization.zh.html#customize-board-service-uiservicetiming"><span class="std std-ref">UI 服务周期</span></a> 的 Customize（定制）页面上的<sup>®</sup> Development Suite 。</p></li>
 <li><p><strong>性能分析定时器</strong>：用于 <a class="reference internal" href="../../components/testharness.zh.html#test-timestamps"><span class="std std-ref">性能分析时间戳</span></a>。</p></li>
 </ul>
 <p>避免将这两个硬件定时器用于 MCAF 之外的任何目的。</p>
@@ -345,7 +345,7 @@
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../../search.html" class="search" method="get">
+<form action="../../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -362,9 +362,9 @@
 <li class="right" style="margin-right: 10px">
 <a href="../../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="configuration.zh.html" title="6.6.5. Creating a custom board configuration">下一页</a> |</li>
+<a href="configuration.zh.html" title="6.6.5. 创建自定义板级配置">下一页</a> |</li>
 <li class="right">
-<a href="index.zh.html" title="6.6. Custom Board Support">上一页</a> |</li>
+<a href="index.zh.html" title="6.6. 定制板卡支持">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »

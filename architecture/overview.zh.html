@@ -19,10 +19,10 @@
 <script src="../_static/rendermath.js"></script>
 <script src="../_static/svgcrop.js"></script>
 <script src="../_static/mcaf-styling.js"></script>
-<link href="../genindex.zh.html" rel="index" title="Index"/>
-<link href="../search.zh.html" rel="search" title="Search"/>
-<link href="naming.zh.html" rel="next" title="3.2. Naming Conventions"/>
-<link href="index.zh.html" rel="prev" title="3. Architecture"/>
+<link href="../genindex.zh.html" rel="index" title="索引"/>
+<link href="../search.zh.html" rel="search" title="搜索"/>
+<link href="naming.zh.html" rel="next" title="3.2. 命名约定"/>
+<link href="index.zh.html" rel="prev" title="3. 架构"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -30,9 +30,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="naming.zh.html" title="3.2. Naming Conventions">下一页</a> |</li>
+<a accesskey="N" href="naming.zh.html" title="3.2. 命名约定">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="index.zh.html" title="3. Architecture">上一页</a> |</li>
+<a accesskey="P" href="index.zh.html" title="3. 架构">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -52,7 +52,7 @@
 <li><p>基于简单的用户输入驱动电机</p></li>
 <li><p>检测并报告故障状态</p></li>
 <li><p>模块化且可维护</p></li>
-<li><p>为 Microchip 客户提供使用 dsPIC<sup>®</sup> DSC 器件</p></li>
+<li><p>为 Microchip 客户提供使用 dsPIC<sup>®</sup> DSC 器件的电机控制应用的清晰示例</p></li>
 <li><p>在资源受限的器件中高效利用可用的 CPU 时间</p></li>
 </ul>
 <p>本节将概述如何实现这些目标。</p>
@@ -129,7 +129,7 @@
 <li><p><a class="reference internal" href="../components/foc.zh.html#current-control"><span class="std std-ref">电流控制</span></a>：大多数电机控制算法需要电流控制环来管理电机转矩和/或电流。（有些不需要；而是由主速度控制器直接输出占空比。未来可能添加对这类系统的支持。）应用框架最初将支持 <a class="reference internal" href="../appendix/glossary.zh.html#term-FOC"><span class="xref std std-term">FOC</span></a> 永磁同步电机的，但也可支持 <a class="reference internal" href="../appendix/glossary.zh.html#term-FOC"><span class="xref std std-term">FOC</span></a> 感应电机的、六步控制、直接转矩控制等（视需要）。</p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="../components/foc.zh.html#posvelest"><span class="std std-ref">换相与估计</span></a>：所有永磁同步电机（<a class="reference internal" href="../appendix/glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a>）、开关磁阻电机（SR）、交流感应电机（ACIM）和步进电机都需要交流波形，并控制任意时刻哪些电机端子接收电流；唯一例外是带有内置换向器的直流电机。换相与估计的功能是检查可用输入并得出电机位置、速度和/或换相角的估计值。换相角决定哪些相应接收电流。该组件可由若干替代实现组成：</p>
+<li><p><a class="reference internal" href="../components/foc.zh.html#posvelest"><span class="std std-ref">换相与估计</span></a>：所有永磁同步电机（<a class="reference internal" href="../appendix/glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a>）、开关磁阻电机（SR）、交流感应电机（ACIM）和步进电机都需要交流波形，并控制任意时刻哪些电机端子接收电流；唯一例外是带有内置换向器的直流电机。换相与估计的功能是采集可用输入并得出电机位置、速度和/或换相角的估计值。换相角决定哪些绕组接收电流。该组件可由若干替代实现组成：</p>
 <ul>
 <li><p>无传感器估计器（<a class="reference internal" href="../appendix/glossary.zh.html#term-PLL"><span class="xref std std-term">PLL</span></a>， <a class="reference internal" href="../appendix/glossary.zh.html#term-SMO"><span class="xref std std-term">SMO</span></a>等）</p></li>
 <li><p>霍尔传感器换相与估计</p></li>
@@ -201,7 +201,7 @@
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../search.html" class="search" method="get">
+<form action="../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -218,9 +218,9 @@
 <li class="right" style="margin-right: 10px">
 <a href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="naming.zh.html" title="3.2. Naming Conventions">下一页</a> |</li>
+<a href="naming.zh.html" title="3.2. 命名约定">下一页</a> |</li>
 <li class="right">
-<a href="index.zh.html" title="3. Architecture">上一页</a> |</li>
+<a href="index.zh.html" title="3. 架构">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="zh">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
@@ -20,10 +20,10 @@
 <script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../_static/svgcrop.js"></script>
 <script src="../_static/mcaf-styling.js"></script>
-<link href="../genindex.html" rel="index" title="Index"/>
-<link href="../search.html" rel="search" title="Search"/>
-<link href="voltage-control.html" rel="next" title="5.8. Voltage Control"/>
-<link href="dynlimit-simple.html" rel="prev" title="5.6.5.1. Simple dynamic current limit"/>
+<link href="../genindex.html" rel="index" title="索引"/>
+<link href="../search.html" rel="search" title="搜索"/>
+<link href="voltage-control.html" rel="next" title="5.8. 电压控制"/>
+<link href="dynlimit-simple.html" rel="prev" title="5.6.5.1. 简单动态电流限制"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -62,7 +62,7 @@
 <p><span class="caption-number">图 5.93 </span><span class="caption-text">三相桥，由驱动电机端子 A、B 和 C 的三个半桥组成。每个半桥有一个高侧和低侧晶体管，可以将相应的电机端子连接到直流母线的正极或负极。</span><a class="headerlink" href="#id3" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
-<p>死区如 <a class="reference internal" href="#fig-dtc-pwmdeadtime"><span class="std std-numref">图 5.94</span></a>所示，表示为 <span class="math notranslate nohighlight">\(\delta_1\)</span> 占整个 PWM 周期的比例 <span class="math notranslate nohighlight">\(T_\text{PWM}\)</span>。它用于适应开关转换所需的时间，并允许一个晶体管在另一个开始导通之前完全关断。这避免了直通，即直流母线两端发生暂时短路并在两个晶体管中引起 high power dissipation in both transistors.</p>
+<p>死区如 <a class="reference internal" href="#fig-dtc-pwmdeadtime"><span class="std std-numref">图 5.94</span></a>所示，表示为 <span class="math notranslate nohighlight">\(\delta_1\)</span> 占整个 PWM 周期的比例 <span class="math notranslate nohighlight">\(T_\text{PWM}\)</span>。它用于适应开关转换所需的时间，并允许一个晶体管在另一个开始导通之前完全关断。这避免了直通，即直流母线两端发生暂时短路并在两个晶体管中引起 两个晶体管中产生高功耗。</p>
 <figure class="align-center" id="id4">
 <span id="fig-dtc-pwmdeadtime"></span><img alt="../_images/pwm-with-deadtime.svg" src="../_images/pwm-with-deadtime.svg"/><figcaption>
 <p><span class="caption-number">图 5.94 </span><span class="caption-text">电机某一半桥的栅驱动信号示例</span><a class="headerlink" href="#id4" title="本图片的永久链接">¶</a></p>
@@ -81,7 +81,7 @@
 <section id="output-voltage-during-dead-time">
 <span id="dtc-outputvoltage"></span><h3><span class="section-number">5.7.3.1. </span>死区期间的输出电压<a class="headerlink" href="#output-voltage-during-dead-time" title="本标题的永久链接">¶</a></h3>
 <p>MCAF 中的矢量控制使用平均值建模。控制变量可以用采样时间内的平均值表示，采样时间由离散数量的半周期组成。MCAF R1 – R9 均使用 1 个完整 PWM 周期作为采样时间。PWM 周期内半桥的平均输出电压为 <span class="math notranslate nohighlight">\(D'V_{dc} = (D+\delta)V_{dc}\)</span> 其中 <span class="math notranslate nohighlight">\(D'\)</span> 为有效占空比， <span class="math notranslate nohighlight">\(D\)</span> 为期望占空比， <span class="math notranslate nohighlight">\(\delta\)</span> 为有效占空比误差。此误差由死区引起，称为死区畸变。</p>
-<p>在死区期间，每个半桥输出实际上处于高阻状态，由功率级的续流二极管在直流母线电压轨处钳位。（MOSFET 具有固有体二极管；IGBT 没有，需要反并联二极管）parallel diodes)</p>
+<p>在死区期间，每个半桥输出实际上处于高阻状态，由功率级的续流二极管在直流母线电压轨处钳位。（MOSFET 具有固有体二极管；IGBT 没有，需要反并联二极管）反并联二极管）</p>
 <p>这导致死区期间的输出电压随输出电流而变化。在电机驱动中，半桥负载是感性的，因此输出电压为以下之一，如 <a class="reference internal" href="#fig-dtc-deadtime-distortion1"><span class="std std-numref">图 5.95</span></a>：</p>
 <figure class="align-center" id="id5">
 <span id="fig-dtc-deadtime-distortion1"></span><a class="reference internal image-reference" href="../_images/pwm-deadtime-distortion.svg"><img alt="../_images/pwm-deadtime-distortion.svg" src="../_images/pwm-deadtime-distortion.svg" width="70%"/></a>
@@ -124,7 +124,7 @@
 </figure>
 <p>有效占空比误差的主要项仅为 <span class="math notranslate nohighlight">\(\delta = \plusmn\delta_1\)</span> ，由电流不在零附近时的死区直接引起。还有一些次要效应：</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#dtc-outputvoltage"><span class="std std-ref">Diode drop voltage</span></a> <span class="math notranslate nohighlight">\(V_d\)</span> 在死区期间的二极管压降——由此产生的误差往往非常小：例如，在 24 伏系统中 1 伏压降，在整个 PWM 周期总死区时间为 4% 时，代表有效占空比误差为 4% / 24 = 0.17%。它对极低电压系统影响最严重，但这些情况下死区通常可以减小。此外，由于其效应与死区时间成正比，可以合并到有效死区时间 <span class="math notranslate nohighlight">\(\delta_1' \approx \delta_1 (1+V_d/V_{dc})\)</span></p></li>
+<li><p><a class="reference internal" href="#dtc-outputvoltage"><span class="std std-ref">二极管压降</span></a> <span class="math notranslate nohighlight">\(V_d\)</span> 在死区期间的二极管压降——由此产生的误差往往非常小：例如，在 24 伏系统中 1 伏压降，在整个 PWM 周期总死区时间为 4% 时，代表有效占空比误差为 4% / 24 = 0.17%。它对极低电压系统影响最严重，但这些情况下死区通常可以减小。此外，由于其效应与死区时间成正比，可以合并到有效死区时间 <span class="math notranslate nohighlight">\(\delta_1' \approx \delta_1 (1+V_d/V_{dc})\)</span></p></li>
 <li><p>导通和关断时间的不对称——这如 <a class="reference internal" href="#fig-dtc-deadtime-distortion2"><span class="std std-numref">图 5.99</span></a>所示。它通过导通和关断时间之差有效地延长了死区时间，因为在设计良好的电机驱动中，关断通常比导通快——尽管如果关断比导通慢，它也可能减小有效死区时间。 在示波器波形中似乎就是这种情况，这些波形捕获于 <a class="reference internal" href="#fig-dtc-deadtime-oscope10"><span class="std std-numref">图 5.96</span></a> 和 <a class="reference internal" href="#fig-dtc-deadtime-oscope13"><span class="std std-numref">图 5.97</span></a>：输出电压转换的时间跨度小于死区时间。此效应也可合并到有效死区时间 <span class="math notranslate nohighlight">\(\delta_1' \approx \delta_1 + (t_\textrm{on} - t_\textrm{off})/T_\textrm{PWM}\)</span>。</p></li>
 <li><p>断续导通——这在下一节中讨论。</p></li>
 </ul>
@@ -155,8 +155,8 @@
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(I\)</span> ——相电流，幅值为 <span class="math notranslate nohighlight">\(I_0\)</span></p></li>
 <li><p><span class="math notranslate nohighlight">\(s_A, s_B, s_C\)</span> ——对应电流的符号，幅值为 <span class="math notranslate nohighlight">\(\plusmn 1\)</span></p></li>
-<li><p><span class="math notranslate nohighlight">\(s_{\alpha\beta}\)</span> — sign vector in stationary (αβ) frame; <span class="math notranslate nohighlight">\(s_\alpha = \frac{1}{3}(2s_A - s_B - s_C),\;s_\beta = \frac{1}{\sqrt{3}}(s_B - s_C)\)</span>。这表示恒定幅值 <span class="math notranslate nohighlight">\(\frac{4}{3}\)</span> 和每次电流过零时跳变 60° 的角度。</p></li>
-<li><p><span class="math notranslate nohighlight">\(s_{dq}\)</span> — sign vector in synchronous (dq) frame; <span class="math notranslate nohighlight">\(s_d = s_\alpha \sin \theta_e - s_\beta \cos \theta_e,\;s_q = s_\alpha \cos \theta_e + s_\beta \sin \theta_e\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(s_{\alpha\beta}\)</span> — 静止（αβ）坐标系中的符号矢量； <span class="math notranslate nohighlight">\(s_\alpha = \frac{1}{3}(2s_A - s_B - s_C),\;s_\beta = \frac{1}{\sqrt{3}}(s_B - s_C)\)</span>。这表示恒定幅值 <span class="math notranslate nohighlight">\(\frac{4}{3}\)</span> 和每次电流过零时跳变 60° 的角度。</p></li>
+<li><p><span class="math notranslate nohighlight">\(s_{dq}\)</span> — 同步（dq）坐标系中的符号矢量； <span class="math notranslate nohighlight">\(s_d = s_\alpha \sin \theta_e - s_\beta \cos \theta_e,\;s_q = s_\alpha \cos \theta_e + s_\beta \sin \theta_e\)</span></p></li>
 </ul>
 <figure class="align-center" id="id11">
 <span id="fig-dtc-deadtime-distortion3a"></span><img alt="../_images/pwm-deadtime-distortion3a.svg" src="../_images/pwm-deadtime-distortion3a.svg"/><figcaption>
@@ -218,7 +218,7 @@
 <section id="dead-time-distortion-and-field-oriented-current-control">
 <h3><span class="section-number">5.7.4.1. </span>死区畸变与矢量电流控制<a class="headerlink" href="#dead-time-distortion-and-field-oriented-current-control" title="本标题的永久链接">¶</a></h3>
 <p>在 FOC 中，电流控制器在同步（dq）参考坐标系中运行。死区畸变在 <span class="math notranslate nohighlight">\(6f_e\)</span> （六倍电气频率）处对电流控制器产生电压扰动，出现在相电流每次过零附近。</p>
-<p>在低速时，电流控制器最终会在每次暂暂后恢复零稳态误差。 <a class="reference internal" href="#fig-dtc-deadtime-distortion3b"><span class="std std-numref">图 5.102</span></a> 右侧所示的扰动必须通过增加相反符号的电压来抵消：</p>
+<p>在低速时，电流控制器最终会在每次暂态后恢复零稳态误差。 <a class="reference internal" href="#fig-dtc-deadtime-distortion3b"><span class="std std-numref">图 5.102</span></a> 右侧所示的扰动必须通过增加相反符号的电压来抵消：</p>
 <ul class="simple">
 <li><p>电机处 q 轴电压的平均降低必须由 q 轴电流控制器增加相同数量的电压来抵消</p></li>
 <li><p>d 轴扰动约为线性斜坡，必须由 d 轴电流控制器以相反方向的控制器输出变化来抵消。</p></li>
@@ -275,9 +275,9 @@
 </figure>
 <p>中的直流电压偏移 <span class="math notranslate nohighlight">\(V_{dq}\)</span> visible in <a class="reference internal" href="#fig-dtc-deadtime-distortion5a"><span class="std std-numref">图 5.106</span></a> 和 <a class="reference internal" href="#fig-dtc-deadtime-distortion6a"><span class="std std-numref">图 5.108</span></a> （预测电压和测量电压之间的偏移）可能由以下三个效应引起：</p>
 <ul class="simple">
-<li><p>resistive voltage drop — <span class="math notranslate nohighlight">\(IR \approx\)</span> 沿 q 轴 0.19V</p></li>
-<li><p>inductive voltage drop — <span class="math notranslate nohighlight">\(I\omega_e L \approx\)</span> 1200 RPM 时 0.11V，1800 RPM 时 0.17V，沿 d 轴</p></li>
-<li><p>sample input-to-output delay — <span class="math notranslate nohighlight">\(\omega_e T_d\)</span> 用于 <span class="math notranslate nohighlight">\(T_d = 1.5T_s =\)</span> 75 μs 在 1200 RPM 时约 2.7°，1800 RPM 时约 4.1°。在 1200 RPM 时，沿 q 轴 6 V 信号旋转 2.7° 可预期 d 轴偏移约 0.28 V。在 1800 RPM 时，沿 q 轴 8.2 V 信号旋转 4.1°，可预期 d-axis shift of ≈ 0.58V</p></li>
+<li><p>电阻压降 — <span class="math notranslate nohighlight">\(IR \approx\)</span> 沿 q 轴 0.19V</p></li>
+<li><p>电感压降 — <span class="math notranslate nohighlight">\(I\omega_e L \approx\)</span> 1200 RPM 时 0.11V，1800 RPM 时 0.17V，沿 d 轴</p></li>
+<li><p>采样输入到输出延迟 — <span class="math notranslate nohighlight">\(\omega_e T_d\)</span> 用于 <span class="math notranslate nohighlight">\(T_d = 1.5T_s =\)</span> 75 μs 在 1200 RPM 时约 2.7°，1800 RPM 时约 4.1°。在 1200 RPM 时，沿 q 轴 6 V 信号旋转 2.7° 可预期 d 轴偏移约 0.28 V。在 1800 RPM 时，沿 q 轴 8.2 V 信号旋转 4.1°，可预期 d 轴偏移约 0.58V</p></li>
 </ul>
 <p>总电压偏移与图中的值一致。</p>
 <section id="dead-time-distortion-with-low-bandwidth-current-controllers">
@@ -337,7 +337,7 @@
 <h2><span class="section-number">5.7.5. </span>死区补偿<a class="headerlink" href="#id2" title="本标题的永久链接">¶</a></h2>
 <p>有三种主要方法可以减轻死区畸变，大致按优先级排序：</p>
 <ul class="simple">
-<li><p><strong>减小死区。</strong> 这可能通过精心的栅驱动设计和测试来实现。 <strong>注意：</strong> 不要仅基于在室温下测试一个电机驱动板样品就假定死区足够！尝试最小化死区同时仍保护免直通，需要对开关暂暂对温度、占空比、电流以及晶体管和栅驱动电路的器件间差异的敏感性有详细了解。</p></li>
+<li><p><strong>减小死区。</strong> 这可能通过精心的栅驱动设计和测试来实现。 <strong>注意：</strong> 不要仅基于在室温下测试一个电机驱动板样品就假定死区足够！尝试最小化死区同时仍防止直通，需要对开关暂态对温度、占空比、电流以及晶体管和栅驱动电路的器件间差异的敏感性有详细了解。</p></li>
 <li><p><strong>提高电流环带宽。</strong> 这本质上补偿了死区畸变，至少对于低于电流环带宽的电气频率如此。如上所述， <a class="reference internal" href="#dtc-distortion-ictrl-low-bandwidth"><span class="std std-ref">低带宽电流控制环无法抵消死区畸变的效应。</span></a></p></li>
 <li><p><strong>添加电压补偿。</strong> 尽管这是三种方法中最不理想的，但它可以潜在地减轻死区畸变的效应。</p></li>
 </ul>
@@ -502,7 +502,7 @@
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../search.html" class="search" method="get">
+<form action="../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>

@@ -20,10 +20,10 @@
 <script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../../_static/svgcrop.js"></script>
 <script src="../../_static/mcaf-styling.js"></script>
-<link href="../../genindex.zh.html" rel="index" title="Index"/>
-<link href="../../search.zh.html" rel="search" title="Search"/>
-<link href="pullout.zh.html" rel="next" title="5.4.3.3.4. Pullout torque method"/>
-<link href="align.zh.html" rel="prev" title="5.4.3.3.2. Align method"/>
+<link href="../../genindex.zh.html" rel="index" title="索引"/>
+<link href="../../search.zh.html" rel="search" title="搜索"/>
+<link href="pullout.zh.html" rel="next" title="5.4.3.3.4. 失步转矩方法"/>
+<link href="align.zh.html" rel="prev" title="5.4.3.3.2. 对齐方法"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -31,9 +31,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="pullout.zh.html" title="5.4.3.3.4. Pullout torque method">下一页</a> |</li>
+<a accesskey="N" href="pullout.zh.html" title="5.4.3.3.4. 失步转矩方法">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="align.zh.html" title="5.4.3.3.2. Align method">上一页</a> |</li>
+<a accesskey="P" href="align.zh.html" title="5.4.3.3.2. 对齐方法">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -52,7 +52,7 @@
 <span id="index-0"></span><h1><span class="section-number">5.4.3.3.3. </span>对齐并扫描方法<a class="headerlink" href="#align-and-sweep-method" title="本标题的永久链接">¶</a></h1>
 <section id="overview">
 <h2><span class="section-number">5.4.3.3.3.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
-<p>对齐并扫描方法是对 <a class="reference internal" href="align.zh.html#qei-sync-align"><span class="std std-ref">对齐方法</span></a>的一个小改动。不是在对齐状态下使用固定角度，而是将施加的电气角度在两个方向上缓慢旋转一个完整的机械周期，通过在这两个周期内取施加角度与测量角度之差的平均值来估计换相偏移。（使用与对齐方法相同的计算，但使用多次测量的平均值代替单次测量。）其目的是通过覆盖完整的机械轮，将齿槽转矩导致的角度变化平均掉。在正向和反向旋转上取平均可以消除大部分摩擦转矩的影响。</p>
+<p>对齐并扫描方法是对 <a class="reference internal" href="align.zh.html#qei-sync-align"><span class="std std-ref">对齐方法</span></a>的一个小改动。不是在对齐状态下使用固定角度，而是将施加的电气角度在两个方向上缓慢旋转一个完整的机械周期，通过在这两个周期内取施加角度与测量角度之差的平均值来估计换相偏移。（使用与对齐方法相同的计算，但使用多次测量的平均值代替单次测量。）其目的是通过覆盖完整的机械周期，将齿槽转矩导致的角度变化平均掉。在正向和反向旋转上取平均可以消除大部分摩擦转矩的影响。</p>
 <p>得到的换相偏移具有极好的 <a class="reference internal" href="#qei-sync-align-sweep-accuracy"><span class="std std-ref">精度和可重复性表现</span></a>。然而，它比简单的对齐方法需要更多时间，且略微复杂一些。</p>
 </section>
 <section id="limitations">
@@ -66,7 +66,7 @@
 <p>为了管理这些瞬变，对齐并扫描方法包含“设置”区间。在设置区间内，角频率保持恒定，允许对齐瞬变在测量区间开始前稳定下来。</p>
 <section id="selection-of-rotation-rate">
 <h3><span class="section-number">5.4.3.3.3.3.1. </span>旋转速率的选择<a class="headerlink" href="#selection-of-rotation-rate" title="本标题的永久链接">¶</a></h3>
-<p>MCAF R4 允许在对齐并扫描方法期间选择三种旋转速率：每控制 ISR 1、2 和 4 个脈冲，其中每个脈冲为电气周期的 1/65536 ≈ 0.0055°。4 脈冲选项最快，1 脈冲选项最慢。</p>
+<p>MCAF R4 允许在对齐并扫描方法期间选择三种旋转速率：每控制 ISR 1、2 和 4 个脉冲，其中每个脉冲为电气周期的 1/65536 ≈ 0.0055°。4 脉冲选项最快，1 脉冲选项最慢。</p>
 <p>旋转速度和精度之间存在权衡。以更高的旋转速度运行对齐并扫描方法将更快完成测量，但会经历更大的角度波动，结果角度偏移可能有更多的随机误差。更低的旋转速度将提高精度，但会增加测量时间。</p>
 </section>
 <section id="calculations-involving-angles">
@@ -98,20 +98,20 @@
 <figure class="align-center" id="id1">
 <span id="fig-qei-align-sweep1"></span><img alt="../../_images/2242-blws232d-24v-1350.png" src="../../_images/2242-blws232d-24v-1350.png"/>
 <figcaption>
-<p><span class="caption-number">图 5.64 </span><span class="caption-text">对齐并扫描方法（BLWS232D-24V-1350-1024SI5，扫描速率 = 4 脈冲/控制 ISR）</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+<p><span class="caption-number">图 5.64 </span><span class="caption-text">对齐并扫描方法（BLWS232D-24V-1350-1024SI5，扫描速率 = 4 脉冲/控制 ISR）</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
-<p>BLY342D-24V-3000-1024SI5 具有高齿槽转矩，对反电动势同步提出了更大的挑战。 <a class="reference internal" href="#fig-qei-align-sweep2"><span class="std std-numref">图 5.65</span></a> 和 <a class="reference internal" href="#fig-qei-align-sweep3"><span class="std std-numref">5.66</span></a> 展示了对齐并扫描方法在此电机上的实际运行；两个图显示了不同的扫描速率。角度注波可超过 60° 峰峰值，库仑摩擦的影响作为方向相关的偏移很容易看出。较低的扫描速率有助于减小角度注波，并产生更准确的结果，代价是测量时间更长。</p>
+<p>BLY342D-24V-3000-1024SI5 具有高齿槽转矩，对反电动势同步提出了更大的挑战。 <a class="reference internal" href="#fig-qei-align-sweep2"><span class="std std-numref">图 5.65</span></a> 和 <a class="reference internal" href="#fig-qei-align-sweep3"><span class="std std-numref">5.66</span></a> 展示了对齐并扫描方法在此电机上的实际运行；两个图显示了不同的扫描速率。角度波动可超过 60° 峰峰值，库仑摩擦的影响作为方向相关的偏移很容易看出。较低的扫描速率有助于减小角度波动，并产生更准确的结果，代价是测量时间更长。</p>
 <figure class="align-center" id="id2">
 <span id="fig-qei-align-sweep2"></span><img alt="../../_images/2242-bly342d-24v-3000-r1.png" src="../../_images/2242-bly342d-24v-3000-r1.png"/>
 <figcaption>
-<p><span class="caption-number">图 5.65 </span><span class="caption-text">对齐并扫描方法（BLY342D-24V-3000-1024SI5，扫描速率 = 1 脈冲/控制 ISR）</span><a class="headerlink" href="#id2" title="本图片的永久链接">¶</a></p>
+<p><span class="caption-number">图 5.65 </span><span class="caption-text">对齐并扫描方法（BLY342D-24V-3000-1024SI5，扫描速率 = 1 脉冲/控制 ISR）</span><a class="headerlink" href="#id2" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id3">
 <span id="fig-qei-align-sweep3"></span><img alt="../../_images/2242-bly342d-24v-3000-r4.png" src="../../_images/2242-bly342d-24v-3000-r4.png"/>
 <figcaption>
-<p><span class="caption-number">图 5.66 </span><span class="caption-text">对齐并扫描方法（BLY342D-24V-3000-1024SI5，扪b描速率 = 4 脈冲/控制 ISR）</span><a class="headerlink" href="#id3" title="本图片的永久链接">¶</a></p>
+<p><span class="caption-number">图 5.66 </span><span class="caption-text">对齐并扫描方法（BLY342D-24V-3000-1024SI5，扫描速率 = 4 脉冲/控制 ISR）</span><a class="headerlink" href="#id3" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -120,7 +120,7 @@
 <p>对齐并扫描方法在 MCAF R4 中进行了测试，并将从索引获得的换相偏移（<code class="docutils literal notranslate"><span class="pre">motor.estimator.qei.position.commutationOffsetFromIndex</span></code>）与参考方法进行了比较，参考方法是在电机以恒定速度机械转动时测量电机端子的开路电压。</p>
 <p><a class="reference internal" href="#table-qei-sync-align-sweep-accuracy"><span class="std std-numref">表 5.3</span></a> 描述了结果。在每种情况下，对齐并扫描方法进行了 16 次迭代。（初始条件相同，但对估计偏移的影响不显著，因为此方法旋转电机覆盖整个机械转动。）每个电机使用 dsPICDEM<sup>®</sup> MCLV-2 开发板，默认电流限制为 2.29A，默认启动电流为电流限制的 91% = 2.08A。</p>
 <table class="docutils align-default" id="table-qei-sync-align-sweep-accuracy">
-<caption><span class="caption-number">表 5.3 </span><span class="caption-text">对齐并扫描方法的精度和可重复性指标。 <br/> 值 <em>r</em> 表示扫描速率，单位为脈冲/ISR。</span><a class="headerlink" href="#table-qei-sync-align-sweep-accuracy" title="本表格的永久链接">¶</a></caption>
+<caption><span class="caption-number">表 5.3 </span><span class="caption-text">对齐并扫描方法的精度和可重复性指标。 <br/> 值 <em>r</em> 表示扫描速率，单位为脉冲/ISR。</span><a class="headerlink" href="#table-qei-sync-align-sweep-accuracy" title="本表格的永久链接">¶</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>均值 <span class="math notranslate nohighlight">\(\tilde\theta_{\mathrm{ofs}}\)</span></p></th>
 <th class="head"><p>最大值 <span class="math notranslate nohighlight">\(\tilde\theta_{\mathrm{ofs}}\)</span></p></th>
@@ -203,7 +203,7 @@
 <li><p>标准差 <span class="math notranslate nohighlight">\(\hat\theta_{\mathrm{ofs}}\)</span> — 对齐并扫描方法估计的换相偏移的标准差</p></li>
 <li><p>极差 <span class="math notranslate nohighlight">\(\hat\theta_{\mathrm{ofs}}\)</span> — 对齐并扫描方法估计的换相偏移的最小值与最大值之差</p></li>
 </ul>
-<p>除 BLY342D-24V-3000-1024SI5 外，所有电机在 4 脈冲/ISR 扫描速率下都能产生具有优异可重复性的估计。BLY342D-24V-3000-1024SI5 在 4 脈冲/ISR 时的精度与 2 脈冲/ISR 相比有所下降。</p>
+<p>除 BLY342D-24V-3000-1024SI5 外，所有电机在 4 脉冲/ISR 扫描速率下都能产生具有优异可重复性的估计。BLY342D-24V-3000-1024SI5 在 4 脉冲/ISR 时的精度与 2 脉冲/ISR 相比有所下降。</p>
 </section>
 </section>
 <div class="clearer"></div>
@@ -241,7 +241,7 @@
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../../search.html" class="search" method="get">
+<form action="../../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -258,9 +258,9 @@
 <li class="right" style="margin-right: 10px">
 <a href="../../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="pullout.zh.html" title="5.4.3.3.4. Pullout torque method">下一页</a> |</li>
+<a href="pullout.zh.html" title="5.4.3.3.4. 失步转矩方法">下一页</a> |</li>
 <li class="right">
-<a href="align.zh.html" title="5.4.3.3.2. Align method">上一页</a> |</li>
+<a href="align.zh.html" title="5.4.3.3.2. 对齐方法">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »

@@ -19,10 +19,10 @@
 <script src="../../_static/rendermath.js"></script>
 <script src="../../_static/svgcrop.js"></script>
 <script src="../../_static/mcaf-styling.js"></script>
-<link href="../../genindex.zh.html" rel="index" title="Index"/>
-<link href="../../search.zh.html" rel="search" title="Search"/>
-<link href="align.zh.html" rel="next" title="5.4.3.3.2. Align method"/>
-<link href="../qei.zh.html" rel="prev" title="5.4.3. Quadrature encoder support"/>
+<link href="../../genindex.zh.html" rel="index" title="索引"/>
+<link href="../../search.zh.html" rel="search" title="搜索"/>
+<link href="align.zh.html" rel="next" title="5.4.3.3.2. 对齐方法"/>
+<link href="../qei.zh.html" rel="prev" title="5.4.3. 正交编码器支持"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -30,9 +30,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="align.zh.html" title="5.4.3.3.2. Align method">下一页</a> |</li>
+<a accesskey="N" href="align.zh.html" title="5.4.3.3.2. 对齐方法">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="../qei.zh.html" title="5.4.3. Quadrature encoder support">上一页</a> |</li>
+<a accesskey="P" href="../qei.zh.html" title="5.4.3. 正交编码器支持">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -115,7 +115,7 @@
 <h2><span class="section-number">5.4.3.3.1.2. </span>重要数据元素<a class="headerlink" href="#important-data-elements" title="本标题的永久链接">¶</a></h2>
 <p>无论使用哪种 <code class="docutils literal notranslate"><span class="pre">qei_sync</span></code> 方法，以下数据成员均可用：</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">motor.estimator.qei.position.commutationOffset</span></code> — 控制换相偏移，即在编码器的原始电气角度用于换相之前加上的角度。可以使用实时诊断工具在电机运行时修改换相偏移。任何此类更改应缓慢进行：建议的最大步进为 11 电角度（2000 脈冲）。大于此的步进变化可能导致 FOC 中的控制环失去同步。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">motor.estimator.qei.position.commutationOffset</span></code> — 控制换相偏移，即在编码器的原始电气角度用于换相之前加上的角度。可以使用实时诊断工具在电机运行时修改换相偏移。任何此类更改应缓慢进行：建议的最大步进为 11 电角度（2000 脉冲）。大于此的步进变化可能导致 FOC 中的控制环失去同步。</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">motor.estimator.qei.position.commutationOffsetFromIndex</span></code> — 这是在反电动势同步结束时提供的一个便捷计算，它测量在一个电气周期内相对于索引位置的换相偏移。当使用带有索引脉冲编码器的电机时， <code class="docutils literal notranslate"><span class="pre">commutationOffsetFromIndex</span></code> 的值将相当一致，与 <a class="reference internal" href="../../appendix/glossary.zh.html#term-QEI"><span class="xref std std-term">QEI</span></a> 外设启用时电机的起始位置无关。</p></li>
 </ul>
 </section>
@@ -147,7 +147,7 @@
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../../search.html" class="search" method="get">
+<form action="../../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -164,9 +164,9 @@
 <li class="right" style="margin-right: 10px">
 <a href="../../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="align.zh.html" title="5.4.3.3.2. Align method">下一页</a> |</li>
+<a href="align.zh.html" title="5.4.3.3.2. 对齐方法">下一页</a> |</li>
 <li class="right">
-<a href="../qei.zh.html" title="5.4.3. Quadrature encoder support">上一页</a> |</li>
+<a href="../qei.zh.html" title="5.4.3. 正交编码器支持">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »

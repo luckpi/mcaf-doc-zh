@@ -20,10 +20,10 @@
 <script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../_static/svgcrop.js"></script>
 <script src="../_static/mcaf-styling.js"></script>
-<link href="../genindex.zh.html" rel="index" title="Index"/>
-<link href="../search.zh.html" rel="search" title="Search"/>
-<link href="mcapi.zh.html" rel="next" title="4.10. Motion Control API (MCAPI)"/>
-<link href="diagnostics.zh.html" rel="prev" title="4.8. Diagnostic Kernel"/>
+<link href="../genindex.zh.html" rel="index" title="索引"/>
+<link href="../search.zh.html" rel="search" title="搜索"/>
+<link href="mcapi.zh.html" rel="next" title="4.10. 运动控制 API（MCAPI）"/>
+<link href="diagnostics.zh.html" rel="prev" title="4.8. 诊断内核"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -31,9 +31,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="mcapi.zh.html" title="4.10. Motion Control API (MCAPI)">下一页</a> |</li>
+<a accesskey="N" href="mcapi.zh.html" title="4.10. 运动控制 API（MCAPI）">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="diagnostics.zh.html" title="4.8. Diagnostic Kernel">上一页</a> |</li>
+<a accesskey="P" href="diagnostics.zh.html" title="4.8. 诊断内核">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -60,7 +60,7 @@
 <p>MCAF 的大部分代码在几个不同的中断服务程序中执行。以下中断按从高到低的优先级列出，供 MCAF 使用。参见 <a class="reference internal" href="../architecture/schedopt.zh.html#scheduling-requirements"><span class="std std-ref">调度要求</span></a> 一节了解更多信息。</p>
 <ul class="simple">
 <li><p>主 ADC ISR——执行 <a class="reference internal" href="statemach.zh.html#component-statemachine"><span class="std std-ref">状态机</span></a> 和几个其他关键 MCAF 组件，每个 PWM 周期执行一次。</p></li>
-<li><p>单通道 ADC ISR——每个 PWM 周期对直流母线电流采样两次。仅在 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-single-channel"><span class="std std-ref">单通道电流测量</span></a> 时执行。</p></li>
+<li><p>单通道 ADC ISR——每个 PWM 周期对直流母线电流采样两次。仅在 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-单通道"><span class="std std-ref">单通道电流测量</span></a> 时执行。</p></li>
 <li><p>定时器 ISR——执行 <a class="reference internal" href="#board-service-module"><span class="std std-ref">板级服务</span></a> 任务和 <a class="reference internal" href="main.zh.html#component-main"><span class="std std-ref">主应用程序</span></a> 周期性地。</p></li>
 </ul>
 </section>
@@ -176,7 +176,7 @@
 <p><span class="caption-number">图 4.16 </span><span class="caption-text">单次更新和双次更新。虚线表示 PWM 生成器更新的机会。</span><a class="headerlink" href="#id7" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
-<p>通常建议 MCAF 使用双次更新以减少采样到更新延迟，但某些控制方法需要其他 PWM 更新选项。 <a class="reference internal" href="../algorithms/zsmt.zh.html#algorithm-zsmt"><span class="std std-ref">ZS/MT</span></a> 在中心对齐 PWM 模式下需要单次更新。对于其他估算器， <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-single-channel"><span class="std std-ref">single-channel</span></a> 电流测量在双沿中心对齐 PWM 模式下需要单次更新，而对于 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-dual-channel"><span class="std std-ref">dual-channel</span></a> 或 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-triple-channel"><span class="std std-ref">triple-channel</span></a> 电流测量，配置双次更新中心对齐 PWM 模式以减少采样到更新延迟。</p>
+<p>通常建议 MCAF 使用双次更新以减少采样到更新延迟，但某些控制方法需要其他 PWM 更新选项。 <a class="reference internal" href="../algorithms/zsmt.zh.html#algorithm-zsmt"><span class="std std-ref">ZS/MT</span></a> 在中心对齐 PWM 模式下需要单次更新。对于其他估算器， <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-单通道"><span class="std std-ref">单通道</span></a> 电流测量在双沿中心对齐 PWM 模式下需要单次更新，而对于 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-双通道"><span class="std std-ref">双通道</span></a> 或 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-三通道"><span class="std std-ref">三通道</span></a> 电流测量，配置双次更新中心对齐 PWM 模式以减少采样到更新延迟。</p>
 <p>注意：在 dsPIC33E 设备中，双次更新默认启用，不需要也不允许更改外设配置。对于 dsPIC33E，请检查设备勘误。某些设备的早期硅片版本实现单次更新行为而非双次更新行为。</p>
 </section>
 <section id="board-service-module">
@@ -366,7 +366,7 @@
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../search.html" class="search" method="get">
+<form action="../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -383,9 +383,9 @@
 <li class="right" style="margin-right: 10px">
 <a href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="mcapi.zh.html" title="4.10. Motion Control API (MCAPI)">下一页</a> |</li>
+<a href="mcapi.zh.html" title="4.10. 运动控制 API（MCAPI）">下一页</a> |</li>
 <li class="right">
-<a href="diagnostics.zh.html" title="4.8. Diagnostic Kernel">上一页</a> |</li>
+<a href="diagnostics.zh.html" title="4.8. 诊断内核">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »

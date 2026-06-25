@@ -20,10 +20,10 @@
 <script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../_static/svgcrop.js"></script>
 <script src="../_static/mcaf-styling.js"></script>
-<link href="../genindex.zh.html" rel="index" title="Index"/>
-<link href="../search.zh.html" rel="search" title="Search"/>
-<link href="estimator-interface.zh.html" rel="next" title="5.4.1. Firmware Interface"/>
-<link href="stopping.zh.html" rel="prev" title="5.3. Stopping"/>
+<link href="../genindex.zh.html" rel="index" title="索引"/>
+<link href="../search.zh.html" rel="search" title="搜索"/>
+<link href="estimator-interface.zh.html" rel="next" title="5.4.1. 固件接口"/>
+<link href="stopping.zh.html" rel="prev" title="5.3. 停止"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -31,9 +31,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="estimator-interface.zh.html" title="5.4.1. Firmware Interface">下一页</a> |</li>
+<a accesskey="N" href="estimator-interface.zh.html" title="5.4.1. 固件接口">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="stopping.zh.html" title="5.3. Stopping">上一页</a> |</li>
+<a accesskey="P" href="stopping.zh.html" title="5.3. 停止">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -91,13 +91,13 @@
 </ul>
 </div>
 <section id="overview">
-<h2><span class="section-number">5.4.7. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
+<h2><span class="section-number">5.4.7. </span>总结<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
 <p>为了支持 <a class="reference internal" href="../appendix/glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a>的无传感器控制，MCAF 提供了 AN1292 锁相环（PLL）、角度跟踪锁相环（ATPLL）和 AN1078 滑模观测器（SMO）估计器的选择。除此之外，还通过 dsPIC<sup>®</sup> DSC 的 QEI（正交编码器接口）外设提供了正交编码器支持。</p>
 </section>
 <section id="comparative-analysis">
 <span id="index-1"></span><h2><span class="section-number">5.4.8. </span>比较分析<a class="headerlink" href="#comparative-analysis" title="本标题的永久链接">¶</a></h2>
 <section id="summary">
-<h3><span class="section-number">5.4.8.1. </span>概述<a class="headerlink" href="#summary" title="本标题的永久链接">¶</a></h3>
+<h3><span class="section-number">5.4.8.1. </span>总结<a class="headerlink" href="#summary" title="本标题的永久链接">¶</a></h3>
 <table class="docutils align-default" id="id9">
 <caption><span class="caption-number">表 5.5 </span><span class="caption-text">估计器比较</span><a class="headerlink" href="#id9" title="本表格的永久链接">¶</a></caption>
 <colgroup>
@@ -216,7 +216,7 @@
 <p>ATPLL 估计器的优势之一是其适用于具有凸极和非凸极转子的电机。通过为凸极和非凸极转子的电机选择合适的反电动势计算方程，ATPLL 估计器可以正确估计转子角度和转子速度。</p>
 <p>ATPLL 估计器相对于 AN1292 PLL 估计器的另一主要优势是其对反电动势常数值的鲁棒性。对于 AN1292 PLL 估计器，估计器使用的反电动势常数与电机实际反电动势常数之间的偏差会导致估计转子角度的稳态误差。估计速度没有稳态误差。然而，ATPLL 估计器不受反电动势常数偏差的影响，能够准确估计转子速度和角度。</p>
 <p><a class="reference internal" href="#fig-atpll-pll-ke80pc-angle"><span class="std std-numref">图 5.77</span></a> 展示了稳态下的实际转子角度、ATPLL 估计器的估计角度和 AN1292 PLL 估计器的估计角度，当电机的实际反电动势常数（<span class="math notranslate nohighlight">\(K_{e\_act}\)</span>）比估计器使用的值（<span class="math notranslate nohighlight">\(K_{e\_estimator}\)</span>）低 20%。 <a class="reference internal" href="#fig-atpll-pll-ke80pc-angle"><span class="std std-numref">图 5.77</span></a> 还在单独的图中展示了 AN1292 PLL 估计器和 ATPLL 估计器的估计角度误差。可以观察到，AN1292 PLL 估计器的估计角度存在显著的稳态误差，而 ATPLL 估计器的估计角度没有稳态误差。</p>
-<p>类似的图展示在 <a class="reference internal" href="#fig-atpll-pll-ke120pc-angle"><span class="std std-numref">图 5.78</span></a> 其中电机的实际反电动势常数（<span class="math notranslate nohighlight">\(K_{e\_act}\)</span>）比估计器使用的值（<span class="math notranslate nohighlight">\(K_{e\_estimator}\)</span>）高 20%。可以观察到，在这种情况下 AN1292 PLL 估计器的估计转子角度也存在稳态误差，但误差的符号相反。然而，ATPLL 估计器的估计转子角度不显示任何穳态误差。</p>
+<p>类似的图展示在 <a class="reference internal" href="#fig-atpll-pll-ke120pc-angle"><span class="std std-numref">图 5.78</span></a> 其中电机的实际反电动势常数（<span class="math notranslate nohighlight">\(K_{e\_act}\)</span>）比估计器使用的值（<span class="math notranslate nohighlight">\(K_{e\_estimator}\)</span>）高 20%。可以观察到，在这种情况下 AN1292 PLL 估计器的估计转子角度也存在稳态误差，但误差的符号相反。然而，ATPLL 估计器的估计转子角度不显示任何稳态误差。</p>
 <figure class="align-center" id="id10">
 <span id="fig-atpll-pll-ke80pc-angle"></span><a class="reference internal image-reference" href="../_images/pll_atpll_angle_err_Ke_80pc.png"><img alt="../_images/pll_atpll_angle_err_Ke_80pc.png" src="../_images/pll_atpll_angle_err_Ke_80pc.png" style="width: 584.0px; height: 495.20000000000005px;"/></a>
 <figcaption>
@@ -263,7 +263,7 @@
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../search.html" class="search" method="get">
+<form action="../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -280,9 +280,9 @@
 <li class="right" style="margin-right: 10px">
 <a href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="estimator-interface.zh.html" title="5.4.1. Firmware Interface">下一页</a> |</li>
+<a href="estimator-interface.zh.html" title="5.4.1. 固件接口">下一页</a> |</li>
 <li class="right">
-<a href="stopping.zh.html" title="5.3. Stopping">上一页</a> |</li>
+<a href="stopping.zh.html" title="5.3. 停止">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »

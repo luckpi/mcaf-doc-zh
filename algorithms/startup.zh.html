@@ -20,10 +20,10 @@
 <script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../_static/svgcrop.js"></script>
 <script src="../_static/mcaf-styling.js"></script>
-<link href="../genindex.zh.html" rel="index" title="Index"/>
-<link href="../search.zh.html" rel="search" title="Search"/>
-<link href="stopping.zh.html" rel="next" title="5.3. Stopping"/>
-<link href="foc/comparison-6step.zh.html" rel="prev" title="5.1.7. Comparison between FOC and six-step control"/>
+<link href="../genindex.zh.html" rel="index" title="索引"/>
+<link href="../search.zh.html" rel="search" title="搜索"/>
+<link href="stopping.zh.html" rel="next" title="5.3. 停止"/>
+<link href="foc/comparison-6step.zh.html" rel="prev" title="5.1.7. FOC 与六步控制的比较"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -31,9 +31,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="stopping.zh.html" title="5.3. Stopping">下一页</a> |</li>
+<a accesskey="N" href="stopping.zh.html" title="5.3. 停止">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="foc/comparison-6step.zh.html" title="5.1.7. Comparison between FOC and six-step control">上一页</a> |</li>
+<a accesskey="P" href="foc/comparison-6step.zh.html" title="5.1.7. FOC 与六步控制的比较">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -65,12 +65,12 @@
 </section>
 <section id="choice-of-startup-method">
 <span id="startup-which-method"></span><h3><span class="section-number">5.2.1.4. </span>启动方法的选择<a class="headerlink" href="#choice-of-startup-method" title="本标题的永久链接">¶</a></h3>
-<p>启动方法可在 motorBench 的 Customize（自定义）页面<sup>®</sup> Development Suite（开发套件）中选择。风向标方法提供更快的启动速度，且对扰动转矩的鲁棒性优于经典方法，但在过渡期间可能产生较大的转矩瞬变。</p>
+<p>启动方法可在 motorBench<sup>®</sup> Development Suite（开发套件）的 Customize（自定义）页面中选择。风向标方法提供更快的启动速度，且对扰动转矩的鲁棒性优于经典方法，但在过渡期间可能产生较大的转矩瞬变。</p>
 <p>当 ZS/MT 作为主估计器时，需要使用 ZS/MT + IPC。</p>
 </section>
 </section>
 <section id="startup-sequence-and-common-elements">
-<span id="startup-sequence"></span><h2><span class="section-number">5.2.2. </span>启动序列和公共要素<a class="headerlink" href="#startup-sequence-and-common-elements" title="本标题的永久链接">¶</a></h2>
+<span id="startup-sequence"></span><h2><span class="section-number">5.2.2. </span>启动序列和共同要素<a class="headerlink" href="#startup-sequence-and-common-elements" title="本标题的永久链接">¶</a></h2>
 <p>经典方法和风向标方法都经过以下启动状态序列，并要求电机在开始启动时处于静止状态。在启动序列的大部分时间里，速度控制被禁用，使用 FOC 的闭环电流控制被启用，但采用强制换相角度。</p>
 <table class="docutils align-default">
 <thead>
@@ -130,7 +130,7 @@
 <p><span class="caption-number">图 5.50 </span><span class="caption-text">启动序列中电流和电气频率的曲线图。（所示为风向标启动算法。）</span><a class="headerlink" href="#id2" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
-<p>MCAF R4 和 R5 增加了在 motorBench 的 Customize（自定义）页面中调整各种启动参数的功能<sup>®</sup> Development Suite（开发套件）。参见 <a class="reference internal" href="../implementation/ui-customization.zh.html#impl-customization"><span class="std std-ref">参数自定义</span></a> 了解更多信息。</p>
+<p>MCAF R4 和 R5 增加了在 motorBench 的 Customize（自定义）页面中调整各种启动参数的功能 Development Suite（开发套件）。参见 <a class="reference internal" href="../implementation/ui-customization.zh.html#impl-customization"><span class="std std-ref">参数自定义</span></a> 了解更多信息。</p>
 <section id="startup-status-codes">
 <span id="id1"></span><h3><span class="section-number">5.2.2.1. </span>启动状态码<a class="headerlink" href="#startup-status-codes" title="本标题的永久链接">¶</a></h3>
 <p>为便于可能不共享完全相同状态序列的不同启动算法，已创建了一组通用的状态码。状态码可通过 <code class="docutils literal notranslate"><span class="pre">MCAF_StartupGetStatus()</span></code> 读取，其值将为以下之一：</p>
@@ -196,8 +196,8 @@
 </section>
 <section id="active-damping">
 <h2><span class="section-number">5.2.6. </span>有源阻尼<a class="headerlink" href="#active-damping" title="本标题的永久链接">¶</a></h2>
-<p>当 PMSM 以恒定电流在强制换相角度下以恒定频率驱动时，其动态特性大致为一个阻尼非常小的二阶系。存在一个虚拟“弹簧”，其恢复转矩由转子磁场与施加的定子磁场之间的任何失配引起。该恢复转矩与转子惯性共同作用产生振荡。当电机以加速频率驱动时，或当电流控制器的误差导致足够的相位滞后时，这些振荡可能增大。</p>
-<p>为帮助在强制换相期间控制此效应，MCAF 包含“有源阻尼”功能。该功能在强制换相期间调制电流，通过施加与换相频率和估计器得到的速度之间的差值成正比的电流变化来实现。有源阻尼仅在速度高于阈值时启用，因为对于许多无传感器估计器而言，在低速时无法获得准确的估计值。（启用有源阻尼的速度阈值可在 motorBench 的 Customize（自定义）页面<sup>®</sup> Development Suite（开发套件）中调整。）这可在 <a class="reference internal" href="#fig-startup-classic"><span class="std std-numref">图 5.52</span></a> 和 <a class="reference internal" href="#fig-startup-weathervane"><span class="std std-numref">图 5.53</span></a> 中的快加速状态（以绿色标出）期间看到。</p>
+<p>当 PMSM 以恒定电流在强制换相角度下以恒定频率驱动时，其动态特性大致为一个阻尼非常小的二阶系统。存在一个虚拟“弹簧”，其恢复转矩由转子磁场与施加的定子磁场之间的任何失配引起。该恢复转矩与转子惯性共同作用产生振荡。当电机以加速频率驱动时，或当电流控制器的误差导致足够的相位滞后时，这些振荡可能增大。</p>
+<p>为帮助在强制换相期间控制此效应，MCAF 包含“有源阻尼”功能。该功能在强制换相期间调制电流，通过施加与换相频率和估计器得到的速度之间的差值成正比的电流变化来实现。有源阻尼仅在速度高于阈值时启用，因为对于许多无传感器估计器而言，在低速时无法获得准确的估计值。（启用有源阻尼的速度阈值可在 motorBench 的 Customize（自定义）页面 Development Suite（开发套件）中调整。）这可在 <a class="reference internal" href="#fig-startup-classic"><span class="std std-numref">图 5.52</span></a> 和 <a class="reference internal" href="#fig-startup-weathervane"><span class="std std-numref">图 5.53</span></a> 中的快加速状态（以绿色标出）期间看到。</p>
 </section>
 <section id="slow-and-fast-acceleration">
 <h2><span class="section-number">5.2.7. </span>慢加速和快加速<a class="headerlink" href="#slow-and-fast-acceleration" title="本标题的永久链接">¶</a></h2>
@@ -221,7 +221,7 @@
 <li><a class="reference internal" href="#choice-of-startup-method">5.2.1.4. 启动方法的选择</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#startup-sequence-and-common-elements">5.2.2. 启动序列和公共要素</a><ul>
+<li><a class="reference internal" href="#startup-sequence-and-common-elements">5.2.2. 启动序列和共同要素</a><ul>
 <li><a class="reference internal" href="#startup-status-codes">5.2.2.1. 启动状态码</a></li>
 <li><a class="reference internal" href="#phasor-analysis">5.2.2.2. 相量分析</a></li>
 </ul>
@@ -246,7 +246,7 @@
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../search.html" class="search" method="get">
+<form action="../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -263,9 +263,9 @@
 <li class="right" style="margin-right: 10px">
 <a href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="stopping.zh.html" title="5.3. Stopping">下一页</a> |</li>
+<a href="stopping.zh.html" title="5.3. 停止">下一页</a> |</li>
 <li class="right">
-<a href="foc/comparison-6step.zh.html" title="5.1.7. Comparison between FOC and six-step control">上一页</a> |</li>
+<a href="foc/comparison-6step.zh.html" title="5.1.7. FOC 与六步控制的比较">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »

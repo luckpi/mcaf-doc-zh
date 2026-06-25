@@ -20,10 +20,10 @@
 <script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../_static/svgcrop.js"></script>
 <script src="../_static/mcaf-styling.js"></script>
-<link href="../genindex.zh.html" rel="index" title="Index"/>
-<link href="../search.zh.html" rel="search" title="Search"/>
-<link href="../implementation/index.zh.html" rel="next" title="6. General Implementation Issues"/>
-<link href="voltage-control.zh.html" rel="prev" title="5.8. Voltage Control"/>
+<link href="../genindex.zh.html" rel="index" title="索引"/>
+<link href="../search.zh.html" rel="search" title="搜索"/>
+<link href="../implementation/index.zh.html" rel="next" title="6. 一般实现问题"/>
+<link href="voltage-control.zh.html" rel="prev" title="5.8. 电压控制"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -31,9 +31,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="../implementation/index.zh.html" title="6. General Implementation Issues">下一页</a> |</li>
+<a accesskey="N" href="../implementation/index.zh.html" title="6. 一般实现问题">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="voltage-control.zh.html" title="5.8. Voltage Control">上一页</a> |</li>
+<a accesskey="P" href="voltage-control.zh.html" title="5.8. 电压控制">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -58,8 +58,8 @@
 <p><span class="caption-number">图 5.120 </span><span class="caption-text">温度滤波框图</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
-<p>此低通滤波器包含旋转率限制。只要输出旋转率低于指定的最大温度变化率，低通滤波器的传递函数为 <span class="math notranslate nohighlight">\(\frac{1}{\tau s + 1}\)</span>，其中 <span class="math notranslate nohighlight">\(\tau = 1/\alpha\)</span> 为滤波器的有效时间常数，由增益 <span class="math notranslate nohighlight">\(\alpha\)</span>。</p>
-<p>旋转率限制器的存在是为了减少突发噪声对温度测量的影响。示例如 <a class="reference internal" href="#fig-temperature-sim"><span class="std std-numref">图 5.121</span></a>。</p>
+<p>此低通滤波器包含转换速率限制。只要输出转换速率低于指定的最大温度变化率，低通滤波器的传递函数为 <span class="math notranslate nohighlight">\(\frac{1}{\tau s + 1}\)</span>，其中 <span class="math notranslate nohighlight">\(\tau = 1/\alpha\)</span> 为滤波器的有效时间常数，由增益 <span class="math notranslate nohighlight">\(\alpha\)</span>。</p>
+<p>转换速率限制器的存在是为了减少突发噪声对温度测量的影响。示例如 <a class="reference internal" href="#fig-temperature-sim"><span class="std std-numref">图 5.121</span></a>。</p>
 <figure class="align-center" id="id2">
 <span id="fig-temperature-sim"></span><img alt="../_images/3652-temperature-filtering-simulation.png" src="../_images/3652-temperature-filtering-simulation.png"/>
 <figcaption>
@@ -83,11 +83,11 @@
 <section id="filtering-parameters-and-state-variables">
 <h3><span class="section-number">5.9.2.3. </span>滤波参数和状态变量<a class="headerlink" href="#filtering-parameters-and-state-variables" title="本标题的永久链接">¶</a></h3>
 <p>MCAF 在每个电流环采样周期内滤波温度感测信号 <span class="math notranslate nohighlight">\(T_s\)</span>，通常为 50 μs。估计温度的状态变量 <span class="math notranslate nohighlight">\(\hat{T}\)</span> 是一个 32 位整数，高 16 位用作输出——换句话说，状态变量本身为 0.01°C/每 65536 计数。这允许滤波时间常数长达 <span class="math notranslate nohighlight">\(\tau = 65536 T_s\)</span>。（3.27 s， <span class="math notranslate nohighlight">\(T_s =\)</span> 50 μs）</p>
-<p>每采样周期 1 到 32767 计数之间的旋转率——对于 <span class="math notranslate nohighlight">\(T_s =\)</span> 50 μs 为 0.003°C/s 到 100°C/s——受支持。</p>
+<p>每采样周期 1 到 32767 计数之间的转换速率——对于 <span class="math notranslate nohighlight">\(T_s =\)</span> 50 μs 为 0.003°C/s 到 100°C/s——受支持。</p>
 </section>
 <section id="board-support">
 <span id="algorithm-temperature-board-support"></span><h3><span class="section-number">5.9.2.4. </span>板级支持<a class="headerlink" href="#board-support" title="本标题的永久链接">¶</a></h3>
-<p>以下两者均 <a class="reference external" href="https://www.microchip.com/en-us/development-tool/DM330031">dsPIC33CK 低压电机控制 (LVMC) 开发板</a> 和 <a class="reference external" href="https://www.microchip.com/en-us/development-tool/EV18H47A">MCS MCLV-48V-300W 开发板</a> 板均包含安装在功率晶体箧之间的 MCP9700 温度传感器（10mV/°C，0.5V 偏置）。 <a class="reference external" href="https://www.microchip.com/en-us/development-tool/ev78u65a">MCHV-230VAC-1.5kW 电机控制高压开发板</a> 功率模块包含内置 NTC 热敏电阻用于温度监控，连接到微控制器的模拟引脚。</p>
+<p>以下两者均 <a class="reference external" href="https://www.microchip.com/en-us/development-tool/DM330031">dsPIC33CK 低压电机控制 (LVMC) 开发板</a> 和 <a class="reference external" href="https://www.microchip.com/en-us/development-tool/EV18H47A">MCS MCLV-48V-300W 开发板</a> 板均包含安装在功率晶体管之间的 MCP9700 温度传感器（10mV/°C，0.5V 偏置）。 <a class="reference external" href="https://www.microchip.com/en-us/development-tool/ev78u65a">MCHV-230VAC-1.5kW 电机控制高压开发板</a> 功率模块包含内置 NTC 热敏电阻用于温度监控，连接到微控制器的模拟引脚。</p>
 </section>
 </section>
 </section>
@@ -124,7 +124,7 @@
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../search.html" class="search" method="get">
+<form action="../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -141,9 +141,9 @@
 <li class="right" style="margin-right: 10px">
 <a href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="../implementation/index.zh.html" title="6. General Implementation Issues">下一页</a> |</li>
+<a href="../implementation/index.zh.html" title="6. 一般实现问题">下一页</a> |</li>
 <li class="right">
-<a href="voltage-control.zh.html" title="5.8. Voltage Control">上一页</a> |</li>
+<a href="voltage-control.zh.html" title="5.8. 电压控制">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »

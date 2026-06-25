@@ -20,10 +20,10 @@
 <script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../_static/svgcrop.js"></script>
 <script src="../_static/mcaf-styling.js"></script>
-<link href="../genindex.zh.html" rel="index" title="Index"/>
-<link href="../search.zh.html" rel="search" title="Search"/>
-<link href="qei.zh.html" rel="next" title="5.4.3. Quadrature encoder support"/>
-<link href="estimator-interface.zh.html" rel="prev" title="5.4.1. Firmware Interface"/>
+<link href="../genindex.zh.html" rel="index" title="索引"/>
+<link href="../search.zh.html" rel="search" title="搜索"/>
+<link href="qei.zh.html" rel="next" title="5.4.3. 正交编码器支持"/>
+<link href="estimator-interface.zh.html" rel="prev" title="5.4.1. 固件接口"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -31,9 +31,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="qei.zh.html" title="5.4.3. Quadrature encoder support">下一页</a> |</li>
+<a accesskey="N" href="qei.zh.html" title="5.4.3. 正交编码器支持">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="estimator-interface.zh.html" title="5.4.1. Firmware Interface">上一页</a> |</li>
+<a accesskey="P" href="estimator-interface.zh.html" title="5.4.1. 固件接口">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -51,7 +51,7 @@
 <span id="algorithm-pll"></span><span id="index-0"></span><h1><span class="section-number">5.4.2. </span>AN1292 锁相环（PLL）<a class="headerlink" href="#an1292-phase-locked-loop-pll" title="本标题的永久链接">¶</a></h1>
 <section id="overview">
 <h2><span class="section-number">5.4.2.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
-<p>用于估计位置和速度的无传感器估计器本质上与应用笔记 <a class="reference external" href="https://www.microchip.com/en-us/application-notes/an1292">AN1292</a>。</p>
+<p>用于估计位置和速度的无传感器估计器本质上与应用笔记 <a class="reference external" href="https://www.microchip.com/en-us/application-notes/an1292">AN1292</a> 相同。</p>
 <figure class="align-center" id="id1">
 <span id="fig-pll-impl1"></span><img alt="../_images/an1292-pll-blkdiag.png" src="../_images/an1292-pll-blkdiag.png"/>
 <figcaption>
@@ -64,7 +64,7 @@
 <p>反馈环如 <a class="reference internal" href="#fig-pll-impl1"><span class="std std-numref">图 5.55</span></a> 所示，用于旋转 <span class="math notranslate nohighlight">\(E_{\alpha\beta}\)</span> 到同步（dq）坐标系以产生误差信号并更新电气角度 <span class="math notranslate nohighlight">\(\theta_e\)</span> （而不是 <span class="math notranslate nohighlight">\(\rho_{\mathrm{estim}}\)</span> 图中所示）用于旋转，其中</p>
 <div class="math notranslate nohighlight" id="equation-eq-pll-rotation">
 <span class="eqno">(5.25)<a class="headerlink" href="#equation-eq-pll-rotation" title="本公式的永久链接">¶</a></span>\[\theta_e = \rho_{\mathrm{estim}} + \rho_{\mathrm{ofs}}\]</div>
-<p>和 <span class="math notranslate nohighlight">\(\rho_{\mathrm{ofs}}\)</span> （<code class="docutils literal notranslate"><span class="pre">motor.estimator.pll.rhoOffset</span></code> 在固件中）是一个默认为零的参数，但可以通过 <a class="reference internal" href="../components/diagnostics.zh.html#diag-kernel"><span class="std std-ref">实时诊断工具</span></a>。</p>
+<p>和 <span class="math notranslate nohighlight">\(\rho_{\mathrm{ofs}}\)</span> （<code class="docutils literal notranslate"><span class="pre">motor.estimator.pll.rhoOffset</span></code> 在固件中）是一个默认为零的参数，但可以通过 <a class="reference internal" href="../components/diagnostics.zh.html#diag-kernel"><span class="std std-ref">实时诊断工具</span></a> 进行修改。</p>
 </section>
 </section>
 <div class="clearer"></div>
@@ -93,7 +93,7 @@
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../search.html" class="search" method="get">
+<form action="../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -110,9 +110,9 @@
 <li class="right" style="margin-right: 10px">
 <a href="../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="qei.zh.html" title="5.4.3. Quadrature encoder support">下一页</a> |</li>
+<a href="qei.zh.html" title="5.4.3. 正交编码器支持">下一页</a> |</li>
 <li class="right">
-<a href="estimator-interface.zh.html" title="5.4.1. Firmware Interface">上一页</a> |</li>
+<a href="estimator-interface.zh.html" title="5.4.1. 固件接口">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »

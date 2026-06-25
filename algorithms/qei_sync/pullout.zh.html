@@ -20,10 +20,10 @@
 <script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../../_static/svgcrop.js"></script>
 <script src="../../_static/mcaf-styling.js"></script>
-<link href="../../genindex.zh.html" rel="index" title="Index"/>
-<link href="../../search.zh.html" rel="search" title="Search"/>
-<link href="../atpll.zh.html" rel="next" title="5.4.4. Angle-tracking Phase-locked Loop (ATPLL)"/>
-<link href="align-sweep.zh.html" rel="prev" title="5.4.3.3.3. Align-and-sweep method"/>
+<link href="../../genindex.zh.html" rel="index" title="索引"/>
+<link href="../../search.zh.html" rel="search" title="搜索"/>
+<link href="../atpll.zh.html" rel="next" title="5.4.4. 角度跟踪锁相环（ATPLL）"/>
+<link href="align-sweep.zh.html" rel="prev" title="5.4.3.3.3. 对齐并扫描方法"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -31,9 +31,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="../atpll.zh.html" title="5.4.4. Angle-tracking Phase-locked Loop (ATPLL)">下一页</a> |</li>
+<a accesskey="N" href="../atpll.zh.html" title="5.4.4. 角度跟踪锁相环（ATPLL）">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="align-sweep.zh.html" title="5.4.3.3.3. Align-and-sweep method">上一页</a> |</li>
+<a accesskey="P" href="align-sweep.zh.html" title="5.4.3.3.3. 对齐并扫描方法">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -61,7 +61,7 @@
 <span class="eqno">(5.28)<a class="headerlink" href="#equation-eqn-pullout-1" title="本公式的永久链接">¶</a></span>\[\operatorname{rotor\ offset} = \tan^{-1} V_{\alpha\beta} - \operatorname{pullout\ position} - \pi/2 - \operatorname{load\ angle}.\]</div>
 <p>负载角可忽略，因为在无负载和低速时电流非常小（<span class="math notranslate nohighlight">\(I_d=0\)</span> 失步时）。</p>
 <p>因此此方法的关键因素是 <span class="math notranslate nohighlight">\(T_{fr}/J\)</span> 机械参数的值必须足够高，以使电机在大约几秒内无外力协助下达到静止。如果需要多秒，应探索其他方法。</p>
-<p>启动 <a class="reference internal" href="../startup.zh.html#algorithm-startup"><span class="std std-ref">序列</span></a> 的“SPIN”状态（转子已加速到开环最大速度）被用于允许合适的稳定时间以达到机械平衡，在此时间结束时，电流 <span class="math notranslate nohighlight">\(I_q\)</span> 被减小到失步点，此时计算失步位置，即施加的换相角度（<span class="math notranslate nohighlight">\(\tan^{-1} V_{\alpha\beta}\)</span>）与原始编码器脈冲数之差。一旦转子偏移被计算出，运行时的实际转子位置计算为</p>
+<p>启动 <a class="reference internal" href="../startup.zh.html#algorithm-startup"><span class="std std-ref">序列</span></a> 的“SPIN”状态（转子已加速到开环最大速度）被用于允许合适的稳定时间以达到机械平衡，在此时间结束时，电流 <span class="math notranslate nohighlight">\(I_q\)</span> 被减小到失步点，此时计算失步位置，即施加的换相角度（<span class="math notranslate nohighlight">\(\tan^{-1} V_{\alpha\beta}\)</span>）与原始编码器脉冲数之差。一旦转子偏移被计算出，运行时的实际转子位置计算为</p>
 <div class="math notranslate nohighlight" id="equation-algorithms-qei-sync-pullout-0">
 <span class="eqno">(5.29)<a class="headerlink" href="#equation-algorithms-qei-sync-pullout-0" title="本公式的永久链接">¶</a></span>\[\operatorname{actual\ rotor\ position} =  \operatorname{raw\ position} + \operatorname{rotor\ offset}.\]</div>
 </section>
@@ -101,7 +101,7 @@
 <p><span class="caption-number">图 5.69 </span><span class="caption-text">失步方法（BLY171D-24V-4000）</span><a class="headerlink" href="#id3" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
-<p>在此情况下，由于惯性较小，默认的滑差阈值导致失步检测滑或超过实际失步点。这导致误差具有相反的符号（参见 <a class="reference internal" href="#table-qei-sync-pullout-accuracy"><span class="std std-numref">表 5.4</span></a>），与滑差阈值最佳的其他电机相比。此电机是需要更大滑差阈值的示例。</p>
+<p>在此情况下，由于惯性较小，默认的滑差阈值导致失步检测滑过或超过实际失步点。这导致误差具有相反的符号（参见 <a class="reference internal" href="#table-qei-sync-pullout-accuracy"><span class="std std-numref">表 5.4</span></a>），与滑差阈值最佳的其他电机相比。此电机是需要更大滑差阈值的示例。</p>
 </section>
 <section id="accuracy-and-repeatability-tests">
 <h2><span class="section-number">5.4.3.3.4.5. </span>精度和可重复性测试<a class="headerlink" href="#accuracy-and-repeatability-tests" title="本标题的永久链接">¶</a></h2>
@@ -208,7 +208,7 @@
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../../search.html" class="search" method="get">
+<form action="../../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -225,9 +225,9 @@
 <li class="right" style="margin-right: 10px">
 <a href="../../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="../atpll.zh.html" title="5.4.4. Angle-tracking Phase-locked Loop (ATPLL)">下一页</a> |</li>
+<a href="../atpll.zh.html" title="5.4.4. 角度跟踪锁相环（ATPLL）">下一页</a> |</li>
 <li class="right">
-<a href="align-sweep.zh.html" title="5.4.3.3.3. Align-and-sweep method">上一页</a> |</li>
+<a href="align-sweep.zh.html" title="5.4.3.3.3. 对齐并扫描方法">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »

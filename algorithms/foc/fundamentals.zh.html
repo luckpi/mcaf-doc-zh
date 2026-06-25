@@ -20,10 +20,10 @@
 <script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../../_static/svgcrop.js"></script>
 <script src="../../_static/mcaf-styling.js"></script>
-<link href="../../genindex.zh.html" rel="index" title="Index"/>
-<link href="../../search.zh.html" rel="search" title="Search"/>
-<link href="current_measure.zh.html" rel="next" title="5.1.3. Current measurement"/>
-<link href="overview.zh.html" rel="prev" title="5.1.1. Field-oriented control (FOC): an overview"/>
+<link href="../../genindex.zh.html" rel="index" title="索引"/>
+<link href="../../search.zh.html" rel="search" title="搜索"/>
+<link href="current_measure.zh.html" rel="next" title="5.1.3. 电流测量"/>
+<link href="overview.zh.html" rel="prev" title="5.1.1. 磁场定向控制（FOC）：概述"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -31,9 +31,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="current_measure.zh.html" title="5.1.3. Current measurement">下一页</a> |</li>
+<a accesskey="N" href="current_measure.zh.html" title="5.1.3. 电流测量">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="overview.zh.html" title="5.1.1. Field-oriented control (FOC): an overview">上一页</a> |</li>
+<a accesskey="P" href="overview.zh.html" title="5.1.1. 磁场定向控制（FOC）：概述">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -52,14 +52,14 @@
 <p>MCAF 对电机电流采用磁场定向控制（FOC）。本节一般性地介绍 FOC 的理论，并给出一些针对 MCAF 实现的具体说明。</p>
 <section id="torque-production-and-reference-frames">
 <span id="foc-refframe"></span><span id="foc-torque"></span><span id="index-0"></span><h2><span class="section-number">5.1.2.1. </span>转矩产生与参考坐标系<a class="headerlink" href="#torque-production-and-reference-frames" title="本标题的永久链接">¶</a></h2>
-<p>的目标 <a class="reference internal" href="../../appendix/glossary.zh.html#term-FOC"><span class="xref std std-term">磁场定向控制（FOC）</span></a> 是以高带宽控制瞬时电磁转矩。这可以通过在某个电角度的参考坐标系中管理两个正交的电流分量来实现——尽管对初学者而言这并不直观。 <span class="math notranslate nohighlight">\(\theta_e\)</span>。电频率 <span class="math notranslate nohighlight">\(\omega_e = \frac{d\theta_e}{dt}\)</span> 是电角度的变化率。</p>
+<p><a class="reference internal" href="../../appendix/glossary.zh.html#term-FOC"><span class="xref std std-term">磁场定向控制（FOC）</span></a> 的目标是以高带宽控制瞬时电磁转矩。这可以通过在某个电角度的参考坐标系中管理两个正交的电流分量来实现——尽管对初学者而言这并不直观。 <span class="math notranslate nohighlight">\(\theta_e\)</span>。电频率 <span class="math notranslate nohighlight">\(\omega_e = \frac{d\theta_e}{dt}\)</span> 是电角度的变化率。</p>
 <p>电角度和电频率与机械角度和机械频率成正比，如公式 <a class="reference internal" href="#equation-eq-foc-polepairs">5.1</a>所示，其中 <span class="math notranslate nohighlight">\(N_p\)</span> 为极对数。例如，一台六极电机， <span class="math notranslate nohighlight">\(N_p=3\)</span>，每旋转一圈（机械旋转）经历三个电周期。</p>
 <div class="math notranslate nohighlight" id="equation-eq-foc-polepairs">
 <span class="eqno">(5.1)<a class="headerlink" href="#equation-eq-foc-polepairs" title="本公式的永久链接">¶</a></span>\[\begin{split}\begin{aligned}
 \theta_e &amp;= N_p \theta_m \\
 \omega_e &amp;= N_p \omega_m
 \end{aligned}\end{split}\]</div>
-<p>电磁转矩 <span class="math notranslate nohighlight">\(T_{em}\)</span> 在三相旋转电机中与定子电流和转子磁链的叉积成正比，如公式 <a class="reference internal" href="#equation-eq-foc-torque1">5.2</a>所示。这里 <span class="math notranslate nohighlight">\(\hat{z}\)</span> 是沿旋转轴的单位矢量，x 和 y 是垂直于 <span class="math notranslate nohighlight">\(\hat{z}\)</span>的二维平面上的分量，而电流矢量是根据合成磁场与这些 x、y 轴的对齐关系得到的电流等效矢量和。</p>
+<p>电磁转矩 <span class="math notranslate nohighlight">\(T_{em}\)</span> 在三相旋转电机中与定子电流和转子磁链的叉积成正比，如公式 <a class="reference internal" href="#equation-eq-foc-torque1">5.2</a>所示。这里 <span class="math notranslate nohighlight">\(\hat{z}\)</span> 是沿旋转轴的单位矢量，x 和 y 是垂直于 <span class="math notranslate nohighlight">\(\hat{z}\)</span>的二维平面上的分量，而电流矢量是根据合成磁场与这些 x、y 轴的对齐关系得到的电流合成矢量。</p>
 <div class="math notranslate nohighlight" id="equation-eq-foc-torque1">
 <span class="eqno">(5.2)<a class="headerlink" href="#equation-eq-foc-torque1" title="本公式的永久链接">¶</a></span>\[\begin{split}\begin{aligned}
 T_{em} &amp;= \tfrac{3}{2}N_p \left(\boldsymbol{\psi} \times \boldsymbol{I}\right) \cdot \hat{z} \\
@@ -146,7 +146,7 @@ V_q &amp;= R_s I_q + \omega_e \psi_d + \tfrac{d}{dt}\psi_q
 </section>
 <section id="pmsm-voltage-equations">
 <h3><span class="section-number">5.1.2.2.2. </span>PMSM 电压方程<a class="headerlink" href="#pmsm-voltage-equations" title="本标题的永久链接">¶</a></h3>
-<p>对于 PMSM，磁链方程如公式 <a class="reference internal" href="#equation-eq-foc-flux1">5.11</a> 所示，将磁链矢量 <span class="math notranslate nohighlight">\(\psi_{dq}\)</span> 与电流矢量 <span class="math notranslate nohighlight">\(I_{dq}\)</span>。</p>
+<p>对于 PMSM，磁链方程如公式 <a class="reference internal" href="#equation-eq-foc-flux1">5.11</a> 所示，将磁链矢量 <span class="math notranslate nohighlight">\(\psi_{dq}\)</span> 与电流矢量 <span class="math notranslate nohighlight">\(I_{dq}\)</span> 联系起来。</p>
 <div class="math notranslate nohighlight" id="equation-eq-foc-flux1">
 <span class="eqno">(5.11)<a class="headerlink" href="#equation-eq-foc-flux1" title="本公式的永久链接">¶</a></span>\[\begin{aligned}
 \psi_d &amp;= L_d I_d + \psi_m
@@ -208,7 +208,7 @@ V_q &amp;= R_s I_q + \omega_e L_dI_d + L_q\tfrac{d}{dt}I_q  + \psi_m\omega_e
 </figcaption>
 </figure>
 <p>非常大的电机可能有超过六个绕组端子，并能以多种方式重新连接；参见 <a class="reference internal" href="#foc-iec60034-8"><span class="std std-ref">IEC 60034-8</span></a>。</p>
-<p>的附录 A2。不过，只要电机由制造商以三端子“黑盒”形式提供，其内部结构（星形或三角形）就无关紧要，三相电机的理论对两种连接方式同样适用。</p>
+<p>IEC 60034-8 的附录 A2。不过，只要电机由制造商以三端子“黑盒”形式提供，其内部结构（星形或三角形）就无关紧要，三相电机的理论对两种连接方式同样适用。</p>
 </section>
 <section id="steady-state-and-phasor-analysis">
 <span id="foc-phasor-analysis"></span><h3><span class="section-number">5.1.2.2.6. </span>稳态与相量分析<a class="headerlink" href="#steady-state-and-phasor-analysis" title="本标题的永久链接">¶</a></h3>
@@ -365,21 +365,21 @@ V_q &amp;=R_s I_q  + \omega_e L_dI_d &amp;&amp;+\psi_m\omega_e \\
 <div>
 <h3><a href="../../index.zh.html">目录</a></h3>
 <ul>
-<li><a class="reference internal" href="#">5.1.2. Fundamentals of FOC</a><ul>
-<li><a class="reference internal" href="#torque-production-and-reference-frames">5.1.2.1. Torque production and reference frames</a></li>
-<li><a class="reference internal" href="#stator-voltage-and-flux-equations">5.1.2.2. Stator voltage and flux equations</a><ul>
-<li><a class="reference internal" href="#general-stator-voltage-equation">5.1.2.2.1. General stator voltage equation</a></li>
-<li><a class="reference internal" href="#pmsm-voltage-equations">5.1.2.2.2. PMSM voltage equations</a></li>
-<li><a class="reference internal" href="#pmsm-torque-equation">5.1.2.2.3. PMSM torque equation</a></li>
-<li><a class="reference internal" href="#per-phase-equivalent-circuit">5.1.2.2.4. Per-phase equivalent circuit</a></li>
-<li><a class="reference internal" href="#wye-and-delta-connections">5.1.2.2.5. Wye and delta connections</a></li>
-<li><a class="reference internal" href="#steady-state-and-phasor-analysis">5.1.2.2.6. Steady-state and phasor analysis</a></li>
+<li><a class="reference internal" href="#">5.1.2. FOC 基础</a><ul>
+<li><a class="reference internal" href="#torque-production-and-reference-frames">5.1.2.1. 转矩产生与参考坐标系</a></li>
+<li><a class="reference internal" href="#stator-voltage-and-flux-equations">5.1.2.2. 定子电压与磁通方程</a><ul>
+<li><a class="reference internal" href="#general-stator-voltage-equation">5.1.2.2.1. 通用定子电压方程</a></li>
+<li><a class="reference internal" href="#pmsm-voltage-equations">5.1.2.2.2. PMSM 电压方程</a></li>
+<li><a class="reference internal" href="#pmsm-torque-equation">5.1.2.2.3. PMSM 转矩方程</a></li>
+<li><a class="reference internal" href="#per-phase-equivalent-circuit">5.1.2.2.4. 每相等效电路</a></li>
+<li><a class="reference internal" href="#wye-and-delta-connections">5.1.2.2.5. 星形与三角形连接</a></li>
+<li><a class="reference internal" href="#steady-state-and-phasor-analysis">5.1.2.2.6. 稳态与相量分析</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#foc-block-diagram">5.1.2.3. FOC block diagram</a></li>
-<li><a class="reference internal" href="#implementation-notes">5.1.2.4. Implementation notes</a></li>
-<li><a class="reference internal" href="#miscellaneous-topics">5.1.2.5. Miscellaneous topics</a><ul>
-<li><a class="reference internal" href="#alternate-reference-frame-transforms">5.1.2.5.1. Alternate reference frame transforms</a></li>
+<li><a class="reference internal" href="#foc-block-diagram">5.1.2.3. FOC 框图</a></li>
+<li><a class="reference internal" href="#implementation-notes">5.1.2.4. 实现说明</a></li>
+<li><a class="reference internal" href="#miscellaneous-topics">5.1.2.5. 其他主题</a><ul>
+<li><a class="reference internal" href="#alternate-reference-frame-transforms">5.1.2.5.1. 其他参考坐标系变换</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#references">5.1.2.6. References</a></li>
@@ -398,7 +398,7 @@ V_q &amp;=R_s I_q  + \omega_e L_dI_d &amp;&amp;+\psi_m\omega_e \\
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../../search.html" class="search" method="get">
+<form action="../../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -415,9 +415,9 @@ V_q &amp;=R_s I_q  + \omega_e L_dI_d &amp;&amp;+\psi_m\omega_e \\
 <li class="right" style="margin-right: 10px">
 <a href="../../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="current_measure.zh.html" title="5.1.3. Current measurement">下一页</a> |</li>
+<a href="current_measure.zh.html" title="5.1.3. 电流测量">下一页</a> |</li>
 <li class="right">
-<a href="overview.zh.html" title="5.1.1. Field-oriented control (FOC): an overview">上一页</a> |</li>
+<a href="overview.zh.html" title="5.1.1. 磁场定向控制（FOC）：概述">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »

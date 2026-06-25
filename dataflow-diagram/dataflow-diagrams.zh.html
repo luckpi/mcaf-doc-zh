@@ -129,7 +129,7 @@
 <tr data-row="00006" id="row-00006">
 <td class="col-symbol">V6</td>
 <td class="col-variable"><code>motor.testing.overrides : 4 (zero = "on")</code></td>
-<td class="col-description">"Valve" to enable data flow into reciprocal voltage</td>
+<td class="col-description">用于使能数据流入倒数电压的"阀门"</td>
 </tr>
 <tr data-row="00007" id="row-00007">
 <td class="col-symbol">\( R_V \)</td>
@@ -144,7 +144,7 @@
 <tr data-row="00009" id="row-00009">
 <td class="col-symbol">V1</td>
 <td class="col-variable"><code>motor.testing.overrides : 1 (zero = "on")</code></td>
-<td class="col-description">"Valve" to enable data flow into velocity command</td>
+<td class="col-description">用于使能数据流入速度指令的"阀门"</td>
 </tr>
 <tr data-row="00010" id="row-00010">
 <td class="col-symbol">\( \omega_{m,\rm ref0} \)</td>
@@ -158,18 +158,18 @@
 </tr>
 <tr data-row="00012" id="row-00012">
 <td class="col-symbol">\( I_{q,\rm ref0} \)</td>
-<td class="col-variable"><code>[not stored in MCAF but see valve V2]</code></td>
+<td class="col-variable"><code>[未存储在 MCAF 中，但请参见阀门 V2]</code></td>
 <td class="col-description">来自速度控制器的期望 q 轴电流</td>
 </tr>
 <tr data-row="00013" id="row-00013">
 <td class="col-symbol">\( I_{d,\rm ref0} \)</td>
-<td class="col-variable"><code>[not stored in MCAF but see valve V2]</code></td>
+<td class="col-variable"><code>[未存储在 MCAF 中，但请参见阀门 V2]</code></td>
 <td class="col-description">来自磁通控制模块的期望 d 轴电流</td>
 </tr>
 <tr data-row="00014" id="row-00014">
 <td class="col-symbol">V2</td>
 <td class="col-variable"><code>motor.testing.operatingMode = OM_NORMAL and startup complete</code></td>
-<td class="col-description">"Valve" to enable data flow into current command</td>
+<td class="col-description">用于使能数据流入电流指令的"阀门"</td>
 </tr>
 <tr data-row="00015" id="row-00015">
 <td class="col-symbol">\( I_{dq,\rm ref0} \)</td>
@@ -183,13 +183,13 @@
 </tr>
 <tr data-row="00017" id="row-00017">
 <td class="col-symbol">\( I_{dq,\rm err} \)</td>
-<td class="col-variable"><code>[not stored in MCAF]</code></td>
+<td class="col-variable"><code>[未存储在 MCAF 中]</code></td>
 <td class="col-description"></td>
 </tr>
 <tr data-row="00018" id="row-00018">
 <td class="col-symbol">V3</td>
 <td class="col-variable"><code>motor.testing.operatingMode = OM_FORCE_CURRENT or greater</code></td>
-<td class="col-description">"Valve" to enable data flow into voltage command</td>
+<td class="col-description">用于使能数据流入电压指令的"阀门"</td>
 </tr>
 <tr data-row="00019" id="row-00019">
 <td class="col-symbol">\( V_{dq0} \)</td>
@@ -203,8 +203,8 @@
 </tr>
 <tr data-row="00021" id="row-00021">
 <td class="col-symbol">V4</td>
-<td class="col-variable"><code>[Not implemented in MCAF R7]</code></td>
-<td class="col-description">"Valve" to enable data flow into alphabeta voltage command</td>
+<td class="col-variable"><code>[MCAF R7 中未实现]</code></td>
+<td class="col-description">用于使能数据流入 alphabeta 电压指令的"阀门"</td>
 </tr>
 <tr data-row="00022" id="row-00022">
 <td class="col-symbol">\( V_{\alpha\beta0} \)</td>
@@ -224,7 +224,7 @@
 <tr data-row="00025" id="row-00025">
 <td class="col-symbol">\( D_{abc0} \)</td>
 <td class="col-variable"><code>motor.dabcRaw</code></td>
-<td class="col-description">死区补偿、ZSM 和削波之前的占空比输出</td>
+<td class="col-description">死区补偿、ZSM 和限幅之前的占空比输出</td>
 </tr>
 <tr data-row="00026" id="row-00026">
 <td class="col-symbol">\( D_{abc1} \)</td>
@@ -233,8 +233,8 @@
 </tr>
 <tr data-row="00027" id="row-00027">
 <td class="col-symbol">V5</td>
-<td class="col-variable"><code>[Not implemented in MCAF R7]</code></td>
-<td class="col-description">"Valve" to enable data flow into output duty cycle</td>
+<td class="col-variable"><code>[MCAF R7 中未实现]</code></td>
+<td class="col-description">用于使能数据流入输出占空比的"阀门"</td>
 </tr>
 <tr data-row="00028" id="row-00028">
 <td class="col-symbol">\( D_{abc2} \)</td>

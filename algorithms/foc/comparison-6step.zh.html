@@ -20,10 +20,10 @@
 <script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
 <script src="../../_static/svgcrop.js"></script>
 <script src="../../_static/mcaf-styling.js"></script>
-<link href="../../genindex.zh.html" rel="index" title="Index"/>
-<link href="../../search.zh.html" rel="search" title="Search"/>
-<link href="../startup.zh.html" rel="next" title="5.2. Startup"/>
-<link href="tuning.zh.html" rel="prev" title="5.1.6. Current loop tuning"/>
+<link href="../../genindex.zh.html" rel="index" title="索引"/>
+<link href="../../search.zh.html" rel="search" title="搜索"/>
+<link href="../startup.zh.html" rel="next" title="5.2. 启动"/>
+<link href="tuning.zh.html" rel="prev" title="5.1.6. 电流环整定"/>
 </head><body>
 <div aria-label="related navigation" class="related" role="navigation">
 <h3>导航</h3>
@@ -31,9 +31,9 @@
 <li class="right" style="margin-right: 10px">
 <a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a accesskey="N" href="../startup.zh.html" title="5.2. Startup">下一页</a> |</li>
+<a accesskey="N" href="../startup.zh.html" title="5.2. 启动">下一页</a> |</li>
 <li class="right">
-<a accesskey="P" href="tuning.zh.html" title="5.1.6. Current loop tuning">上一页</a> |</li>
+<a accesskey="P" href="tuning.zh.html" title="5.1.6. 电流环整定">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -261,8 +261,8 @@ I_6 &amp;= \frac{\pi}{2\sqrt{3}}I_q \cr
     &amp;\approx 0.907 I_q \cr
 I_q &amp;\approx 1.103 I_6
 \end{aligned}\]</div>
-<p>对于同一电机，FOC 所需的峰值电流检测范围比六步高约 10.3%。即便六步效率较低也是如此：电流 I<sub>6</sub> 流入一个端子并从另一个端子流出，其等效的三相电流矢量幅值为 <span class="math notranslate nohighlight">\(\frac{2}{\sqrt{3}}I_6 \approx 1.1547 I_6\)</span>，因此六步电流检测能以更低的峰值电流要求蒙混过关。</p>
-<p>在 FOC 中，电流幅值 I 对应的最坏换相角<sub>q</sub> 是 I<sub>q</sub> 流入（或流出）一个电机端子，而该电流的一半从另外两个端子流出（或流入）的情况。该电流幅值对应的最佳换相角是 <span class="math notranslate nohighlight">\(\frac{\sqrt{3}}{2}I_q\)</span> 流入一个电机端子并从另一个端子流出、第三个端子电流为零的情况。然而电流传感器必须覆盖 ±I 的完整范围<sub>q</sub>, however.</p>
+<p>对于同一电机，FOC 所需的峰值电流检测范围比六步高约 10.3%。即便六步效率较低也是如此：电流 I<sub>6</sub> 流入一个端子并从另一个端子流出，其等效的三相电流矢量幅值为 <span class="math notranslate nohighlight">\(\frac{2}{\sqrt{3}}I_6 \approx 1.1547 I_6\)</span>，因此六步电流检测能以更低的峰值电流要求得以规避。</p>
+<p>在 FOC 中，电流幅值 I 对应的最坏换相角下的 I<sub>q</sub> 是 I<sub>q</sub> 流入（或流出）一个电机端子，而该电流的一半从另外两个端子流出（或流入）的情况。该电流幅值对应的最佳换相角是 <span class="math notranslate nohighlight">\(\frac{\sqrt{3}}{2}I_q\)</span> 流入一个电机端子并从另一个端子流出、第三个端子电流为零的情况。然而电流传感器必须覆盖 ±I 的完整范围。</p>
 <p>参见 <a class="reference internal" href="#fig-foc6-equiv-avg-torque"><span class="std std-numref">图 5.46</span></a> 的图形描述；在 30/90/150/210/270/330 度的点处，FOC 电流幅值比等效平均转矩下的六步电流低 4.5%（系数为 <span class="math notranslate nohighlight">\(3/\pi\)</span>），但 FOC 波形在正弦波峰值处需要更高的电流范围。</p>
 <p>在实际中，这意味着电流检测电路、过流电路以及（在较小程度上）栅极驱动都需要设计成能覆盖完整的瞬时相电流，因此如果决定因素是平均转矩而非瞬时转矩，六步的要求略低。</p>
 <p>由于热原因其额定值更取决于方均根电流的系统部件（如连接器、导线、功率级和电机本身），在六步下比在 FOC 下需要更高的额定值。（见 <a class="reference internal" href="#foc-6step-efficiency"><span class="std std-ref">效率</span></a>）</p>
@@ -327,7 +327,7 @@ I_q &amp;\approx 1.103 I_6
 <div id="searchbox" role="search" style="display: none">
 <h3 id="searchlabel">快速搜索</h3>
 <div class="searchformwrapper">
-<form action="../../search.html" class="search" method="get">
+<form action="../../search.zh.html" class="search" method="get">
 <input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
 <input type="submit" value="Go"/>
 </form>
@@ -344,9 +344,9 @@ I_q &amp;\approx 1.103 I_6
 <li class="right" style="margin-right: 10px">
 <a href="../../genindex.zh.html" title="总索引">索引</a></li>
 <li class="right">
-<a href="../startup.zh.html" title="5.2. Startup">下一页</a> |</li>
+<a href="../startup.zh.html" title="5.2. 启动">下一页</a> |</li>
 <li class="right">
-<a href="tuning.zh.html" title="5.1.6. Current loop tuning">上一页</a> |</li>
+<a href="tuning.zh.html" title="5.1.6. 电流环整定">上一页</a> |</li>
 <li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
 <li><a href=""></a> »</li>
 <a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
@@ -357,7 +357,7 @@ I_q &amp;\approx 1.103 I_6
 </ul>
 </div>
 <div class="footer" role="contentinfo">
-        © 版权所有 2017-2026，Microchip Technology, Inc..
+        © 版权所有 2017-2026，Microchip Technology, Inc.
     </div>
 <script src="../../_static/lang-switch.js"></script>
 </body>
