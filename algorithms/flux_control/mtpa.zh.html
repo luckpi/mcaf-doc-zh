@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.5.2. 每安培最大转矩（MTPA） — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../../_static/rendermath.js"></script>
+<script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/svgcrop.js"></script>
+<script src="../../_static/mcaf-styling.js"></script>
+<link href="../../genindex.zh.html" rel="index" title="Index"/>
+<link href="../../search.zh.html" rel="search" title="Search"/>
+<link href="flux_weakening_mtpa_integration.zh.html" rel="next" title="5.5.3. D-axis current reference generation"/>
+<link href="fw_types/fw_eq_based.zh.html" rel="prev" title="5.5.1.3.1. 公式 based flux-weakening"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="flux_weakening_mtpa_integration.zh.html" title="5.5.3. D-axis current reference generation">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="fw_types/fw_eq_based.zh.html" title="5.5.1.3.1. 公式 based flux-weakening">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.zh.html"><span class="section-number">5.5. </span>磁链控制</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.5.2. </span>每安培最大转矩（MTPA）</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="maximum-torque-per-ampere-mtpa">
+<span id="algorithm-mtpa"></span><span id="index-0"></span><h1><span class="section-number">5.5.2. </span>每安培最大转矩（MTPA）<a class="headerlink" href="#maximum-torque-per-ampere-mtpa" title="本标题的永久链接">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">5.5.2.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
+<p>对于表贴 <a class="reference internal" href="../../appendix/glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a>， <span class="math notranslate nohighlight">\(I_{d} = 0\)</span>， <span class="math notranslate nohighlight">\(I_{q} &gt; 0\)</span> 会产生每安培最大转矩（MTPA）运行。在 <a class="reference internal" href="../../appendix/glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a> 中，凸极转子（例如内置 <a class="reference internal" href="../../appendix/glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a> 或 IPMSM），d 轴和 q 轴电感值不同，通常 <span class="math notranslate nohighlight">\(L_{q} &gt; L_{d}\)</span>。对于凸极电机，转矩方程由 <a class="reference internal" href="#equation-torque-equation-salient-motor">5.53</a>给出。此处产生的电磁转矩由两个项组成。第一项是永磁转矩，第二项是磁阻转矩。磁阻转矩是由于电机的凸性而产生的。</p>
+<div class="math notranslate nohighlight" id="equation-torque-equation-salient-motor">
+<span class="eqno">(5.53)<a class="headerlink" href="#equation-torque-equation-salient-motor" title="本公式的永久链接">¶</a></span>\[    T_{em} = \frac{3}{2} \frac{P}{2} \Psi_{\mathrm{PM}}I_{q} + \frac{3}{2} \frac{P}{2} (L_{d}-L_{q}) I_{q} I_{d}\]</div>
+<p>由于 <span class="math notranslate nohighlight">\(L_{q} &gt; L_{d}\)</span>，如果 <span class="math notranslate nohighlight">\(I_{d} &lt; 0\)</span>，可以使磁阻转矩辅助永磁转矩。通过合适的负 <span class="math notranslate nohighlight">\(I_{d}\)</span> 值，电机可以在最高效率下运行，从而在 IPMSM 中实现每安培最大转矩（MTPA）。MTPA 算法的目标是计算这样的 d 轴电流参考（<span class="math notranslate nohighlight">\(I_{d\_mtpa}\)</span>），以用于电机的给定工作点。</p>
+</section>
+<section id="flow-chart-and-description">
+<h2><span class="section-number">5.5.2.2. </span>流程图和说明<a class="headerlink" href="#flow-chart-and-description" title="本标题的永久链接">¶</a></h2>
+<p>使电机以最高效率运行从而实现 MTPA 的 <span class="math notranslate nohighlight">\(I_{d}\)</span> 值由转矩方程推导出，由 <a class="reference internal" href="#equation-id-mtpa-equation">5.54</a>给出。这里， <span class="math notranslate nohighlight">\(\Psi_{\mathrm{PM}}\)</span> 为反电动势常数（单位为伏特/电气弧度/秒）， <span class="math notranslate nohighlight">\(L_{1}\)</span> 为差分电感，由 <span class="math notranslate nohighlight">\(L_{1} = \frac{L_d - L_q}{2}\)</span>给出。除了电机参数 <span class="math notranslate nohighlight">\(\Psi_{\mathrm{PM}}\)</span> 和 <span class="math notranslate nohighlight">\(L_{1}\)</span>外，确保 MTPA 所需的 d 轴电流（<span class="math notranslate nohighlight">\(I_{d\_mtpa}\)</span>）是 q 轴电流 <span class="math notranslate nohighlight">\(I_{q}\)</span>。</p>
+<div class="math notranslate nohighlight" id="equation-id-mtpa-equation">
+<span class="eqno">(5.54)<a class="headerlink" href="#equation-id-mtpa-equation" title="本公式的永久链接">¶</a></span>\[    I_{d\_mtpa} = \frac{-\Psi_{\mathrm{PM}} + \sqrt{\Psi_{\mathrm{PM}}{}^2 + (4L_1I_q)^2}}{4L_1}\]</div>
+<p><a class="reference internal" href="#fig-mtpa-implementation"><span class="std std-numref">图 5.87</span></a> 的函数。</p>
+<figure class="align-center" id="id1">
+<span id="fig-mtpa-implementation"></span><a class="reference internal image-reference" href="../../_images/mtpa_implementation.png"><img alt="../../_images/mtpa_implementation.png" src="../../_images/mtpa_implementation.png" style="width: 600px;"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.87 </span><span class="caption-text">MTPA 算法流程图</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p><span class="math notranslate nohighlight">\(I_{d\_mtpa}\)</span> 值使用 <a class="reference internal" href="#equation-id-mtpa-equation">5.54</a>计算。此计算值随后进入 <a class="reference internal" href="flux_weakening_mtpa_integration.zh.html#algorithm-fw-and-mtpa-integration"><span class="std std-ref">D 轴电流参考生成</span></a> 并用于生成 <span class="math notranslate nohighlight">\(I_{d\_ref}\)</span>。</p>
+</section>
+<section id="implementation-notes">
+<h2><span class="section-number">5.5.2.3. </span>实现说明<a class="headerlink" href="#implementation-notes" title="本标题的永久链接">¶</a></h2>
+<p>在 R6 中添加。</p>
+<ul class="simple">
+<li><p>低凸性优化：如果电机凸性较低（<span class="math notranslate nohighlight">\(L_d \approx L_q\)</span>），则跳过 MTPA 计算以减少 CPU 使用， <span class="math notranslate nohighlight">\(I_{d\_mtpa}\)</span> 被设为零。如果凸性比 <span class="math notranslate nohighlight">\(\xi = \frac{L_q}{L_d}\)</span> 小于用户定义的凸性阈值，则执行此操作。</p></li>
+<li><p>开方计算：当前的 MTPA 算法使用完整的机器精度开方计算。为了减少 CPU 指令周期，未来版本的 MCAF 可能包含替代方案。</p></li>
+</ul>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">5.5.2. 每安培最大转矩（MTPA）</a><ul>
+<li><a class="reference internal" href="#overview">5.5.2.1. 概述</a></li>
+<li><a class="reference internal" href="#flow-chart-and-description">5.5.2.2. 流程图和说明</a></li>
+<li><a class="reference internal" href="#implementation-notes">5.5.2.3. 实现说明</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="fw_types/fw_eq_based.zh.html" title="上一章"><span class="section-number">5.5.1.3.1. </span>基于方程的弱磁控制</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="flux_weakening_mtpa_integration.zh.html" title="下一章"><span class="section-number">5.5.3. </span>D 轴电流参考生成</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="flux_weakening_mtpa_integration.zh.html" title="5.5.3. D-axis current reference generation">下一页</a> |</li>
+<li class="right">
+<a href="fw_types/fw_eq_based.zh.html" title="5.5.1.3.1. 公式 based flux-weakening">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.zh.html"><span class="section-number">5.5. </span>磁链控制</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.5.2. </span>每安培最大转矩（MTPA）</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../../_static/lang-switch.js"></script>
+</body>
+</html>

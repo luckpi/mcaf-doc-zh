@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.4.4. 角度跟踪锁相环（ATPLL） — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="zsmt.zh.html" rel="next" title="5.4.5. Zero-Speed / Maximum Torque (ZS/MT)"/>
+<link href="qei_sync/pullout.zh.html" rel="prev" title="5.4.3.3.4. Pullout torque method"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="zsmt.zh.html" title="5.4.5. Zero-Speed / Maximum Torque (ZS/MT)">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="qei_sync/pullout.zh.html" title="5.4.3.3.4. Pullout torque method">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="estimators.zh.html"><span class="section-number">5.4. </span>位置和速度估计</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4.4. </span>角度跟踪锁相环（ATPLL）</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="angle-tracking-phase-locked-loop-atpll">
+<span id="algorithm-atpll"></span><span id="index-0"></span><h1><span class="section-number">5.4.4. </span>角度跟踪锁相环（ATPLL）<a class="headerlink" href="#angle-tracking-phase-locked-loop-atpll" title="本标题的永久链接">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">5.4.4.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
+<p>角度跟踪锁相环（ATPLL）是一种为 <a class="reference internal" href="../appendix/glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a>的无传感器闭环速度控制提供的速度和转子角度估计算法。该算法具有 <a class="reference internal" href="../appendix/glossary.zh.html#term-PLL"><span class="xref std std-term">PLL</span></a>状结构，通过在稳态下使反电动势的 d 轴分量为零来估计正确的转子速度和角度。由于 ATPLL 估计器结构中包含的 PI 控制器模块，转子速度和角度误差在稳态下被消除。ATPLL 估计器算法可用于具有或不具有转子凸性的 PMSM 电机的转子速度和转子角度估计。</p>
+</section>
+<section id="implementation-block-diagram-and-description">
+<h2><span class="section-number">5.4.4.2. </span>实现方框图和描述<a class="headerlink" href="#implementation-block-diagram-and-description" title="本标题的永久链接">¶</a></h2>
+<p><a class="reference internal" href="#fig-atpll-generic"><span class="std std-numref">图 5.70</span></a> 展示了 ATPLL 估计器的基本原理。这里，估计器的输出是估计转子速度 <span class="math notranslate nohighlight">\(\hat\omega\)</span> 和估计转子角度 <span class="math notranslate nohighlight">\(\hat\theta\)</span>。反电动势的 d 轴分量 <span class="math notranslate nohighlight">\(E_d\)</span> 由电机定子电压 <span class="math notranslate nohighlight">\(V_{\alpha}, V_{\beta}\)</span> 和定子电流 <span class="math notranslate nohighlight">\(I_{\alpha}, I_{\beta}\)</span>计算得到。参考值 <span class="math notranslate nohighlight">\(E_d\)</span> 为零，因此误差等于 <span class="math notranslate nohighlight">\(- E_d\)</span>。此误差送入 PI 控制器。PI 控制器的输出与前馈速度项 <span class="math notranslate nohighlight">\(\omega_{\mathrm{ref}}\)</span>相加，此和即为估计速度 <span class="math notranslate nohighlight">\(\hat\omega\)</span>。估计速度经积分得到估计转子角度 <span class="math notranslate nohighlight">\(\hat\theta\)</span>。</p>
+<figure class="align-center" id="id1">
+<span id="fig-atpll-generic"></span><a class="reference internal image-reference" href="../_images/atpll_generic.png"><img alt="../_images/atpll_generic.png" src="../_images/atpll_generic.png" style="width: 500px; height: 212px;"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.70 </span><span class="caption-text">ATPLL：通用方框图</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>ATPLL 估计器的 MCAF 实现如 <a class="reference internal" href="#fig-atpll-impl"><span class="std std-numref">图 5.71</span></a>所示。下面简要描述 ATPLL 结构中使用的不同模块。</p>
+<figure class="align-center" id="id2">
+<span id="fig-atpll-impl"></span><img alt="../_images/atpll.png" src="../_images/atpll.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.71 </span><span class="caption-text">ATPLL 实现</span><a class="headerlink" href="#id2" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<ul class="simple">
+<li><p>输入：ATPLL 算法首先计算反电动势分量 <span class="math notranslate nohighlight">\(E_{\alpha}\)</span> 和 <span class="math notranslate nohighlight">\(E_{\beta}\)</span> 由定子电压（<span class="math notranslate nohighlight">\(V_{\alpha}\)</span>， <span class="math notranslate nohighlight">\(V_{\beta}\)</span>）和定子电流（<span class="math notranslate nohighlight">\(I_{\alpha}\)</span>， <span class="math notranslate nohighlight">\(I_{\beta}\)</span>）使用电机电阻和电感值计算。这些反电动势值然后用于进一步计算 <span class="math notranslate nohighlight">\(- E_d\)</span> ，如 <a class="reference internal" href="#fig-atpll-impl"><span class="std std-numref">图 5.71</span></a>所示。对于计算 <span class="math notranslate nohighlight">\(E_{\alpha}\)</span> 和 <span class="math notranslate nohighlight">\(E_{\beta}\)</span>，方程 <a class="reference internal" href="#equation-eq-bemf-nonsalient">5.30</a> 用于无显著转子凸性的电机，方程 <a class="reference internal" href="#equation-eq-bemf-salient">5.31</a> 用于具有转子凸性的电机。电机根据其 <a class="reference internal" href="#atpll-saliency"><span class="std std-ref">凸性常数</span></a>。在 <a class="reference internal" href="#equation-eq-bemf-nonsalient">5.30</a>， <span class="math notranslate nohighlight">\(R_{s}\)</span> 和 <span class="math notranslate nohighlight">\(L_{s}\)</span> 为每相定子绕组电阻和电感值。在 <a class="reference internal" href="#equation-eq-bemf-salient">5.31</a>， <span class="math notranslate nohighlight">\(\theta\)</span> 为转子角度， <span class="math notranslate nohighlight">\(L_0\)</span> 和 <span class="math notranslate nohighlight">\(L_1\)</span> 由 <a class="reference internal" href="#equation-l0l1">5.32</a>。</p></li>
+</ul>
+<div class="math notranslate nohighlight" id="equation-eq-bemf-nonsalient">
+<span class="eqno">(5.30)<a class="headerlink" href="#equation-eq-bemf-nonsalient" title="本公式的永久链接">¶</a></span>\[\begin{split}\begin{bmatrix} E_{\alpha} \\ E_{\beta} \end{bmatrix} = \begin{bmatrix} V_{\alpha} \\ V_{\beta} \end{bmatrix} -
+\begin{bmatrix} R_{s} &amp; 0 \\ 0 &amp; R_{s} \end{bmatrix} \begin{bmatrix} I_{\alpha} \\ I_{\beta} \end{bmatrix} -
+\begin{bmatrix} L_{s} &amp; 0 \\ 0 &amp; L_{s} \end{bmatrix} \frac{d}{dt}\begin{bmatrix} I_{\alpha} \\ I_{\beta} \end{bmatrix}\end{split}\]</div>
+<div class="math notranslate nohighlight" id="equation-eq-bemf-salient">
+<span class="eqno">(5.31)<a class="headerlink" href="#equation-eq-bemf-salient" title="本公式的永久链接">¶</a></span>\[\begin{split}\begin{bmatrix} E_{\alpha} \\ E_{\beta} \end{bmatrix} = \begin{bmatrix} V_{\alpha} \\ V_{\beta} \end{bmatrix} -
+\begin{bmatrix} R_{s} &amp; 0 \\ 0 &amp; R_{s} \end{bmatrix} \begin{bmatrix} I_{\alpha} \\ I_{\beta} \end{bmatrix} -
+\frac{d}{dt}\begin{bmatrix}\begin{bmatrix} L_{0}+L_{1}\cos 2\theta &amp; L_{1}\sin 2\theta \\ L_{1}\sin 2\theta &amp; L_{0}-L_{1}\cos 2\theta \end{bmatrix} \begin{bmatrix} I_{\alpha} \\ I_{\beta} \end{bmatrix} \end{bmatrix}\end{split}\]</div>
+<div class="math notranslate nohighlight" id="equation-l0l1">
+<span class="eqno">(5.32)<a class="headerlink" href="#equation-l0l1" title="本公式的永久链接">¶</a></span>\[L_0 = \frac{L_d + L_q}{2},  L_1 = \frac{L_d - L_q}{2}\]</div>
+<ul class="simple">
+<li><p>两点平均：如上所述，首先从 <span class="math notranslate nohighlight">\(- E_d\)</span> 计算 <span class="math notranslate nohighlight">\(E_{\alpha}\)</span> 和 <span class="math notranslate nohighlight">\(E_{\beta}\)</span> 得到，并送入两点平均模块。此模块有助于平滑比例-积分（PI）控制器的输入（<span class="math notranslate nohighlight">\(G_{PI}(s)\)</span>).</p></li>
+<li><p><span class="math notranslate nohighlight">\(G_{PI}(s)\)</span> : 该模块表示一个 PI 控制器，它是 ATPLL 估计器的核心。在稳态下，PI 控制器的输入（即： <span class="math notranslate nohighlight">\(- E_d\)</span>）减小到零，从而将估计速度和角度的稳态误差也减小到零。 <span class="math notranslate nohighlight">\(G_{PI}(s)\)</span> 的 s 域表示如下：</p></li>
+</ul>
+<div class="math notranslate nohighlight" id="equation-algorithms-atpll-0">
+<span class="eqno">(5.33)<a class="headerlink" href="#equation-algorithms-atpll-0" title="本公式的永久链接">¶</a></span>\[G_{PI}(s) = K_p + \frac{K_i}{s}\]</div>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(G_{Filt1}(s)\)</span> ：这是 PI 控制器输出的低通滤波器。滤波后，输出与参考速度（<span class="math notranslate nohighlight">\(\omega_{\mathrm{ref}}\)</span>）相加。此加法的结果为未滤波的估计速度，并经积分计算估计转子角度（<span class="math notranslate nohighlight">\(\hat\theta\)</span>）。 <span class="math notranslate nohighlight">\(G_{Filt1}(s)\)</span> 的 s 域表示如下，其中 <span class="math notranslate nohighlight">\(\tau_1\)</span> 为滤波器时间常数。</p></li>
+</ul>
+<div class="math notranslate nohighlight" id="equation-algorithms-atpll-1">
+<span class="eqno">(5.34)<a class="headerlink" href="#equation-algorithms-atpll-1" title="本公式的永久链接">¶</a></span>\[G_{Filt1}(s) = \frac{1}{\tau_1 s + 1}\]</div>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(G_{Filt2}(s)\)</span> ：PI 控制器输出与参考速度的加法结果通过此低通滤波器进一步滤波。此滤波器的输出为估计转子速度（<span class="math notranslate nohighlight">\(\hat\omega\)</span>）。 <span class="math notranslate nohighlight">\(G_{Filt2}(s)\)</span> 的 s 域表示如下，其中 <span class="math notranslate nohighlight">\(\tau_2\)</span> 为滤波器时间常数。</p></li>
+</ul>
+<div class="math notranslate nohighlight" id="equation-algorithms-atpll-2">
+<span class="eqno">(5.35)<a class="headerlink" href="#equation-algorithms-atpll-2" title="本公式的永久链接">¶</a></span>\[G_{Filt2}(s) = \frac{1}{\tau_2 s + 1}\]</div>
+<p>以下是与 PI 控制器和低通滤波器模块相关的一些重要点。</p>
+<ul class="simple">
+<li><p>为了在整个运行速度范围内获得 ATPLL 估计器的稳定动态性能，积分增益 <span class="math notranslate nohighlight">\(K_i\)</span> 被设为依赖于参考速度 <span class="math notranslate nohighlight">\(\omega_{\mathrm{ref}}\)</span>。为了支持具有不同参数值的电机，比例和积分增益 <span class="math notranslate nohighlight">\(K_p\)</span> 和 <span class="math notranslate nohighlight">\(K_i\)</span> 被设为依赖于电机的反电动势常数 <span class="math notranslate nohighlight">\(K_e\)</span>。PI 控制器增益的经验调节显著简化了设计。 <span class="math notranslate nohighlight">\(K_p\)</span> 和 <span class="math notranslate nohighlight">\(K_i\)</span> 的经验方程在方程 <a class="reference internal" href="#equation-eqn-atpll-pi-gains">5.36</a>。</p></li>
+</ul>
+<div class="math notranslate nohighlight" id="equation-eqn-atpll-pi-gains">
+<span class="eqno">(5.36)<a class="headerlink" href="#equation-eqn-atpll-pi-gains" title="本公式的永久链接">¶</a></span>\[\begin{aligned}
+K_{p} &amp;= \frac{1.9}{K_e} \cr
+K_{i} &amp;= \frac{\omega_{\mathrm{ref}}}{30 K_e}
+\end{aligned}\]</div>
+<ul class="simple">
+<li><p>ATPLL 估计器支持速度反转。为了实现这一点，PI 控制器增益的符号根据参考速度的符号进行反转。</p></li>
+<li><p>滤波器常数 <span class="math notranslate nohighlight">\(\tau_1\)</span> 和 <span class="math notranslate nohighlight">\(\tau_2\)</span> 根据一系列电机的控制算法性能确定。滤波器常数可在 <a class="reference internal" href="../implementation/ui-customization.zh.html#customize-diagnostics-method"><span class="std std-ref">Customize（自定义）页面</span></a> 的 motorBench<sup>®</sup> Development Suite（开发套件）中调整。</p></li>
+</ul>
+</section>
+<section id="application-to-pmsms-with-saliency">
+<span id="atpll-saliency"></span><h2><span class="section-number">5.4.4.3. </span>在具有凸性的 PMSM 中的应用<a class="headerlink" href="#application-to-pmsms-with-saliency" title="本标题的永久链接">¶</a></h2>
+<p>对于内置永磁电机（IPMSM）， <span class="math notranslate nohighlight">\(d\)</span>轴和 <span class="math notranslate nohighlight">\(q\)</span>轴电感不相等；通常 <span class="math notranslate nohighlight">\(L_q\)</span> 大于 <span class="math notranslate nohighlight">\(L_d\)</span>。为了量化转子的凸性程度，定义了以下凸性常数。这里， <span class="math notranslate nohighlight">\(\xi\)</span> 等于 <span class="math notranslate nohighlight">\(\frac{L_q}{L_d}\)</span>。</p>
+<div class="math notranslate nohighlight" id="equation-algorithms-atpll-3">
+<span class="eqno">(5.37)<a class="headerlink" href="#equation-algorithms-atpll-3" title="本公式的永久链接">¶</a></span>\[\text{Saliency Constant} = 1 - \frac{1}{\xi}\]</div>
+<p>可以注意到，对于无凸性的电机，凸性常数等于 0，随着凸性增加而趋近 1。为了正确估计转子速度和角度，估计器使用相关方程非常重要，凸极和非凸极转子电机的方程不同。为了区分凸极电机和非凸极电机，定义了 0.25 的凸性常数阈值。因此，满足以下条件的电机被视为凸极电机。</p>
+<div class="math notranslate nohighlight" id="equation-algorithms-atpll-4">
+<span class="eqno">(5.38)<a class="headerlink" href="#equation-algorithms-atpll-4" title="本公式的永久链接">¶</a></span>\[1 - \frac{1}{\xi} &gt; 0.25\]</div>
+<p>这可以进一步简化为</p>
+<div class="math notranslate nohighlight" id="equation-algorithms-atpll-5">
+<span class="eqno">(5.39)<a class="headerlink" href="#equation-algorithms-atpll-5" title="本公式的永久链接">¶</a></span>\[\xi &gt; \frac{4}{3}.\]</div>
+<p>ATPLL 估计器通过在其算法中选择合适的方程来适应凸极和非凸极转子的电机，从而保持转子速度和角度估计的准确性。</p>
+</section>
+<section id="sample-results">
+<h2><span class="section-number">5.4.4.4. </span>示例结果<a class="headerlink" href="#sample-results" title="本标题的永久链接">¶</a></h2>
+<p>以下结果来自 Leadshine 400 电机的数值仿真。实际转子速度和 ATPLL 估计器估计转子速度的叠加图展示在 <a class="reference internal" href="#fig-atpll-speed"><span class="std std-numref">图 5.72</span></a> 中，同时还展示了估计速度误差图。可以观察到稳态速度误差为零。</p>
+<figure class="align-center" id="id3">
+<span id="fig-atpll-speed"></span><a class="reference internal image-reference" href="../_images/atpll_speed_error.png"><img alt="../_images/atpll_speed_error.png" src="../_images/atpll_speed_error.png" style="width: 560.0px; height: 420.0px;"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.72 </span><span class="caption-text">ATPLL 的估计转子速度</span><a class="headerlink" href="#id3" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>实际转子角度和 ATPLL 估计器估计转子角度的叠加图以及估计角度误差展示在 <a class="reference internal" href="#fig-atpll-angle"><span class="std std-numref">图 5.73</span></a>。此图对应于 <a class="reference internal" href="#fig-atpll-speed"><span class="std std-numref">图 5.72</span></a>所示的相同速度瞬变。可以看到稳态角度误差为零。</p>
+<figure class="align-center" id="id4">
+<span id="fig-atpll-angle"></span><a class="reference internal image-reference" href="../_images/atpll_angle_error.png"><img alt="../_images/atpll_angle_error.png" src="../_images/atpll_angle_error.png" style="width: 560.0px; height: 420.0px;"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.73 </span><span class="caption-text">ATPLL 的估计转子角度</span><a class="headerlink" href="#id4" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="implementation-notes">
+<h2><span class="section-number">5.4.4.5. </span>实现说明<a class="headerlink" href="#implementation-notes" title="本标题的永久链接">¶</a></h2>
+<section id="mcaf-r5-r8">
+<h3><span class="section-number">5.4.4.5.1. </span>MCAF R5 – R8<a class="headerlink" href="#mcaf-r5-r8" title="本标题的永久链接">¶</a></h3>
+<p>ATPLL 滤波器常数 <span class="math notranslate nohighlight">\(\tau_1\)</span> 和 <span class="math notranslate nohighlight">\(\tau_2\)</span> 在 MCAF R5 – R8 中是固定的。</p>
+</section>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">5.4.4. 角度跟踪锁相环（ATPLL）</a><ul>
+<li><a class="reference internal" href="#overview">5.4.4.1. 概述</a></li>
+<li><a class="reference internal" href="#implementation-block-diagram-and-description">5.4.4.2. 实现方框图和描述</a></li>
+<li><a class="reference internal" href="#application-to-pmsms-with-saliency">5.4.4.3. 在具有凸性的 PMSM 中的应用</a></li>
+<li><a class="reference internal" href="#sample-results">5.4.4.4. 示例结果</a></li>
+<li><a class="reference internal" href="#implementation-notes">5.4.4.5. 实现说明</a><ul>
+<li><a class="reference internal" href="#mcaf-r5-r8">5.4.4.5.1. MCAF R5 – R8</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="qei_sync/pullout.zh.html" title="上一章"><span class="section-number">5.4.3.3.4. </span>失步转矩方法</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="zsmt.zh.html" title="下一章"><span class="section-number">5.4.5. </span>零速/最大转矩（ZS/MT）</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="zsmt.zh.html" title="5.4.5. Zero-Speed / Maximum Torque (ZS/MT)">下一页</a> |</li>
+<li class="right">
+<a href="qei_sync/pullout.zh.html" title="5.4.3.3.4. Pullout torque method">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="estimators.zh.html"><span class="section-number">5.4. </span>位置和速度估计</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4.4. </span>角度跟踪锁相环（ATPLL）</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

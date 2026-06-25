@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.4.5. 零速/最大转矩（ZS/MT） — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="smo.zh.html" rel="next" title="5.4.6. Sliding Mode Observer (SMO)"/>
+<link href="atpll.zh.html" rel="prev" title="5.4.4. Angle-tracking Phase-locked Loop (ATPLL)"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="smo.zh.html" title="5.4.6. Sliding Mode Observer (SMO)">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="atpll.zh.html" title="5.4.4. Angle-tracking Phase-locked Loop (ATPLL)">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="estimators.zh.html"><span class="section-number">5.4. </span>位置和速度估计</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4.5. </span>零速/最大转矩（ZS/MT）</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="zsmtlong-zs-mt">
+<span id="algorithm-zsmt"></span><span id="index-0"></span><h1><span class="section-number">5.4.5. </span>零速/最大转矩（ZS/MT）<a class="headerlink" href="#zsmtlong-zs-mt" title="本标题的永久链接">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">5.4.5.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
+<p>零速/最大转矩（ZS/MT）为某些具有 <a class="reference internal" href="../appendix/glossary.zh.html#term-rotor-saliency"><span class="xref std std-term">转子凸性</span></a>的永磁同步电机，如内置永磁同步电机（<a class="reference internal" href="../appendix/glossary.zh.html#term-IPMSM"><span class="xref std std-term">IPMSM</span></a>），在静止和中等速度下提供高转矩能力。</p>
+<p>ZS/MT 施加高频激励信号，通过电机的电感特性来估计位置。（这使它成为一个 <a class="reference internal" href="estimator-interface.zh.html#algorithm-estimator-terminology"><span class="std std-ref">侵入式</span></a> 估计器。） <a class="reference internal" href="#fig-zsmt-blkdiag"><span class="std std-numref">图 5.74</span></a> 展示了 ZS/MT 的高层方框图，包含激励、相位检测和锁相环模块。</p>
+<figure class="align-center" id="id1">
+<span id="fig-zsmt-blkdiag"></span><img alt="../_images/foc_blkdiag_zsmt_basic.svg" class="no-scaled-link" src="../_images/foc_blkdiag_zsmt_basic.svg" width="100%"/><figcaption>
+<p><span class="caption-number">图 5.74 </span><span class="caption-text">ZS/MT 方框图</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="further-information">
+<span id="zsmt-further-information"></span><h2><span class="section-number">5.4.5.2. </span>更多信息<a class="headerlink" href="#further-information" title="本标题的永久链接">¶</a></h2>
+<p>此功能从 MCAF R7 开始免费提供，但文档仅应请提供。如需更多信息，请 <a class="reference internal" href="../faq.zh.html#faq-support"><span class="std std-ref">联系 Microchip</span></a>。</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">5.4.5. 零速/最大转矩（ZS/MT）</a><ul>
+<li><a class="reference internal" href="#overview">5.4.5.1. 概述</a></li>
+<li><a class="reference internal" href="#further-information">5.4.5.2. 更多信息</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="atpll.zh.html" title="上一章"><span class="section-number">5.4.4. </span>角度跟踪锁相环（ATPLL）</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="smo.zh.html" title="下一章"><span class="section-number">5.4.6. </span>滑模观测器（SMO）</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="smo.zh.html" title="5.4.6. Sliding Mode Observer (SMO)">下一页</a> |</li>
+<li class="right">
+<a href="atpll.zh.html" title="5.4.4. Angle-tracking Phase-locked Loop (ATPLL)">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="estimators.zh.html"><span class="section-number">5.4. </span>位置和速度估计</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4.5. </span>零速/最大转矩（ZS/MT）</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

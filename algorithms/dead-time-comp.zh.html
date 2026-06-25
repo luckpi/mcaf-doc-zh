@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.7. 死区补偿 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="voltage-control.html" rel="next" title="5.8. Voltage Control"/>
+<link href="dynlimit-simple.html" rel="prev" title="5.6.5.1. Simple dynamic current limit"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="voltage-control.html" title="5.8. 电压控制">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="dynlimit-simple.html" title="5.6.5.1. 简单动态电流限制">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.7. </span>死区补偿</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="dead-time-compensation">
+<span id="algorithm-deadtimecompensation"></span><span id="index-0"></span><h1><span class="section-number">5.7. </span>死区补偿<a class="headerlink" href="#dead-time-compensation" title="本标题的永久链接">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">5.7.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
+<p>死区是在 <a class="reference internal" href="../appendix/glossary.html#term-PWM"><span class="xref std std-term">PWM</span></a> 周期中高侧和低侧晶体管的栅驱动信号均不活动的延迟。这表现为幅值大致固定的电压畸变，并取决于相电流方向。在矢量控制中，此电压畸变在每个电气周期内重复六次，在相电流每次过零附近有短暂暂态。</p>
+<p>MCAF 中的死区补偿可用于抵消部分死区畸变，既作用于电流控制环本身，也作用于 <a class="reference internal" href="estimators.html#algorithm-estimators"><span class="std std-ref">位置和速度估计器</span></a>。</p>
+</section>
+<section id="definition-and-origin-of-dead-time">
+<span id="dtc-definition"></span><h2><span class="section-number">5.7.2. </span>死区的定义和来源<a class="headerlink" href="#definition-and-origin-of-dead-time" title="本标题的永久链接">¶</a></h2>
+<p>三相 <a class="reference internal" href="../appendix/glossary.html#term-PMSM"><span class="xref std std-term">PMSM</span></a> 的驱动电子电路包括如 <a class="reference internal" href="#fig-dtc-bridge"><span class="std std-numref">图 5.93</span></a>。</p>
+<figure class="align-center" id="id3">
+<span id="fig-dtc-bridge"></span><a class="reference internal image-reference" href="../_images/bridge3e.svg"><img alt="../_images/bridge3e.svg" src="../_images/bridge3e.svg" width="500px"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.93 </span><span class="caption-text">三相桥，由驱动电机端子 A、B 和 C 的三个半桥组成。每个半桥有一个高侧和低侧晶体管，可以将相应的电机端子连接到直流母线的正极或负极。</span><a class="headerlink" href="#id3" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>死区如 <a class="reference internal" href="#fig-dtc-pwmdeadtime"><span class="std std-numref">图 5.94</span></a>所示，表示为 <span class="math notranslate nohighlight">\(\delta_1\)</span> 占整个 PWM 周期的比例 <span class="math notranslate nohighlight">\(T_\text{PWM}\)</span>。它用于适应开关转换所需的时间，并允许一个晶体管在另一个开始导通之前完全关断。这避免了直通，即直流母线两端发生暂时短路并在两个晶体管中引起 high power dissipation in both transistors.</p>
+<figure class="align-center" id="id4">
+<span id="fig-dtc-pwmdeadtime"></span><img alt="../_images/pwm-with-deadtime.svg" src="../_images/pwm-with-deadtime.svg"/><figcaption>
+<p><span class="caption-number">图 5.94 </span><span class="caption-text">电机某一半桥的栅驱动信号示例</span><a class="headerlink" href="#id4" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>中的信号 <a class="reference internal" href="#fig-dtc-pwmdeadtime"><span class="std std-numref">图 5.94</span></a> 如下所述。</p>
+<ul class="simple">
+<li><p>信号 G 是原始生成的脉冲波形，占空比为 <span class="math notranslate nohighlight">\(D\)</span>。</p></li>
+<li><p>信号 H 是高侧晶体管的栅极驱动信号，其有效占空比为 <span class="math notranslate nohighlight">\(D-\delta_1\)</span>。</p></li>
+<li><p>信号 L 是低侧晶体管的栅极驱动信号，其有效占空比为 <span class="math notranslate nohighlight">\(1-(D+\delta_1) = 1-D-\delta_1\)</span>。</p></li>
+</ul>
+<p>当 G 导通时，低侧栅极驱动 L 立即关断，但高侧栅极驱动 H 在死区时间 <span class="math notranslate nohighlight">\(\delta_1T_\text{PWM}\)</span>的延迟后导通。当 G 关断时，高侧栅极驱动 H 立即关断，但低侧栅极驱动 L 在死区时间 <span class="math notranslate nohighlight">\(\delta_1T_\text{PWM}\)</span>。</p>
+</section>
+<section id="dead-time-distortion">
+<span id="dtc-distortion"></span><span id="index-1"></span><h2><span class="section-number">5.7.3. </span>死区畸变<a class="headerlink" href="#dead-time-distortion" title="本标题的永久链接">¶</a></h2>
+<section id="output-voltage-during-dead-time">
+<span id="dtc-outputvoltage"></span><h3><span class="section-number">5.7.3.1. </span>死区期间的输出电压<a class="headerlink" href="#output-voltage-during-dead-time" title="本标题的永久链接">¶</a></h3>
+<p>MCAF 中的矢量控制使用平均值建模。控制变量可以用采样时间内的平均值表示，采样时间由离散数量的半周期组成。MCAF R1 – R9 均使用 1 个完整 PWM 周期作为采样时间。PWM 周期内半桥的平均输出电压为 <span class="math notranslate nohighlight">\(D'V_{dc} = (D+\delta)V_{dc}\)</span> 其中 <span class="math notranslate nohighlight">\(D'\)</span> 为有效占空比， <span class="math notranslate nohighlight">\(D\)</span> 为期望占空比， <span class="math notranslate nohighlight">\(\delta\)</span> 为有效占空比误差。此误差由死区引起，称为死区畸变。</p>
+<p>在死区期间，每个半桥输出实际上处于高阻状态，由功率级的续流二极管在直流母线电压轨处钳位。（MOSFET 具有固有体二极管；IGBT 没有，需要反并联二极管）parallel diodes)</p>
+<p>这导致死区期间的输出电压随输出电流而变化。在电机驱动中，半桥负载是感性的，因此输出电压为以下之一，如 <a class="reference internal" href="#fig-dtc-deadtime-distortion1"><span class="std std-numref">图 5.95</span></a>：</p>
+<figure class="align-center" id="id5">
+<span id="fig-dtc-deadtime-distortion1"></span><a class="reference internal image-reference" href="../_images/pwm-deadtime-distortion.svg"><img alt="../_images/pwm-deadtime-distortion.svg" src="../_images/pwm-deadtime-distortion.svg" width="70%"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.95 </span><span class="caption-text">死区期间感性负载下半桥的输出电压。延迟时间 <span class="math notranslate nohighlight">\(t_\textrm{off}\)</span> 和 <span class="math notranslate nohighlight">\(t_\textrm{on}\)</span> 表示栅驱动信号边沿与晶体管电压开始变化时刻之间的传播延迟。</span><a class="headerlink" href="#id5" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<ul class="simple">
+<li><p>如果死区期间输出电流严格为正（从半桥流出），则低侧续流二极管导通，输出电压为 <span class="math notranslate nohighlight">\(-V_d\)</span>，即低于直流母线负端一个二极管压降，如 <a class="reference internal" href="#fig-dtc-deadtime-distortion1"><span class="std std-numref">图 5.95</span></a>。</p></li>
+<li><p>如果死区期间输出电流严格为负（流入半桥），则高侧续流二极管导通，输出电压为 <span class="math notranslate nohighlight">\(V_{DC}+V_d\)</span>，即高于直流母线正端一个二极管压降，如 <a class="reference internal" href="#fig-dtc-deadtime-distortion1"><span class="std std-numref">图 5.95</span></a>。</p></li>
+<li><p>如果死区期间输出电流达到零，则半桥进入断续导通，电压由感性负载与半桥的寄生电容 <span class="math notranslate nohighlight">\(C_p\)</span> 和漏电阻 <span class="math notranslate nohighlight">\(R_l\)</span> 的相互作用决定。这可能导致频率为 <span class="math notranslate nohighlight">\(f \approx 1/(2\pi\sqrt{L_sC_p})\)</span>的电压振荡，如 <a class="reference internal" href="#fig-dtc-deadtime-distortion1"><span class="std std-numref">图 5.95</span></a>的红色和橙色曲线所示。精确波形难以预测，且对输出电流的微小变化非常敏感。</p></li>
+</ul>
+<p><a class="reference internal" href="#fig-dtc-deadtime-oscope10"><span class="std std-numref">图 5.96</span></a>， <a class="reference internal" href="#fig-dtc-deadtime-oscope13"><span class="std std-numref">图 5.97</span></a>，以及 <a class="reference internal" href="#fig-dtc-deadtime-oscope19"><span class="std std-numref">图 5.98</span></a> 展示了示波器捕获的波形，用于说明死区对 dsPICDEM<sup>®</sup> MCLV-2 开发板的影响，该板运行在 24Vdc，时间基为 1 μs/格，相电压测量为 10 V/格。</p>
+<figure class="align-center" id="id6">
+<span id="fig-dtc-deadtime-oscope10"></span><img alt="../_images/2999-deadtime-10.png" src="../_images/2999-deadtime-10.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.96 </span><span class="caption-text">死区期间的输出电压行为，相电压输出下降沿。淡紫色表示多次捕获轨迹的余辉。</span><a class="headerlink" href="#id6" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id7">
+<span id="fig-dtc-deadtime-oscope13"></span><img alt="../_images/2999-deadtime-13.png" src="../_images/2999-deadtime-13.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.97 </span><span class="caption-text">死区期间的输出电压行为，相电压输出上升沿。淡紫色表示多次捕获轨迹的余辉。</span><a class="headerlink" href="#id7" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id8">
+<span id="fig-dtc-deadtime-oscope19"></span><img alt="../_images/2999-deadtime-19.png" src="../_images/2999-deadtime-19.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.98 </span><span class="caption-text">死区期间的输出电压行为，电流近零时相电压输出下降沿。</span><a class="headerlink" href="#id8" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="analysis-of-error-bounds">
+<span id="dtc-error-bounds"></span><h3><span class="section-number">5.7.3.2. </span>误差边界分析<a class="headerlink" href="#analysis-of-error-bounds" title="本标题的永久链接">¶</a></h3>
+<p>采样时间内的平均电压可以通过观察死区期间大正电流和大负电流引起的上下界来限定。这些是 <a class="reference internal" href="#fig-dtc-deadtime-distortion1"><span class="std std-numref">图 5.95</span></a>中的绿色和黑色曲线；类似的曲线如 <a class="reference internal" href="#fig-dtc-deadtime-distortion2"><span class="std std-numref">图 5.99</span></a> 所示，标注了有效占空比 <span class="math notranslate nohighlight">\(D' = D + \delta\)</span>。</p>
+<figure class="align-center" id="id9">
+<span id="fig-dtc-deadtime-distortion2"></span><img alt="../_images/pwm-deadtime-distortion2.svg" src="../_images/pwm-deadtime-distortion2.svg"/><figcaption>
+<p><span class="caption-number">图 5.99 </span><span class="caption-text">整个 PWM 周期内的有效占空比</span><a class="headerlink" href="#id9" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>有效占空比误差的主要项仅为 <span class="math notranslate nohighlight">\(\delta = \plusmn\delta_1\)</span> ，由电流不在零附近时的死区直接引起。还有一些次要效应：</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#dtc-outputvoltage"><span class="std std-ref">Diode drop voltage</span></a> <span class="math notranslate nohighlight">\(V_d\)</span> 在死区期间的二极管压降——由此产生的误差往往非常小：例如，在 24 伏系统中 1 伏压降，在整个 PWM 周期总死区时间为 4% 时，代表有效占空比误差为 4% / 24 = 0.17%。它对极低电压系统影响最严重，但这些情况下死区通常可以减小。此外，由于其效应与死区时间成正比，可以合并到有效死区时间 <span class="math notranslate nohighlight">\(\delta_1' \approx \delta_1 (1+V_d/V_{dc})\)</span></p></li>
+<li><p>导通和关断时间的不对称——这如 <a class="reference internal" href="#fig-dtc-deadtime-distortion2"><span class="std std-numref">图 5.99</span></a>所示。它通过导通和关断时间之差有效地延长了死区时间，因为在设计良好的电机驱动中，关断通常比导通快——尽管如果关断比导通慢，它也可能减小有效死区时间。 在示波器波形中似乎就是这种情况，这些波形捕获于 <a class="reference internal" href="#fig-dtc-deadtime-oscope10"><span class="std std-numref">图 5.96</span></a> 和 <a class="reference internal" href="#fig-dtc-deadtime-oscope13"><span class="std std-numref">图 5.97</span></a>：输出电压转换的时间跨度小于死区时间。此效应也可合并到有效死区时间 <span class="math notranslate nohighlight">\(\delta_1' \approx \delta_1 + (t_\textrm{on} - t_\textrm{off})/T_\textrm{PWM}\)</span>。</p></li>
+<li><p>断续导通——这在下一节中讨论。</p></li>
+</ul>
+</section>
+<section id="behavior-during-discontinuous-conduction">
+<span id="dtc-discontinuous-conduction"></span><h3><span class="section-number">5.7.3.3. </span>断续导通期间的行为<a class="headerlink" href="#behavior-during-discontinuous-conduction" title="本标题的永久链接">¶</a></h3>
+<p>当电流接近零且半桥进入断续导通时，有效占空比误差 <span class="math notranslate nohighlight">\(\delta\)</span> 介于上下界之间 <span class="math notranslate nohighlight">\(\delta=\plusmn\delta_1\)</span>，且是电流的函数，难以建模。</p>
+<div class="math notranslate nohighlight" id="equation-dtcomp-errorfunc">
+<span class="eqno">(5.57)<a class="headerlink" href="#equation-dtcomp-errorfunc" title="本公式的永久链接">¶</a></span>\[\begin{split}    \delta(I) = \begin{cases}
+   -\delta_1          &amp; I \ge I_\delta \\
+   -\delta_1f_{nl}(I/I_\delta) &amp; |I| &lt; I_\delta \\
+   \delta_1         &amp; I \le -I_\delta \\
+\end{cases}\end{split}\]</div>
+<p>公式 <a class="reference internal" href="#equation-dtcomp-errorfunc">5.57</a> 分离了电流在 <span class="math notranslate nohighlight">\(|I| &lt; I_\delta\)</span> 附近零时的有趣行为，用非线性函数 <span class="math notranslate nohighlight">\(f_{nl}(u)\)</span>表示，它是一个难以建模的经验非线性函数，将输入范围 [-1,1] 映射到输出范围 [-1,1]。在大多数情况下，不需要知道它究竟是什么；一些非线性函数 <span class="math notranslate nohighlight">\(f_{nl}(u)\)</span> 的示例如 <a class="reference internal" href="#fig-dtc-nonlinearity-functions"><span class="std std-numref">图 5.100</span></a>所示。MCAF 中的死区补偿仅假设线性函数 <span class="math notranslate nohighlight">\(f_{nl1}(u) = u\)</span>。</p>
+<figure class="align-center" id="id10">
+<span id="fig-dtc-nonlinearity-functions"></span><a class="reference internal image-reference" href="../_images/deadtime-nonlinearity-functions.svg"><img alt="../_images/deadtime-nonlinearity-functions.svg" src="../_images/deadtime-nonlinearity-functions.svg" width="70%"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.100 </span><span class="caption-text">非线性函数示例 <span class="math notranslate nohighlight">\(f_{nl}(u)\)</span> 在其行为范围内变化 <span class="math notranslate nohighlight">\(|u| &lt; 1\)</span>，包括符号函数、恒等函数、 <a class="reference external" href="https://en.wikipedia.org/wiki/Sigmoid_function">S 型函数</a>和常数。</span><a class="headerlink" href="#id10" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>电流幅值 <span class="math notranslate nohighlight">\(I_\delta\)</span> 以下可能发生断续导通的值约等于电流纹波。其在断续导通区内的行为取决于 <span class="math notranslate nohighlight">\(I_\delta\)</span> 和特征电流 <span class="math notranslate nohighlight">\(I_C = C_pV_{dc}/\delta_1T_\textrm{PWM}\)</span> 的相对大小，后者是充电寄生电容 <span class="math notranslate nohighlight">\(C_p\)</span>所需的。参考文献 <a class="footnote-reference brackets" href="#fn-dtcomp-mannen2015" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> 详细讨论了这两种效应。</p>
+</section>
+<section id="dead-time-distortion-voltage-in-field-oriented-current-control">
+<h3><span class="section-number">5.7.3.4. </span>矢量电流控制中的死区畸变电压<a class="headerlink" href="#dead-time-distortion-voltage-in-field-oriented-current-control" title="本标题的永久链接">¶</a></h3>
+<p>前面的各节适用于单个半桥带感性负载的情况。在三相电机的矢量电流控制中，死区电压畸变转换到同步（dq）坐标系是有意义的，因为这是电机“看到”的扰动。</p>
+<p><a class="reference internal" href="#fig-dtc-deadtime-distortion3a"><span class="std std-numref">图 5.101</span></a> 展示了单位电压扰动 <span class="math notranslate nohighlight">\(s\)</span> 在各种参考坐标系中的情况，假设正弦电流和平滑角旋转，并忽略断续导通区。</p>
+<p>从上到下：</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(I\)</span> ——相电流，幅值为 <span class="math notranslate nohighlight">\(I_0\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(s_A, s_B, s_C\)</span> ——对应电流的符号，幅值为 <span class="math notranslate nohighlight">\(\plusmn 1\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(s_{\alpha\beta}\)</span> — sign vector in stationary (αβ) frame; <span class="math notranslate nohighlight">\(s_\alpha = \frac{1}{3}(2s_A - s_B - s_C),\;s_\beta = \frac{1}{\sqrt{3}}(s_B - s_C)\)</span>。这表示恒定幅值 <span class="math notranslate nohighlight">\(\frac{4}{3}\)</span> 和每次电流过零时跳变 60° 的角度。</p></li>
+<li><p><span class="math notranslate nohighlight">\(s_{dq}\)</span> — sign vector in synchronous (dq) frame; <span class="math notranslate nohighlight">\(s_d = s_\alpha \sin \theta_e - s_\beta \cos \theta_e,\;s_q = s_\alpha \cos \theta_e + s_\beta \sin \theta_e\)</span></p></li>
+</ul>
+<figure class="align-center" id="id11">
+<span id="fig-dtc-deadtime-distortion3a"></span><img alt="../_images/pwm-deadtime-distortion3a.svg" src="../_images/pwm-deadtime-distortion3a.svg"/><figcaption>
+<p><span class="caption-number">图 5.101 </span><span class="caption-text">死区畸变产生的单位电压扰动。每相分量 <span class="math notranslate nohighlight">\(s_A, s_B, s_C\)</span> 已显示，还有静止参考坐标系中的单位电压扰动 <span class="math notranslate nohighlight">\(s_{\alpha\beta}\)</span> 和同步参考坐标系中的 <span class="math notranslate nohighlight">\(s_{dq}\)</span> 在同步参考坐标系中。</span><a class="headerlink" href="#id11" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>d 轴和 q 轴扰动每 60° 电气角度遵循正弦波形。如果电流矢量沿 q 轴方向，则单位 d 轴扰动 <span class="math notranslate nohighlight">\(s_d\)</span> 以零角度扰动为中心，无直流偏移。单位 q 轴扰动 <span class="math notranslate nohighlight">\(s_q\)</span> 以 90° 为中心，变化较小且有非零偏移。对于每个半桥上的单位死区畸变幅值，这些波形的相关特性列于 <a class="reference internal" href="#table-dtc-vdq"><span class="std std-numref">表 5.6</span></a>。</p>
+<table class="docutils align-center" id="table-dtc-vdq">
+<caption><span class="caption-number">表 5.6 </span><span class="caption-text">单位死区畸变电压的特性 <span class="math notranslate nohighlight">\(s_{dq}\)</span> <br/> 在同步坐标系中</span><a class="headerlink" href="#table-dtc-vdq" title="本表格的永久链接">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>特性</p></th>
+<th class="head"><p>值</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>D 轴峰值扰动</p></td>
+<td><p><span class="math notranslate nohighlight">\(2/3\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>D 轴有效值扰动</p></td>
+<td><p><span class="math notranslate nohighlight">\(\sqrt{\frac{8}{9} +
+\frac{4\sqrt{3}}{3\pi} -
+\frac{16}{\pi^2}}\approx\)</span> 0.05343</p></td>
+</tr>
+<tr class="row-even"><td><p>Q 轴峰值扰动</p></td>
+<td><p><span class="math notranslate nohighlight">\(4/3\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>Q 轴平均扰动</p></td>
+<td><p><span class="math notranslate nohighlight">\(4/\pi\approx\)</span> 1.27324</p></td>
+</tr>
+<tr class="row-even"><td><p>Q 轴有效值扰动</p></td>
+<td><p><span class="math notranslate nohighlight">\(\sqrt{\frac{8}{9} -
+\frac{4\sqrt{3}}{3\pi}}
+\approx\)</span> 0.39215</p></td>
+</tr>
+</tbody>
+</table>
+<p>如果电流矢量包含 d 轴分量，如 <a class="reference internal" href="flux_control/index.html#algorithm-flux-control"><span class="std std-ref">磁链控制算法</span></a>中那样，则死区扰动将以电流矢量方向为中心，而不是以 q 轴为中心。</p>
+<p>这些是单位电压扰动的效应。在实际系统中，当电流幅值较大（避免断续导通）时，电压扰动为 <span class="math notranslate nohighlight">\(-\delta_1 V_{dc} s\)</span> 在每个参考坐标系中。换言之：</p>
+<ul class="simple">
+<li><p>在静止坐标系中，死区电压扰动为 <span class="math notranslate nohighlight">\(-\delta_1 V_{dc} s_{\alpha\beta}\)</span> ，幅值为 <span class="math notranslate nohighlight">\(\frac{4}{3}\delta_1 V_{dc}\)</span></p></li>
+<li><p>在同步坐标系中，死区电压扰动为 <span class="math notranslate nohighlight">\(-\delta_1 V_{dc} s_{dq}\)</span>，幅值也为 <span class="math notranslate nohighlight">\(\frac{4}{3}\delta_1 V_{dc}\)</span>，但在电流矢量 ±30° 范围内扫过一个弧。dq 参考坐标系中的峰值、均值和有效值扰动也可按比例计算，因此 4% 的死区（50 μs PWM 周期中每次转换 2 μs）在 24V 直流母线下 和沿 q 轴的电流矢量应经历约 0.04 × 24 × 1.27324 = 1.22231V.</p></li>
+</ul>
+<p>死区畸变的电压扰动也可以可视化为 x-y 图（α-β 或 d-q）。 <a class="reference internal" href="#fig-dtc-deadtime-distortion3b"><span class="std std-numref">图 5.102</span></a> 展示了 PMSM 在电动象限中的此类图。在静止坐标系中，死区畸变将圆形电压轨迹映射为 6 段不连续弧，看起来像锯齿。在同步坐标系中，死区畸变将代表恒定 dq 电压的单个点映射为一个小弧，沿 q 轴有均值直流偏移，从期望电压中减去。</p>
+<p>在发电象限中，电压扰动方向将反转，并导致沿 q 轴的均值直流偏移叠加到期望电压上。</p>
+<figure class="align-center" id="id12">
+<span id="fig-dtc-deadtime-distortion3b"></span><img alt="../_images/pwm-deadtime-distortion3b.svg" src="../_images/pwm-deadtime-distortion3b.svg"/><figcaption>
+<p><span class="caption-number">图 5.102 </span><span class="caption-text">静止（αβ）坐标系（左）和同步（dq）坐标系（右）中死区畸变的电压扰动。此情况表示大相电流（可忽略断续导通），期望电压幅值为 <span class="math notranslate nohighlight">\(V_1\)</span> 超前电流 30° 电气角度，乘积 <span class="math notranslate nohighlight">\(\delta_1 V_{dc}\)</span> （死区比例与直流母线电压的乘积）为 <span class="math notranslate nohighlight">\(0.15V_1\)</span>。在此情况下，αβ 和 dq 坐标系中的扰动幅值为 <span class="math notranslate nohighlight">\(\frac{4}{3}\delta_1 V_{dc} = \frac{4}{3}\times 0.15V_1 = 0.2V_1\)</span>。</span><a class="headerlink" href="#id12" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="practical-effects-of-dead-time-distortion">
+<h2><span class="section-number">5.7.4. </span>死区畸变的实际效应<a class="headerlink" href="#practical-effects-of-dead-time-distortion" title="本标题的永久链接">¶</a></h2>
+<p>死区畸变在两个主要方面对电机控制有害：</p>
+<ul class="simple">
+<li><p>对电流控制的影响</p></li>
+<li><p>对位置和速度估计器的影响</p></li>
+</ul>
+<section id="dead-time-distortion-and-field-oriented-current-control">
+<h3><span class="section-number">5.7.4.1. </span>死区畸变与矢量电流控制<a class="headerlink" href="#dead-time-distortion-and-field-oriented-current-control" title="本标题的永久链接">¶</a></h3>
+<p>在 FOC 中，电流控制器在同步（dq）参考坐标系中运行。死区畸变在 <span class="math notranslate nohighlight">\(6f_e\)</span> （六倍电气频率）处对电流控制器产生电压扰动，出现在相电流每次过零附近。</p>
+<p>在低速时，电流控制器最终会在每次暂暂后恢复零稳态误差。 <a class="reference internal" href="#fig-dtc-deadtime-distortion3b"><span class="std std-numref">图 5.102</span></a> 右侧所示的扰动必须通过增加相反符号的电压来抵消：</p>
+<ul class="simple">
+<li><p>电机处 q 轴电压的平均降低必须由 q 轴电流控制器增加相同数量的电压来抵消</p></li>
+<li><p>d 轴扰动约为线性斜坡，必须由 d 轴电流控制器以相反方向的控制器输出变化来抵消。</p></li>
+</ul>
+<p>在高速时，抵消死区电压畸变所需的输出电压变化发生得足够快且足够频繁，以致于电流控制器无法完全抵消畸变。</p>
+<p><a class="reference internal" href="#fig-dtc-deadtime-distortion4a"><span class="std std-numref">图 5.103</span></a> 展示了 Nidec Hurst DMA0204024B101 在低速（约 240RPM）和不同死区下的测量和预测电压需求，由 dsPICDEM<sup>®</sup> MCLV-2 开发板驱动，运行在平滑轻载条件下，需要 <span class="math notranslate nohighlight">\(I_q \approx\)</span> 0.5 A。左图显示静止坐标系输出电压 <span class="math notranslate nohighlight">\(V_{\alpha\beta}\)</span>。红色圆圈是反电动势幅值。蓝色、橙色和绿色散点图显示 1、2 和 3 微秒死区下 αβ 坐标系电压的测量样本。黑点标记基于纯符号函数 <span class="math notranslate nohighlight">\(f_{nl0}(u)\)</span> （参见 <a class="reference internal" href="#fig-dtc-nonlinearity-functions"><span class="std std-numref">图 5.100</span></a>）的预测输出电压，本质上显示了反电动势圆的六个 60° 扇区由于抵消死区畸变所需额外电压而向外“爆炸”。这些与测量数据匹配良好，至少在非断续导通时如此。 测量数据中死区畸变的增益略大于预测值（注意蓝色、橙色和绿色六边形散点图略在黑色弧线之外），可能是由于 <a class="reference internal" href="#dtc-error-bounds"><span class="std std-numref">节 5.7.3.2</span></a>。</p>
+<figure class="align-center" id="id13">
+<span id="fig-dtc-deadtime-distortion4a"></span><img alt="../_images/deadtime-4512-240-voltage0.png" src="../_images/deadtime-4512-240-voltage0.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.103 </span><span class="caption-text">不同死区下静止和同步坐标系中的电压图。</span><a class="headerlink" href="#id13" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>的右图 <a class="reference internal" href="#fig-dtc-deadtime-distortion4a"><span class="std std-numref">图 5.103</span></a> 在同步（dq）坐标系中显示相同信息，其中反电动势是一个紧密簇，沿 q 轴变化很小，由微小速度波动引起。 <span class="math notranslate nohighlight">\(V_{dq}\)</span> 的测量和预测数据近似遵循弧线，显示 q 轴电压的增加和 d 轴电压的扫掠。</p>
+<p><a class="reference internal" href="#fig-dtc-deadtime-distortion4b"><span class="std std-numref">图 5.104</span></a> 展示了相同的测量电压，但预测电压考虑了断续导通的影响，通过使用线性模型 <span class="math notranslate nohighlight">\(f_{nl1}(u) = u\)</span> 用于 <span class="math notranslate nohighlight">\(u = I/I_\delta\)</span> 在范围内 <span class="math notranslate nohighlight">\(|I| &lt; I_\delta\)</span> 以处理过零附近的行为（参见 <a class="reference internal" href="#fig-dtc-nonlinearity-functions"><span class="std std-numref">图 5.100</span></a>）。此图中使用的过零范围为 <span class="math notranslate nohighlight">\(I_\delta\)</span> = 0.12A.</p>
+<p>注意与 <a class="reference internal" href="#fig-dtc-deadtime-distortion4a"><span class="std std-numref">图 5.103</span></a>。</p>
+<figure class="align-center" id="id14">
+<span id="fig-dtc-deadtime-distortion4b"></span><img alt="../_images/deadtime-4512-240-voltage1.png" src="../_images/deadtime-4512-240-voltage1.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.104 </span><span class="caption-text">不同死区下静止和同步坐标系中的电压图。</span><a class="headerlink" href="#id14" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>电流本身如 <a class="reference internal" href="#fig-dtc-deadtime-distortion4c"><span class="std std-numref">图 5.105</span></a>所示。测量电流在静止坐标系中相当好地跟踪预期的圆形轨迹（同步坐标系中恒定电流 <span class="math notranslate nohighlight">\(I_q\)</span> ），随死区增大而略有退化。</p>
+<figure class="align-center" id="id15">
+<span id="fig-dtc-deadtime-distortion4c"></span><img alt="../_images/deadtime-4512-240-current.png" src="../_images/deadtime-4512-240-current.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.105 </span><span class="caption-text">不同死区下静止（αβ）和同步（dq）坐标系中的电流图。黑色圆（αβ 坐标系）和点（dq 坐标系）表示平均 q 轴参考电流；这些直接显示在代表测量 q 轴参考电流的灰色圆（αβ 坐标系）和条（dq）上方，后者随速度和负载变化略微波动。 <br/> <br/> dq 坐标系中淡同心灰色椭圆是误差椭圆，基于测量电流的协方差，在均值的 1、2、3 和 4 个标准差处。（对于正态分布的纯随机噪声，误差椭圆所包围的数据期望比例遵循 <a class="reference external" href="https://en.wikipedia.org/wiki/Chi-square_distribution">卡方分布</a> 的累积分布函数（CDF），自由度为 2。 <span class="math notranslate nohighlight">\(\chi^2(2)\)</span>的累积分布函数（CDF），自由度为 2。约 39.35% 的样本预期在 1 个标准差以内；86.47% 在 2 个标准差以内，98.89% 在 3 个标准差以内，99.96% 在 4 个标准差以内。）</span><a class="headerlink" href="#id15" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>死区畸变的效应随速度增加而变化。 <a class="reference internal" href="#fig-dtc-deadtime-distortion5a"><span class="std std-numref">图 5.106</span></a>， <a class="reference internal" href="#fig-dtc-deadtime-distortion5b"><span class="std std-numref">图 5.107</span></a>， <a class="reference internal" href="#fig-dtc-deadtime-distortion6a"><span class="std std-numref">图 5.108</span></a>，以及 <a class="reference internal" href="#fig-dtc-deadtime-distortion6b"><span class="std std-numref">图 5.109</span></a> 展示了同一 10 极电机和电流控制调谐在 1200 RPM 和 1800 RPM 下的情况。</p>
+<p>在这些速度下，六次谐波频率分别为 600 Hz 和 900 Hz。两者都低于电流控制带宽（本例中为 2031 Hz），但差距不大，结果是电流畸变增加。</p>
+<figure class="align-center" id="id16">
+<span id="fig-dtc-deadtime-distortion5a"></span><img alt="../_images/deadtime-4512-1200-voltage1.png" src="../_images/deadtime-4512-1200-voltage1.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.106 </span><span class="caption-text">不同死区下静止和同步坐标系中的电压图。</span><a class="headerlink" href="#id16" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id17">
+<span id="fig-dtc-deadtime-distortion5b"></span><img alt="../_images/deadtime-4512-1200-current.png" src="../_images/deadtime-4512-1200-current.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.107 </span><span class="caption-text">不同死区下静止和同步坐标系中的电流图。（参见 <a class="reference internal" href="#fig-dtc-deadtime-distortion4c"><span class="std std-numref">图 5.105</span></a> 了解此类图的更多信息。）</span><a class="headerlink" href="#id17" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id18">
+<span id="fig-dtc-deadtime-distortion6a"></span><img alt="../_images/deadtime-4512-1800-voltage1.png" src="../_images/deadtime-4512-1800-voltage1.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.108 </span><span class="caption-text">不同死区下静止和同步坐标系中的电压图。</span><a class="headerlink" href="#id18" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id19">
+<span id="fig-dtc-deadtime-distortion6b"></span><img alt="../_images/deadtime-4512-1800-current.png" src="../_images/deadtime-4512-1800-current.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.109 </span><span class="caption-text">不同死区下静止和同步坐标系中的电流图。（参见 <a class="reference internal" href="#fig-dtc-deadtime-distortion4c"><span class="std std-numref">图 5.105</span></a> 了解此类图的更多信息。）</span><a class="headerlink" href="#id19" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>中的直流电压偏移 <span class="math notranslate nohighlight">\(V_{dq}\)</span> visible in <a class="reference internal" href="#fig-dtc-deadtime-distortion5a"><span class="std std-numref">图 5.106</span></a> 和 <a class="reference internal" href="#fig-dtc-deadtime-distortion6a"><span class="std std-numref">图 5.108</span></a> （预测电压和测量电压之间的偏移）可能由以下三个效应引起：</p>
+<ul class="simple">
+<li><p>resistive voltage drop — <span class="math notranslate nohighlight">\(IR \approx\)</span> 沿 q 轴 0.19V</p></li>
+<li><p>inductive voltage drop — <span class="math notranslate nohighlight">\(I\omega_e L \approx\)</span> 1200 RPM 时 0.11V，1800 RPM 时 0.17V，沿 d 轴</p></li>
+<li><p>sample input-to-output delay — <span class="math notranslate nohighlight">\(\omega_e T_d\)</span> 用于 <span class="math notranslate nohighlight">\(T_d = 1.5T_s =\)</span> 75 μs 在 1200 RPM 时约 2.7°，1800 RPM 时约 4.1°。在 1200 RPM 时，沿 q 轴 6 V 信号旋转 2.7° 可预期 d 轴偏移约 0.28 V。在 1800 RPM 时，沿 q 轴 8.2 V 信号旋转 4.1°，可预期 d-axis shift of ≈ 0.58V</p></li>
+</ul>
+<p>总电压偏移与图中的值一致。</p>
+<section id="dead-time-distortion-with-low-bandwidth-current-controllers">
+<span id="dtc-distortion-ictrl-low-bandwidth"></span><h4><span class="section-number">5.7.4.1.1. </span>低带宽电流控制器下的死区畸变<a class="headerlink" href="#dead-time-distortion-with-low-bandwidth-current-controllers" title="本标题的永久链接">¶</a></h4>
+<p>我们可以对低带宽电流控制器进行类似的测量。 <a class="reference internal" href="#fig-dtc-deadtime-distortion7a"><span class="std std-numref">图 5.110</span></a> 和 <a class="reference internal" href="#fig-dtc-deadtime-distortion7b"><span class="std std-numref">图 5.111</span></a> 使用同一电机（Nidec Hurst DMA0204024B101），采用 motorBench<sup>®</sup> Development Suite 中的默认电流环调谐。在此调谐下，电流环带宽约为 235 Hz。这些测试显示在 240 RPM 下运行，平滑轻载约 0.5 A。</p>
+<figure class="align-center" id="id20">
+<span id="fig-dtc-deadtime-distortion7a"></span><img alt="../_images/deadtime-8045-240-voltage1.png" src="../_images/deadtime-8045-240-voltage1.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.110 </span><span class="caption-text">不同死区下静止和同步坐标系中的电压图。</span><a class="headerlink" href="#id20" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id21">
+<span id="fig-dtc-deadtime-distortion7b"></span><img alt="../_images/deadtime-8045-240-current.png" src="../_images/deadtime-8045-240-current.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.111 </span><span class="caption-text">不同死区下静止和同步坐标系中的电流图。（参见 <a class="reference internal" href="#fig-dtc-deadtime-distortion4c"><span class="std std-numref">图 5.105</span></a> 了解此类图的更多信息。）</span><a class="headerlink" href="#id21" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>即使在 20 Hz 的低电气频率下，电流畸变也更大；死区畸变频率 <span class="math notranslate nohighlight">\(6f_e =\)</span> 120Hz 约为电流环带宽的一半。</p>
+<p><a class="reference internal" href="#fig-dtc-deadtime-distortion8a"><span class="std std-numref">图 5.112</span></a> 和 <a class="reference internal" href="#fig-dtc-deadtime-distortion8b"><span class="std std-numref">图 5.113</span></a> 展示了 600 RPM（50 Hz 电气频率， <span class="math notranslate nohighlight">\(6f_e =\)</span> 300 Hz）下的运行，平滑轻载约 0.5 A。在此情况下，扰动频率高于电流环带宽，电流环几乎无法对死区畸变作出反应——注意同步坐标系中的电压输出在图中是相当紧密的簇点，而静止坐标系中几乎是圆形。</p>
+<figure class="align-center" id="id22">
+<span id="fig-dtc-deadtime-distortion8a"></span><img alt="../_images/deadtime-8045-600-voltage1.png" src="../_images/deadtime-8045-600-voltage1.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.112 </span><span class="caption-text">不同死区下静止和同步坐标系中的电压图。</span><a class="headerlink" href="#id22" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id23">
+<span id="fig-dtc-deadtime-distortion8b"></span><img alt="../_images/deadtime-8045-600-current.png" src="../_images/deadtime-8045-600-current.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.113 </span><span class="caption-text">不同死区下静止和同步坐标系中的电流图。（参见 <a class="reference internal" href="#fig-dtc-deadtime-distortion4c"><span class="std std-numref">图 5.105</span></a> 了解此类图的更多信息。）</span><a class="headerlink" href="#id23" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p><a class="reference internal" href="#fig-dtc-deadtime-distortion9a"><span class="std std-numref">图 5.114</span></a> 和 <a class="reference internal" href="#fig-dtc-deadtime-distortion9b"><span class="std std-numref">图 5.115</span></a> 展示了 1200 RPM（100 Hz 电气频率， <span class="math notranslate nohighlight">\(6f_e =\)</span> 600 Hz）下的运行，平滑轻载约 0.5 A。在此情况下，扰动频率更高于电流环带宽。同样，电流环几乎无法对死区畸变作出反应——注意静止坐标系中的电压输出几乎是圆形，同步坐标系中相当紧密，尽管有一些主要沿 d 轴的波动，这表明存在角度抖动，可能是由于转矩纹波引起的速度波动。</p>
+<figure class="align-center" id="id24">
+<span id="fig-dtc-deadtime-distortion9a"></span><img alt="../_images/deadtime-8045-1200-voltage1.png" src="../_images/deadtime-8045-1200-voltage1.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.114 </span><span class="caption-text">不同死区下静止和同步坐标系中的电压图。</span><a class="headerlink" href="#id24" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id25">
+<span id="fig-dtc-deadtime-distortion9b"></span><img alt="../_images/deadtime-8045-1200-current.png" src="../_images/deadtime-8045-1200-current.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.115 </span><span class="caption-text">不同死区下静止和同步坐标系中的电流图。（参见 <a class="reference internal" href="#fig-dtc-deadtime-distortion4c"><span class="std std-numref">图 5.105</span></a> 了解此类图的更多信息。）</span><a class="headerlink" href="#id25" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>有多种原因需要 <a class="reference internal" href="foc/tuning.html#algorithm-foc-tuning"><span class="std std-ref">以更激进的带宽调谐电流环</span></a>，改善死区畸变存在时的不良性能是其中之一。</p>
+</section>
+</section>
+<section id="dead-time-distortion-and-sensorless-estimation">
+<h3><span class="section-number">5.7.4.2. </span>死区畸变与无传感器估计<a class="headerlink" href="#dead-time-distortion-and-sensorless-estimation" title="本标题的永久链接">¶</a></h3>
+<p><a class="reference internal" href="estimators.html#algorithm-estimators"><span class="std std-ref">位置和速度估计器</span></a> 仅基于电压和电流测量的估计器对电压和电流误差敏感。它们通常试图估计反电动势电压矢量并跟踪其角度。由于死区畸变在电流控制器输出和电机端子上的实际电压之间引起电压误差，当反电动势电压低于死区畸变电压幅值 <span class="math notranslate nohighlight">\(\frac{4}{3}\delta_1 V_{dc}\)</span>。</p>
+<p>大多数无传感器估计器对 q 轴电压误差较不敏感（一旦估计器锁定，它们只影响估计反电动势矢量的幅值），而对 d 轴电压误差更敏感（它们扰动估计反电动势矢量的角度）。</p>
+<p> <a class="reference internal" href="pll.html#algorithm-pll"><span class="std std-ref">AN1292 PLL</span></a> 还依赖于估计反电动势的幅值，因此它可能比其他估计器对死区畸变更敏感。</p>
+<p>死区补偿可以通过修正死区畸变对估计反电动势的影响，改善无传感器估计器在低速下的性能。</p>
+</section>
+</section>
+<section id="id2">
+<h2><span class="section-number">5.7.5. </span>死区补偿<a class="headerlink" href="#id2" title="本标题的永久链接">¶</a></h2>
+<p>有三种主要方法可以减轻死区畸变，大致按优先级排序：</p>
+<ul class="simple">
+<li><p><strong>减小死区。</strong> 这可能通过精心的栅驱动设计和测试来实现。 <strong>注意：</strong> 不要仅基于在室温下测试一个电机驱动板样品就假定死区足够！尝试最小化死区同时仍保护免直通，需要对开关暂暂对温度、占空比、电流以及晶体管和栅驱动电路的器件间差异的敏感性有详细了解。</p></li>
+<li><p><strong>提高电流环带宽。</strong> 这本质上补偿了死区畸变，至少对于低于电流环带宽的电气频率如此。如上所述， <a class="reference internal" href="#dtc-distortion-ictrl-low-bandwidth"><span class="std std-ref">低带宽电流控制环无法抵消死区畸变的效应。</span></a></p></li>
+<li><p><strong>添加电压补偿。</strong> 尽管这是三种方法中最不理想的，但它可以潜在地减轻死区畸变的效应。</p></li>
+</ul>
+<section id="mcaf-per-phase-dead-time-compensation-algorithm">
+<span id="algorithm-dtc-perphase"></span><h3><span class="section-number">5.7.5.1. </span>MCAF 逐相死区补偿算法<a class="headerlink" href="#mcaf-per-phase-dead-time-compensation-algorithm" title="本标题的永久链接">¶</a></h3>
+<p>MCAF 中可用的电压补偿方法基于死区畸变电压的逐相估计，添加到 <a class="reference internal" href="../appendix/glossary.html#term-forward-path"><span class="xref std std-term">前向通道</span></a> 电流控制环的前向通道，以及位置和速度估计器的反馈通道。这被称为“逐相”方法，可以在 motorBench<sup>®</sup> Development Suite 的自定义页面中选择。</p>
+<p>死区补偿模块 <code class="docutils literal notranslate"><span class="pre">dtcomp</span></code> 如 <a class="reference internal" href="#fig-dtc-blockdiag"><span class="std std-numref">图 5.117</span></a>所示，上下文如 <a class="reference internal" href="#fig-dtc-blockdiag-context"><span class="std std-numref">图 5.116</span></a>所示。此模块的输入为相电流 <span class="math notranslate nohighlight">\(I_{abc}\)</span> 和占空比 <span class="math notranslate nohighlight">\(D_{abc2}\)</span> ，它们是 ZSM 模块的输出。</p>
+<figure class="svg-crop svg-crop-1050-90-600-480 align-center" id="id26">
+<span id="fig-dtc-blockdiag-context"></span><a class="reference external image-reference" href="../dataflow-diagram/dataflow-diagrams.html"><img alt="../_images/accret-bdiag.svg" src="../_images/accret-bdiag.svg" width="70%"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.116 </span><span class="caption-text">MCAF 中的死区补偿，在主 FOC 框图的上下文中。</span><a class="headerlink" href="#id26" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id27">
+<span id="fig-dtc-blockdiag"></span><a class="reference internal image-reference" href="../_images/dtcomp2.svg"><img alt="../_images/dtcomp2.svg" src="../_images/dtcomp2.svg" width="75%"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.117 </span><span class="caption-text">MCAF 中的逐相死区补偿。</span><a class="headerlink" href="#id27" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>死区补偿模块的上半部分，即 <a class="reference internal" href="#fig-dtc-blockdiag"><span class="std std-numref">图 5.117</span></a>中虚线上方部分，处理用于位置和速度估计器的反馈电压。占空比通过 Clarke 变换转换为静止（αβ）坐标系，然后延迟两个周期以匹配电流采样延迟（待补链接）。 Dead-time compensation vector <span class="math notranslate nohighlight">\(\Delta D_{\alpha\beta f}\)</span>，它是静止坐标系中的占空比矢量，被加到延迟匹配的占空比上，然后乘以直流母线电压 <span class="math notranslate nohighlight">\(V_{dc}\)</span> 以计算估计器反馈电压 <span class="math notranslate nohighlight">\(V_{\alpha\beta f}\)</span>。</p>
+<p>死区补偿模块的下半部分展示了死区补偿算法的核心，分为三个部分：</p>
+<ul class="simple">
+<li><p>计算估计单位扰动信号 <span class="math notranslate nohighlight">\(\hat{s}_{abc}\)</span></p></li>
+<li><p>计算反馈通道死区补偿矢量 <span class="math notranslate nohighlight">\(\Delta D_{\alpha\beta f} = D_{\mathrm{fb}}\hat{s}_{\alpha\beta}\)</span> 从估计单位扰动信号 <span class="math notranslate nohighlight">\(\hat{s}_{\alpha\beta}\)</span> 在静止坐标系中</p></li>
+<li><p>计算前向通道死区补偿矢量 <span class="math notranslate nohighlight">\(\Delta D_{abc} = D_{\mathrm{fwd}}\hat{s}_{abc}\)</span> 作为逐相集。</p></li>
+</ul>
+<p>逐相单位扰动信号的计算如 <a class="reference internal" href="#fig-dtc-blockdiag"><span class="std std-numref">图 5.117</span></a> 所示，使用饱和模块，线性增益为 <span class="math notranslate nohighlight">\(K = K_0/I_\delta\)</span> 对于选定的电流幅值 <span class="math notranslate nohighlight">\(I_\delta\)</span> 和固定缩放因子 <span class="math notranslate nohighlight">\(K_0\)</span>，限幅为 <span class="math notranslate nohighlight">\(\plusmn A = \plusmn 1\)</span>。</p>
+<p>这实际上计算了非线性函数 <span class="math notranslate nohighlight">\(f_{nl}(I/I_\delta)\)</span>, 如 公式 <a class="reference internal" href="#equation-dtcomp-mcaf-nlfunc">5.58</a> 并应用为 公式 <a class="reference internal" href="#equation-dtcomp-mcaf-sabc">5.59</a>。</p>
+<div class="math notranslate nohighlight" id="equation-dtcomp-mcaf-nlfunc">
+<span class="eqno">(5.58)<a class="headerlink" href="#equation-dtcomp-mcaf-nlfunc" title="本公式的永久链接">¶</a></span>\[\begin{split}f_{nl1}(u) = \begin{cases}
+   -1          &amp; u \le -1 \\
+   u &amp; |u| &lt; 1 \\
+   1         &amp; u \ge 1 \\
+\end{cases}\end{split}\]</div>
+<div class="math notranslate nohighlight" id="equation-dtcomp-mcaf-sabc">
+<span class="eqno">(5.59)<a class="headerlink" href="#equation-dtcomp-mcaf-sabc" title="本公式的永久链接">¶</a></span>\[\begin{split}\begin{aligned}
+\hat{s}_a &amp;= f_{nl1}(I_a / I_\delta) \\
+\hat{s}_b &amp;= f_{nl1}(I_b / I_\delta) \\
+\hat{s}_c &amp;= f_{nl1}(I_c / I_\delta)
+\end{aligned}\end{split}\]</div>
+</section>
+<section id="behavior-when-disabled">
+<h3><span class="section-number">5.7.5.2. </span>禁用时的行为<a class="headerlink" href="#behavior-when-disabled" title="本标题的永久链接">¶</a></h3>
+<p>如果在 motorBench<sup>®</sup> Development Suite 的自定义页面中选择了死区补偿的“无”变体，则 <a class="reference internal" href="#fig-dtc-blockdiag"><span class="std std-numref">图 5.117</span></a> 计算估计器反馈电压 <span class="math notranslate nohighlight">\(V_{\alpha\beta f}\)</span> 仍然执行，但补偿值 <span class="math notranslate nohighlight">\(\Delta D_{\alpha\beta f}\)</span> 和 <span class="math notranslate nohighlight">\(\Delta D_{abc}\)</span> 被设为零。</p>
+</section>
+<section id="choice-of-parameters">
+<h3><span class="section-number">5.7.5.3. </span>参数选择<a class="headerlink" href="#choice-of-parameters" title="本标题的永久链接">¶</a></h3>
+<p>三个参数均可调整：</p>
+<ul class="simple">
+<li><p>电流线性范围 <span class="math notranslate nohighlight">\(I_\delta\)</span> 作为满量程电流的比例</p></li>
+<li><p>前向通道增益 <span class="math notranslate nohighlight">\(\alpha_{\mathrm{fwd}} = D_{\mathrm{fwd}}/\delta_1\)</span></p></li>
+<li><p>反馈通道增益 <span class="math notranslate nohighlight">\(\alpha_{\mathrm{fb}} = D_{\mathrm{fb}}/\delta_1\)</span></p></li>
+</ul>
+<p>前向和反馈增益作为预期死区的比例来选择。</p>
+<p><strong>注意：</strong> 本节中的指南是初步的，基于目前可用的测试。未来的工作可能有助于改善此指南。</p>
+<section id="current-linearity-range">
+<span id="algorithm-dtc-current-linearity"></span><h4><span class="section-number">5.7.5.3.1. </span>电流线性范围<a class="headerlink" href="#current-linearity-range" title="本标题的永久链接">¶</a></h4>
+<p>使用 Nidec Hurst DMA0204024B101 电机和 dsPICDEM<sup>®</sup> MCLV-2 开发板的实验工作表明在以下范围内稳定性提高： <span class="math notranslate nohighlight">\(K \approx\)</span> 133 – 200，对应 <span class="math notranslate nohighlight">\(I_\delta = 0.01I_{fs}\)</span> = 0.044 A to <span class="math notranslate nohighlight">\(0.015I_{fs}\)</span> = 0.066 A.</p>
+</section>
+<section id="forward-path-gain">
+<span id="algorithm-dtc-gain-fwd"></span><h4><span class="section-number">5.7.5.3.2. </span>前向通道增益<a class="headerlink" href="#forward-path-gain" title="本标题的永久链接">¶</a></h4>
+<p>前向通道死区补偿并不特别成功。不建议在未对目标电机和负载进行详细测试以确定合适值的情况下使用非零前向通道增益。</p>
+<p>空载电机承受非常低的 q 轴电流，是减小死区畸变效应的困难对象。</p>
+<p>对于 Nidec Hurst DMA0204024B101 电机，仅 <span class="math notranslate nohighlight">\(\alpha_{\mathrm{fwd}} = 0.25\)</span> 的前向通道增益产生最小畸变；增益超过该点太多会导致畸变再次增加。</p>
+<p>对于加载约 0.5 A q 轴电流的电机，死区补偿更有效， <span class="math notranslate nohighlight">\(\alpha_{\mathrm{fwd}} = 0.625\)</span> 产生最小畸变。</p>
+</section>
+<section id="feedback-path-gain">
+<span id="algorithm-dtc-gain-fb"></span><h4><span class="section-number">5.7.5.3.3. </span>反馈通道增益<a class="headerlink" href="#feedback-path-gain" title="本标题的永久链接">¶</a></h4>
+<p>非零反馈通道增益成功改善了 <a class="reference internal" href="pll.html#algorithm-pll"><span class="std std-ref">AN1292 PLL</span></a> 在极低速下的估计器性能。 <span class="math notranslate nohighlight">\(\alpha_{\mathrm{fb}} = 0.5\)</span> 的值在多台测试电机上普遍成功，将最低运行速度降低了 2 到 4 倍。</p>
+<p>If <span class="math notranslate nohighlight">\(\alpha_{\mathrm{fb}}\)</span> 过高时，电机控制器倾向于“锁死”并施加满电流。（如果故意低估电机电阻几个百分点，此效应似乎会减小。）</p>
+<p>建议在 AN1292 PLL 中使用非零反馈通道增益，从 0.4 – 0.5 的增益开始。增益可以增加，但需仔细实验以避免“锁死”行为，以改善低速转矩性能。</p>
+</section>
+</section>
+<section id="experimental-results">
+<h3><span class="section-number">5.7.5.4. </span>实验结果<a class="headerlink" href="#experimental-results" title="本标题的永久链接">¶</a></h3>
+<p>一些显示反馈通道死区补偿改善效果的实验数据如下 <a class="reference internal" href="#fig-dtc-fbpath-data"><span class="std std-numref">图 5.118</span></a>。</p>
+<figure class="align-center" id="id28">
+<span id="fig-dtc-fbpath-data"></span><img alt="../_images/deadtime-fbpath-data.png" src="../_images/deadtime-fbpath-data.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.118 </span><span class="caption-text">MCAF 中的逐相死区补偿。</span><a class="headerlink" href="#id28" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>在此情况下，使用 Nidec Hurst DMA0204024B101 和 dsPICDEM<sup>®</sup> MCLV-2 开发板，展示在低速下可容忍负载电流的增加。电流环调谐为高带宽（≈ 2 kHz），速度环调谐为低带宽（≈ 1.8Hz），以允许缓慢变化的电流。<a class="reference internal" href="pll.html#algorithm-pll"><span class="std std-ref">AN1292 PLL</span></a> 估计器用于换相，正交编码器作为角度参考。</p>
+<p>在多种电机速度下运行，使用三个不同的 <span class="math notranslate nohighlight">\(\alpha_{\mathrm{fb}}\)</span>值，手动施加的负载转矩逐渐增加，直到编码器和估计器偏差超过 60° 电气角度。当换相误差接近 90° 电气角度时，转矩产生迅速下降，电机出现周期滑转 behavior.</p>
+<p><a class="reference internal" href="#fig-dtc-fbpath-data"><span class="std std-numref">图 5.118</span></a> 显示随着 <span class="math notranslate nohighlight">\(\alpha_{\textrm{fb}}\)</span> 的增加，在给定速度下接近周期滑转前电机电流增加。增加的电机电流意味着电机控制器可以施加更大的电流而换相角度误差更小，从而在低速下提供改善的转矩响应。</p>
+</section>
+<section id="implementation-notes">
+<h3><span class="section-number">5.7.5.5. </span>实现说明<a class="headerlink" href="#implementation-notes" title="本标题的永久链接">¶</a></h3>
+<p>在 R6 中添加。</p>
+<p>固定增益缩放因子 <span class="math notranslate nohighlight">\(K_0 = KI_\delta = 2\)</span> 因为在 MCAF 中，电流以两倍 ADC 满量程值的数值满量程表示，以留出设计裕量避免溢出。例如，在 dsPICDEM<sup>®</sup> MCLV-2 开发板上，满量程 ADC 电流为 4.4 A，但电流的数值满量程范围为 8.8 A。</p>
+</section>
+</section>
+<section id="references">
+<h2><span class="section-number">5.7.6. </span>参考文献<a class="headerlink" href="#references" title="本标题的永久链接">¶</a></h2>
+<aside class="footnote brackets" id="fn-dtcomp-sepe94" role="note">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>R. B. Sepe and J. H. Lang, <a class="reference external" href="https://ieeexplore.ieee.org/document/273622">“Inverter nonlinearities and discrete-time vector current control”</a>， <em>IEEE Transactions on Industry Applications</em>, vol. 30, no. 1, pp. 62-70, Jan/Feb 1994.</p>
+</aside>
+<aside class="footnote brackets" id="fn-dtcomp-pellegrino2010" role="note">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<p>G. Pellegrino, P. Guglielmi, E. Armando and R. I. Bojoi, <a class="reference external" href="https://ieeexplore.ieee.org/document/1413531">“Self-Commissioning Algorithm for Inverter Nonlinearity Compensation in Sensorless Induction Motor Drives”</a>, IEEE Transactions on Industry Applications, vol. 46, no. 4, pp. 1416-1424, Jul/Aug 2010.</p>
+</aside>
+<aside class="footnote brackets" id="fn-dtcomp-mannen2015" role="note">
+<span class="label"><span class="fn-bracket">[</span><a href="#id1" role="doc-backlink">3</a><span class="fn-bracket">]</span></span>
+<p>T. Mannen and H. Fujita, <a class="reference external" href="https://ieeexplore.ieee.org/document/6891395">“Dead-Time Compensation Method Based on Current Ripple Estimation”</a>, IEEE Transactions on Power Electronics, vol. 30, no. 7, pp. 4016-4024, Jul 2015.</p>
+</aside>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">5.7. 死区补偿</a><ul>
+<li><a class="reference internal" href="#overview">5.7.1. 概述</a></li>
+<li><a class="reference internal" href="#definition-and-origin-of-dead-time">5.7.2. 死区的定义和来源</a></li>
+<li><a class="reference internal" href="#dead-time-distortion">5.7.3. 死区畸变</a><ul>
+<li><a class="reference internal" href="#output-voltage-during-dead-time">5.7.3.1. 死区期间的输出电压</a></li>
+<li><a class="reference internal" href="#analysis-of-error-bounds">5.7.3.2. 误差边界分析</a></li>
+<li><a class="reference internal" href="#behavior-during-discontinuous-conduction">5.7.3.3. 断续导通期间的行为</a></li>
+<li><a class="reference internal" href="#dead-time-distortion-voltage-in-field-oriented-current-control">5.7.3.4. 矢量电流控制中的死区畸变电压</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#practical-effects-of-dead-time-distortion">5.7.4. 死区畸变的实际效应</a><ul>
+<li><a class="reference internal" href="#dead-time-distortion-and-field-oriented-current-control">5.7.4.1. 死区畸变与矢量电流控制</a><ul>
+<li><a class="reference internal" href="#dead-time-distortion-with-low-bandwidth-current-controllers">5.7.4.1.1. 低带宽电流控制器下的死区畸变</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dead-time-distortion-and-sensorless-estimation">5.7.4.2. 死区畸变与无传感器估计</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id2">5.7.5. 死区补偿</a><ul>
+<li><a class="reference internal" href="#mcaf-per-phase-dead-time-compensation-algorithm">5.7.5.1. MCAF 逐相死区补偿算法</a></li>
+<li><a class="reference internal" href="#behavior-when-disabled">5.7.5.2. 禁用时的行为</a></li>
+<li><a class="reference internal" href="#choice-of-parameters">5.7.5.3. 参数选择</a><ul>
+<li><a class="reference internal" href="#current-linearity-range">5.7.5.3.1. 电流线性范围</a></li>
+<li><a class="reference internal" href="#forward-path-gain">5.7.5.3.2. 前向通道增益</a></li>
+<li><a class="reference internal" href="#feedback-path-gain">5.7.5.3.3. 反馈通道增益</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#experimental-results">5.7.5.4. 实验结果</a></li>
+<li><a class="reference internal" href="#implementation-notes">5.7.5.5. 实现说明</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#references">5.7.6. 参考文献</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="dynlimit-simple.html" title="上一章"><span class="section-number">5.6.5.1. </span>简单动态电流限制</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="voltage-control.html" title="下一章"><span class="section-number">5.8. </span>电压控制</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="voltage-control.html" title="5.8. 电压控制">下一页</a> |</li>
+<li class="right">
+<a href="dynlimit-simple.html" title="5.6.5.1. 简单动态电流限制">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.7. </span>死区补偿</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

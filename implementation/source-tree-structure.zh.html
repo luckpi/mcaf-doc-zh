@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>6.1. 源代码树结构 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="codegen.zh.html" rel="next" title="6.2. Code Generation"/>
+<link href="index.zh.html" rel="prev" title="6. General Implementation Issues"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="codegen.zh.html" title="6.2. Code Generation">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="index.zh.html" title="6. General Implementation Issues">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.1. </span>源代码树结构</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="source-tree-structure">
+<span id="id1"></span><h1><span class="section-number">6.1. </span>源代码树结构<a class="headerlink" href="#source-tree-structure" title="本标题的永久链接">¶</a></h1>
+<p>MCAF 被组织为若干子目录。与 motorBench<sup>®</sup> Development Suite 一起使用时，这些目录生成在 MPLAB<sup>®</sup> X 项目目录下的 <code class="docutils literal notranslate"><span class="pre">motorBench/generated_code</span></code>。</p>
+<ul class="simple">
+<li><p>大多数模块位于顶层目录下。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hal</span></code> 包含 <a class="reference internal" href="../components/hal.zh.html#hal"><span class="std std-ref">硬件抽象层</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">parameters</span></code> 包含带有 <a class="reference internal" href="../architecture/config-params.zh.html#config-params"><span class="std std-ref">可配置参数的头文件</span></a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">library</span></code> 包含 <a class="reference external" href="http://www.microchip.com/design-centers/motor-control-and-drive/motor-control-library">电机控制库的库文件</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aux-files</span></code> 包含非 C 代码的辅助文件，例如由 motorBench 生成的报告文件<sup>®</sup> Development Suite.</p></li>
+</ul>
+<p>特定源代码文件的信息按模块名组织，位于 <a class="reference internal" href="../genindex.zh.html"><span class="std std-ref">index</span></a> 的“modules”条目下。（模块名即文件的基础名，忽略文件扩展名以及可能存在的尾部 <code class="docutils literal notranslate"><span class="pre">_types</span></code>：例如， <code class="docutils literal notranslate"><span class="pre">commutation.c</span></code>， <code class="docutils literal notranslate"><span class="pre">commutation.h</span></code>，以及 <code class="docutils literal notranslate"><span class="pre">commutation_types.h</span></code> 都属于 <code class="docutils literal notranslate"><span class="pre">commutation</span></code> 模块。）</p>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="index.zh.html" title="上一章"><span class="section-number">6. </span>通用实现问题</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="codegen.zh.html" title="下一章"><span class="section-number">6.2. </span>代码生成</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="codegen.zh.html" title="6.2. Code Generation">下一页</a> |</li>
+<li class="right">
+<a href="index.zh.html" title="6. General Implementation Issues">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.1. </span>源代码树结构</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

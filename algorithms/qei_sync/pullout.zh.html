@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.4.3.3.4. 失步转矩方法 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../../_static/rendermath.js"></script>
+<script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/svgcrop.js"></script>
+<script src="../../_static/mcaf-styling.js"></script>
+<link href="../../genindex.zh.html" rel="index" title="Index"/>
+<link href="../../search.zh.html" rel="search" title="Search"/>
+<link href="../atpll.zh.html" rel="next" title="5.4.4. Angle-tracking Phase-locked Loop (ATPLL)"/>
+<link href="align-sweep.zh.html" rel="prev" title="5.4.3.3.3. Align-and-sweep method"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="../atpll.zh.html" title="5.4.4. Angle-tracking Phase-locked Loop (ATPLL)">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="align-sweep.zh.html" title="5.4.3.3.3. Align-and-sweep method">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="../estimators.zh.html"><span class="section-number">5.4. </span>位置和速度估计</a> »</li>
+<li class="nav-item nav-item-3"><a accesskey="U" href="../qei.zh.html"><span class="section-number">5.4.3. </span>正交编码器支持</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4.3.3.4. </span>失步转矩方法</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="pullout-torque-method">
+<span id="qei-sync-pullout"></span><h1><span class="section-number">5.4.3.3.4. </span>失步转矩方法<a class="headerlink" href="#pullout-torque-method" title="本标题的永久链接">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">注意</p>
+<p>这是一个已弃用的功能，可能在即将发布的 MCAF 版本中被移除。</p>
+</div>
+<section id="overview">
+<h2><span class="section-number">5.4.3.3.4.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
+<p>启动时，当电机以开环方式旋转时，转子以未知角度滞后于电压矢量。这是因为电流大于满足负载转矩所需的电流。换句话说， <span class="math notranslate nohighlight">\(I_d\)</span> 电流存在非零分量。当电流幅值逐渐减小时， <span class="math notranslate nohighlight">\(I_d\)</span> 的值自动趋向零，而 <span class="math notranslate nohighlight">\(I_q\)</span> 保持不变，直到达到失步转矩角度。失步瞬间 QEI 位置计数器的原始读数对应于 <span class="math notranslate nohighlight">\(\pi/2\)</span> 加上取决于旋转方向的滞后于电压矢量的小负载角。此读数在方程 <a class="reference internal" href="#equation-eqn-pullout-1">5.28</a>中称为“失步位置”。转子偏移计算为</p>
+<div class="math notranslate nohighlight" id="equation-eqn-pullout-1">
+<span class="eqno">(5.28)<a class="headerlink" href="#equation-eqn-pullout-1" title="本公式的永久链接">¶</a></span>\[\operatorname{rotor\ offset} = \tan^{-1} V_{\alpha\beta} - \operatorname{pullout\ position} - \pi/2 - \operatorname{load\ angle}.\]</div>
+<p>负载角可忽略，因为在无负载和低速时电流非常小（<span class="math notranslate nohighlight">\(I_d=0\)</span> 失步时）。</p>
+<p>因此此方法的关键因素是 <span class="math notranslate nohighlight">\(T_{fr}/J\)</span> 机械参数的值必须足够高，以使电机在大约几秒内无外力协助下达到静止。如果需要多秒，应探索其他方法。</p>
+<p>启动 <a class="reference internal" href="../startup.zh.html#algorithm-startup"><span class="std std-ref">序列</span></a> 的“SPIN”状态（转子已加速到开环最大速度）被用于允许合适的稳定时间以达到机械平衡，在此时间结束时，电流 <span class="math notranslate nohighlight">\(I_q\)</span> 被减小到失步点，此时计算失步位置，即施加的换相角度（<span class="math notranslate nohighlight">\(\tan^{-1} V_{\alpha\beta}\)</span>）与原始编码器脈冲数之差。一旦转子偏移被计算出，运行时的实际转子位置计算为</p>
+<div class="math notranslate nohighlight" id="equation-algorithms-qei-sync-pullout-0">
+<span class="eqno">(5.29)<a class="headerlink" href="#equation-algorithms-qei-sync-pullout-0" title="本公式的永久链接">¶</a></span>\[\operatorname{actual\ rotor\ position} =  \operatorname{raw\ position} + \operatorname{rotor\ offset}.\]</div>
+</section>
+<section id="limitations">
+<h2><span class="section-number">5.4.3.3.4.2. </span>局限性<a class="headerlink" href="#limitations" title="本标题的永久链接">¶</a></h2>
+<p>当转子接近相对于换相角度的失步偏移时，电磁转矩仅够平衡负载转矩。任何轻微扰动或齿槽效应都可能导致电机停转且无法恢复。这要求在测量期间转子不受任何转矩扰动。然而，此方法对稳定的摩擦或黏性转矩具有鲁棒性。</p>
+<p>此偏移测量方法存在一些缺点。高惯性电机在 <span class="math notranslate nohighlight">\(I_d\)</span> 趋近零时不会显示速度的快速变化。由于固件寻找此相对角位的异常增长率，高惯性电机会有更大的误差。此方法依赖逐渐减小电流和多次重试以准确检测失步，消耗大量时间。失步方法通常需要 30–45 秒完成。</p>
+<p>齿槽转矩效应、传感器有限分辨率和较低的旋转速度都可能导致电压矢量与 QEI 位置计数器之间的相对角度突变，这给滤波软件带来挑战。</p>
+</section>
+<section id="practical-implementation-issues">
+<h2><span class="section-number">5.4.3.3.4.3. </span>实际实现问题<a class="headerlink" href="#practical-implementation-issues" title="本标题的永久链接">¶</a></h2>
+<p>失步滑差阈值的选择是为了将广范围电机的绝对误差保持在限制内。对于低惯性电机，误差偏正；对于高惯性电机，误差偏负。未来的实现可以将用于检测失步的速度阈值配置为与电机相匹配，这将在大多数情况下进一步减小绝对误差。</p>
+<p>完成测量所需的时间基于 4 次试验，这使测量时间较长。对于低分辨率编码器，需要更多次试验才能达到相同精度。例如，对于 250 线编码器，8 次重试的结果更好。</p>
+<p>由于重试必须在电机实际停转之前开始，失步点只是被逼近而从未真正达到，这使得此方法始终存在一些小的非零误差。</p>
+</section>
+<section id="example-data">
+<h2><span class="section-number">5.4.3.3.4.4. </span>示例数据<a class="headerlink" href="#example-data" title="本标题的永久链接">¶</a></h2>
+<p>测试在 4 个不同的配有编码器和索引的电机上进行。索引仅用于计算测量偏移与预计算偏移之间的差值。此值仅用于测试目的。</p>
+<p><a class="reference internal" href="#fig-qei-pullout1"><span class="std std-numref">图 5.67</span></a> 展示了失步方法在 Anaheim Automation BLWS232D-24V-1350-1024SI5 上的使用，该电机具有 1024 线编码器和较低的齿槽转矩。对于此电机，失步方法效果很好，误差低。黄色高亮部分显示速度上升状态（速度未显示），一旦速度在“SPIN”状态中稳定， <span class="math notranslate nohighlight">\(I_q\)</span> 电流被减小直到达到失步转矩角度的最大值。在第一次迭代中，电流减小速率较高，主要是为了达到失步点附近。后续迭代将以大大降低的速率重复相同的过程以获得更好的精度。图中显示了 4 次额外的重试，其结果取平均以获得换相偏移。注意 <span class="math notranslate nohighlight">\(\Delta \theta _e\)</span> 在每个图中的重试阶段后“SPIN”状态完成时接近 0。</p>
+<figure class="align-center" id="id1">
+<span id="fig-qei-pullout1"></span><img alt="../../_images/pullout-blws232d_24V.png" src="../../_images/pullout-blws232d_24V.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.67 </span><span class="caption-text">失步方法（BLWS232D-24V-1350-1024SI5）</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p><a class="reference internal" href="#fig-qei-pullout2"><span class="std std-numref">图 5.68</span></a> 展示了失步方法在 Anaheim Automation BLY342D-24V-3200-1024SI5 上的使用，该电机具有 1024 线编码器和显著的齿槽转矩。</p>
+<figure class="align-center" id="id2">
+<span id="fig-qei-pullout2"></span><img alt="../../_images/pullout-bly342d_24V.png" src="../../_images/pullout-bly342d_24V.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.68 </span><span class="caption-text">失步方法（BLY342D-24V-3000-1024SI5）</span><a class="headerlink" href="#id2" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p><a class="reference internal" href="#fig-qei-pullout3"><span class="std std-numref">图 5.69</span></a> 展示了失步方法在 Anaheim Automation BLY171D-24V-4000 上的使用，该电机具有 4096 线编码器和几乎没有齿槽转矩。</p>
+<figure class="align-center" id="id3">
+<span id="fig-qei-pullout3"></span><img alt="../../_images/pullout-bly171d_24V.png" src="../../_images/pullout-bly171d_24V.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.69 </span><span class="caption-text">失步方法（BLY171D-24V-4000）</span><a class="headerlink" href="#id3" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>在此情况下，由于惯性较小，默认的滑差阈值导致失步检测滑或超过实际失步点。这导致误差具有相反的符号（参见 <a class="reference internal" href="#table-qei-sync-pullout-accuracy"><span class="std std-numref">表 5.4</span></a>），与滑差阈值最佳的其他电机相比。此电机是需要更大滑差阈值的示例。</p>
+</section>
+<section id="accuracy-and-repeatability-tests">
+<h2><span class="section-number">5.4.3.3.4.5. </span>精度和可重复性测试<a class="headerlink" href="#accuracy-and-repeatability-tests" title="本标题的永久链接">¶</a></h2>
+<p>失步方法在 MCAF R4 中进行了测试，并将从索引获得的换相偏移（<code class="docutils literal notranslate"><span class="pre">motor.estimator.qei.position.commutationOffsetFromIndex</span></code>）与参考方法进行了比较，参考方法是在电机以恒定速度机械转动时测量电机端子的开路电压。</p>
+<p><a class="reference internal" href="#table-qei-sync-pullout-accuracy"><span class="std std-numref">表 5.4</span></a> 描述了结果。在每种情况下，失步方法进行了 8 次迭代。每个电机在两个方向上进行了测试，以 CW 和 CCW 后缀表示。所有电机均使用默认的滑差阈值进行测试。</p>
+<table class="docutils align-center" id="table-qei-sync-pullout-accuracy">
+<caption><span class="caption-number">表 5.4 </span><span class="caption-text">失步方法的精度和可重复性指标</span><a class="headerlink" href="#table-qei-sync-pullout-accuracy" title="本表格的永久链接">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>均值 <span class="math notranslate nohighlight">\(\tilde\theta_{\mathrm{ofs}}\)</span></p></th>
+<th class="head"><p>最大值 <span class="math notranslate nohighlight">\(\tilde\theta_{\mathrm{ofs}}\)</span></p></th>
+<th class="head"><p>标准差 <span class="math notranslate nohighlight">\(\hat\theta_{\mathrm{ofs}}\)</span></p></th>
+<th class="head"><p>极差 <span class="math notranslate nohighlight">\(\hat\theta_{\mathrm{ofs}}\)</span></p></th>
+<th class="head"><p>测试用例</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-0.15°</p></td>
+<td><p>0.20°</p></td>
+<td><p>0.03°</p></td>
+<td><p>0.09°</p></td>
+<td><p>BLWS232D-24V-1350_CW-1024SI5</p></td>
+</tr>
+<tr class="row-odd"><td><p>0.43°</p></td>
+<td><p>0.47°</p></td>
+<td><p>0.03°</p></td>
+<td><p>0.10°</p></td>
+<td><p>BLWS232D-24V-1350_CCW-1024SI5</p></td>
+</tr>
+<tr class="row-even"><td><p>4.68°</p></td>
+<td><p>4.87°</p></td>
+<td><p>0.19°</p></td>
+<td><p>0.52°</p></td>
+<td><p>BLY171D-24V-4000_CW 配 4096 线编码器</p></td>
+</tr>
+<tr class="row-odd"><td><p>-4.52°</p></td>
+<td><p>4.67°</p></td>
+<td><p>0.13°</p></td>
+<td><p>0.29°</p></td>
+<td><p>BLY171D-24V-4000_CCW 配 4096 线编码器</p></td>
+</tr>
+<tr class="row-even"><td><p>-1.05°</p></td>
+<td><p>1.24°</p></td>
+<td><p>0.09°</p></td>
+<td><p>0.30°</p></td>
+<td><p>BLY342D-24V-3000_CW-1024SI5</p></td>
+</tr>
+<tr class="row-odd"><td><p>0.77°</p></td>
+<td><p>0.89°</p></td>
+<td><p>0.23°</p></td>
+<td><p>0.72°</p></td>
+<td><p>BLY342D-24V-3000_CCW-1024SI5</p></td>
+</tr>
+<tr class="row-even"><td><p>-1.03°</p></td>
+<td><p>1.11°</p></td>
+<td><p>0.04°</p></td>
+<td><p>0.12°</p></td>
+<td><p>BLY342D-48V-3200_CW-1024SI5</p></td>
+</tr>
+<tr class="row-odd"><td><p>1.04°</p></td>
+<td><p>1.12°</p></td>
+<td><p>0.06°</p></td>
+<td><p>0.20°</p></td>
+<td><p>BLY342D-48V-3200_CCW-1024SI5</p></td>
+</tr>
+</tbody>
+</table>
+<p>误差指标如下：</p>
+<ul class="simple">
+<li><p>均值 <span class="math notranslate nohighlight">\(\tilde\theta_{\mathrm{ofs}}\)</span> — 失步方法与参考方法之间换相偏移差值的均值</p></li>
+<li><p>最大值 <span class="math notranslate nohighlight">\(\tilde\theta_{\mathrm{ofs}}\)</span> — 失步方法与参考方法之间换相偏移差值的最大值</p></li>
+<li><p>标准差 <span class="math notranslate nohighlight">\(\hat\theta_{\mathrm{ofs}}\)</span> — 失步方法估计的换相偏移的标准差</p></li>
+<li><p>极差 <span class="math notranslate nohighlight">\(\hat\theta_{\mathrm{ofs}}\)</span> — 失步方法估计的换相偏移的最小值与最大值之差</p></li>
+</ul>
+<p>低惯性电机，如 BLY171D-24V-4000，可以从更高的滑差阈值中受益以获得更好的精度。请参阅关于 <a class="reference internal" href="../../implementation/ui-customization.zh.html#customize-encoder-qei-sync-pullout-pullout-slip"><span class="std std-ref">失步滑差阈值</span></a> 的参数自定义说明了解更多信息。</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">5.4.3.3.4. 失步转矩方法</a><ul>
+<li><a class="reference internal" href="#overview">5.4.3.3.4.1. 概述</a></li>
+<li><a class="reference internal" href="#limitations">5.4.3.3.4.2. 局限性</a></li>
+<li><a class="reference internal" href="#practical-implementation-issues">5.4.3.3.4.3. 实际实现问题</a></li>
+<li><a class="reference internal" href="#example-data">5.4.3.3.4.4. 示例数据</a></li>
+<li><a class="reference internal" href="#accuracy-and-repeatability-tests">5.4.3.3.4.5. 精度和可重复性测试</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="align-sweep.zh.html" title="上一章"><span class="section-number">5.4.3.3.3. </span>对齐并扫描方法</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="../atpll.zh.html" title="下一章"><span class="section-number">5.4.4. </span>角度跟踪锁相环（ATPLL）</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="../atpll.zh.html" title="5.4.4. Angle-tracking Phase-locked Loop (ATPLL)">下一页</a> |</li>
+<li class="right">
+<a href="align-sweep.zh.html" title="5.4.3.3.3. Align-and-sweep method">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="../estimators.zh.html"><span class="section-number">5.4. </span>位置和速度估计</a> »</li>
+<li class="nav-item nav-item-3"><a href="../qei.zh.html"><span class="section-number">5.4.3. </span>正交编码器支持</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4.3.3.4. </span>失步转矩方法</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../../_static/lang-switch.js"></script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.4.3.3.2. 对齐方法 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../../_static/rendermath.js"></script>
+<script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/svgcrop.js"></script>
+<script src="../../_static/mcaf-styling.js"></script>
+<link href="../../genindex.zh.html" rel="index" title="Index"/>
+<link href="../../search.zh.html" rel="search" title="Search"/>
+<link href="align-sweep.zh.html" rel="next" title="5.4.3.3.3. Align-and-sweep method"/>
+<link href="common.zh.html" rel="prev" title="5.4.3.3.1. Implementation issues common to all methods"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="align-sweep.zh.html" title="5.4.3.3.3. Align-and-sweep method">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="common.zh.html" title="5.4.3.3.1. Implementation issues common to all methods">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="../estimators.zh.html"><span class="section-number">5.4. </span>位置和速度估计</a> »</li>
+<li class="nav-item nav-item-3"><a accesskey="U" href="../qei.zh.html"><span class="section-number">5.4.3. </span>正交编码器支持</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4.3.3.2. </span>对齐方法</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<span class="target" id="qei-sync-align"></span><section id="align-method">
+<span id="index-0"></span><h1><span class="section-number">5.4.3.3.2. </span>对齐方法<a class="headerlink" href="#align-method" title="本标题的永久链接">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">5.4.3.3.2.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
+<p>在无负载转矩（齿槽、摩擦、扰动）的情况下，如果施加固定的 αβ 坐标系定子电流矢量，电机将沿 d 轴对齐，因为这到达了电磁转矩为零的平衡点。</p>
+<p>反电动势同步的对齐方法利用此原理，提供了一种简单且通常可靠的方法来获取换相偏移，对于许多电机精度在几个电角度以内。</p>
+<p>然而，此方法存在一些微妙之处，特别是在用于具有显著齿槽转矩的电机时。</p>
+<p>如果使用对齐方法时存在负载转矩，电机将到达一个带有电气角度偏移 <span class="math notranslate nohighlight">\(\tilde{\theta}\)</span> 偏离 d 轴的平衡点，使得 <span class="math notranslate nohighlight">\(T_{\mathrm{load}} + \frac{3}{2}K_eI\sin\tilde{\theta} = 0\)</span>，换句话说， <span class="math notranslate nohighlight">\(\tilde{\theta} = -\sin^{-1}\dfrac{T_{\mathrm{load}}}{\frac{3}{2}K_eI}\)</span>。低成本电机的齿槽/凹槽转矩可能在连续额定转矩的 5%–10% 范围内，加上 1%–3% 的摩擦，因此如果使用等于连续额定电流的电流 I，我们应预期大约 <span class="math notranslate nohighlight">\(\tilde{\theta} = \sin^{-1} 0.13 \approx 7.5^{\circ}\)</span> 的最坏情况误差。超大型电机，即驱动器无法提供足以达到连续额定转矩的电流的电机，将有更大的误差。（例如：如果总负载转矩为 13% 连续额定转矩，驱动器可以提供 50% 连续额定转矩，则预期 arcsin(13/50) ≈ 15.1° 的最坏情况误差。）</p>
+<p>启动 <a class="reference internal" href="../startup.zh.html#startup-sequence"><span class="std std-ref">序列</span></a>的“对齐”状态（电流矢量幅值和角度固定）被用于允许合适的稳定时间以达到机械平衡，在此时间结束时，计算施加的换相角度与编码器脈冲数之间的差值，用于获取换相偏移。</p>
+</section>
+<section id="limitations">
+<span id="qei-sync-align-limitations"></span><h2><span class="section-number">5.4.3.3.2.2. </span>局限性<a class="headerlink" href="#limitations" title="本标题的永久链接">¶</a></h2>
+<ul class="simple">
+<li><p>连续转矩扰动可能阻止机械平衡</p></li>
+<li><p>存在一个半稳定平衡点（局部稳定，全局不稳定）在 <span class="math notranslate nohighlight">\(\tilde\theta = 180^\circ\)</span> 附近，齿槽转矩将转子拉向特定的凹槽位置，电磁转矩足够小，除非施加不同的换相角度，否则无法将转子从凹槽中拉出。</p></li>
+</ul>
+</section>
+<section id="practical-implementation-issues">
+<h2><span class="section-number">5.4.3.3.2.3. </span>实际实现问题<a class="headerlink" href="#practical-implementation-issues" title="本标题的永久链接">¶</a></h2>
+<ul>
+<li><p>启动序列中 rampup 和 align 状态使用的角度很重要，特别是角度偏移：可以在 rampup 和 align 状态期间施加不同的换相角度，以提高对齐方法克服转矩凵槽的能力，避免卡在半稳定平衡点。</p>
+<p>关于角度偏移的更深入讨论见下文 <a class="reference internal" href="#qei-sync-align-example-data"><span class="std std-ref">示例数据部分</span></a>。</p>
+</li>
+<li><p>MCAF 在对齐阶段沿 q 轴而非 d 轴施加电流，因此估计的换相偏移与对齐阶段结束时施加的换相电气角度与测量的编码器电气角度之间的角度差存在 <span class="math notranslate nohighlight">\(\pm 90^\circ\)</span> 偏移。此 <span class="math notranslate nohighlight">\(\pm 90^\circ\)</span> 偏移的符号取决于使用的 q 轴电流的符号。（当电机反方向启动时，启动过程中施加负 q 轴电流。）换句话说， <span class="math notranslate nohighlight">\(\hat\theta_{\mathrm{ofs}} = (\theta_{\mathrm{enc}} - \theta_{e}) + 90^\circ \operatorname{sgn} I_q\)</span> 其中角度下标 <em>ofs</em>， <em>enc</em> 和 <em>e</em> 分别指换相偏移、编码器角度（电气单位）和强制电气角度。</p></li>
+</ul>
+</section>
+<section id="example-data">
+<span id="qei-sync-align-example-data"></span><h2><span class="section-number">5.4.3.3.2.4. </span>示例数据<a class="headerlink" href="#example-data" title="本标题的永久链接">¶</a></h2>
+<p><a class="reference internal" href="#fig-qei-align1"><span class="std std-numref">图 5.58</span></a> 展示了对齐方法在 Anaheim Automation BLWS232D-24V-1350-1024SI5 上的使用，该电机具有 1024 线编码器和较低的齿槽转矩。对于此电机，对齐方法效果很好，误差低。黄色高亮部分显示电流上升状态（电流未显示），施加的电气角度为 <span class="math notranslate nohighlight">\(\theta_0 = 0^\circ\)</span>，绿色高亮部分显示对齐状态，施加的电气角度为 <span class="math notranslate nohighlight">\(\theta_1 = 30^\circ\)</span>。电机大约需要 0.15 秒达到平衡，因此 0.5 秒的对齐时间留有充分的时间达到 120° 的编码器角度，即领先施加的电气角度 90°。</p>
+<figure class="align-center" id="id1">
+<span id="fig-qei-align1"></span><img alt="../../_images/2118-in-action-blws232d.png" src="../../_images/2118-in-action-blws232d.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.58 </span><span class="caption-text">对齐方法（BLWS232D-24V-1350-1024SI5， <span class="math notranslate nohighlight">\(\theta_0 = 0^\circ, \theta_1 = 30^\circ\)</span></span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>本节剩余的图展示了对齐方法在 Anaheim Automation BLY342D-48V-3200-1024SI5 上的使用。该电机具有显著的齿槽转矩，因此对齐方法的成功取决于初始条件和启动角度的选择。 <a class="reference internal" href="#fig-qei-align2"><span class="std std-numref">图 5.59</span></a> 展示了此电机启动时的情况，rampup 和 align 状态时施加的电气角度均为 0°： <span class="math notranslate nohighlight">\(\theta_0 = \theta_1 = 0^\circ\)</span>。在此情况下，电机的初始角度 <span class="math notranslate nohighlight">\(\theta_{\mathrm{init}}\)</span> 距平衡点约 65°，瞬变很快稳定下来。</p>
+<figure class="align-center" id="id2">
+<span id="fig-qei-align2"></span><img alt="../../_images/2118-in-action-bly342d-48v-3200-1.png" src="../../_images/2118-in-action-bly342d-48v-3200-1.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.59 </span><span class="caption-text">对齐方法（BLY342D-48V-3200-1024SI5， <span class="math notranslate nohighlight">\(\theta_0 = \theta_1 = 0^\circ, \theta_{\mathrm{init}}\approx 155^\circ\)</span></span><a class="headerlink" href="#id2" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>当转子的初始位置大约距平衡点 180° 时，转子可能会卡在半稳定平衡的凵槽中。 <a class="reference internal" href="#fig-qei-align3"><span class="std std-numref">图 5.60</span></a> 展示了这样一种情况，转子最终达到了正确的平衡，但瞬变过程长得多。</p>
+<figure class="align-center" id="id3">
+<span id="fig-qei-align3"></span><img alt="../../_images/2118-in-action-bly342d-48v-3200-3.png" src="../../_images/2118-in-action-bly342d-48v-3200-3.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.60 </span><span class="caption-text">对齐方法（BLY342D-48V-3200-1024SI5， <span class="math notranslate nohighlight">\(\theta_0 = \theta_1 = 0^\circ, \theta_{\mathrm{init}}\approx 275^\circ\)</span></span><a class="headerlink" href="#id3" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p><a class="reference internal" href="#fig-qei-align4"><span class="std std-numref">图 5.61</span></a> 展示了几乎相同的起始角度，但这次卡在了半稳定平衡中。注意，在以绿色高亮的对齐阶段，转子角度未有显著移动，仍约领先施加的电气角度 270°，而在成功的对齐方法中，它应达到领先施加的电气角度 90° 的平衡。在这种情况下，计算的换相偏移将偏差 180°，导致反方向转动而非正方向。</p>
+<figure class="align-center" id="id4">
+<span id="fig-qei-align4"></span><img alt="../../_images/2118-in-action-bly342d-48v-3200-2.png" src="../../_images/2118-in-action-bly342d-48v-3200-2.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.61 </span><span class="caption-text">对齐方法（BLY342D-48V-3200-1024SI5， <span class="math notranslate nohighlight">\(\theta_0 = \theta_1 = 0^\circ, \theta_{\mathrm{init}}\approx 275^\circ\)</span>，这展示了转子卡在其初始条件附近的半稳定平衡中的情况。</span><a class="headerlink" href="#id4" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>使用角度偏移可以避免这种情况。</p>
+<p><a class="reference internal" href="#fig-qei-align5"><span class="std std-numref">图 5.62</span></a> 展示了类似的初始条件，但对齐阶段施加的角度偏移了 30°。这里 rampup 阶段仍卡在半稳定平衡中，但对齐阶段能够逃凵凵槽并达到预定位置。</p>
+<figure class="align-center" id="id5">
+<span id="fig-qei-align5"></span><img alt="../../_images/2118-in-action-bly342d-48v-3200-4.png" src="../../_images/2118-in-action-bly342d-48v-3200-4.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.62 </span><span class="caption-text">对齐方法（BLY342D-48V-3200-1024SI5， <span class="math notranslate nohighlight">\(\theta_0 = 0^\circ, \theta_1 = 30^\circ, \theta_{\mathrm{init}}\approx 275^\circ\)</span>。</span><a class="headerlink" href="#id5" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p><a class="reference internal" href="#fig-qei-align5"><span class="std std-numref">图 5.62</span></a> 展示了类似的初始条件，对齐阶段施加的角度为 0°，但 rampup 阶段为 330°。在这种情况下，rampup 阶段提供了足够的转矩给电机一个冲击，避免卡在平衡中。</p>
+<figure class="align-center" id="id6">
+<span id="fig-qei-align6"></span><img alt="../../_images/2118-in-action-bly342d-48v-3200-5.png" src="../../_images/2118-in-action-bly342d-48v-3200-5.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.63 </span><span class="caption-text">对齐方法（BLY342D-48V-3200-1024SI5， <span class="math notranslate nohighlight">\(\theta_0 = 330^\circ, \theta_1 = 0^\circ, \theta_{\mathrm{init}}\approx 275^\circ\)</span>。</span><a class="headerlink" href="#id6" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>这种添加角度偏移的技术并非万无一失，但似乎相当鲁棒。对几种高齿槽转矩电机的测试表明，30°–60° 范围内的角度偏移能够成功对齐。</p>
+</section>
+<section id="accuracy-and-repeatability-tests">
+<h2><span class="section-number">5.4.3.3.2.5. </span>精度和可重复性测试<a class="headerlink" href="#accuracy-and-repeatability-tests" title="本标题的永久链接">¶</a></h2>
+<p>对齐方法在 MCAF R4 中进行了测试，并将从索引获得的换相偏移（<code class="docutils literal notranslate"><span class="pre">motor.estimator.qei.position.commutationOffsetFromIndex</span></code>）与参考方法进行了比较，参考方法是在电机以恒定速度机械转动时测量电机端子的开路电压。</p>
+<p><a class="reference internal" href="#table-qei-sync-align-accuracy"><span class="std std-numref">表 5.2</span></a> 描述了结果。在每种情况下，对齐方法进行了 64 次迭代，初始条件为跨越一个电气周期的均匀间距角度。除另有说明外，对齐方法的设置为默认值 <span class="math notranslate nohighlight">\(\theta_0 = 330^\circ\)</span> （rampup 状态）和 <span class="math notranslate nohighlight">\(\theta_1 = 0^\circ\)</span> （align 状态，角度偏移 30°）。每个电机使用 dsPICDEM<sup>®</sup> MCLV-2 开发板，默认电流限制为 2.29A，默认启动电流为电流限制的 91% = 2.08A。</p>
+<table class="docutils align-default" id="table-qei-sync-align-accuracy">
+<caption><span class="caption-number">表 5.2 </span><span class="caption-text">对齐方法的精度和可重复性指标</span><a class="headerlink" href="#table-qei-sync-align-accuracy" title="本表格的永久链接">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>均值 <span class="math notranslate nohighlight">\(\tilde\theta_{\mathrm{ofs}}\)</span></p></th>
+<th class="head"><p>最大值 <span class="math notranslate nohighlight">\(\tilde\theta_{\mathrm{ofs}}\)</span></p></th>
+<th class="head"><p>标准差 <span class="math notranslate nohighlight">\(\hat\theta_{\mathrm{ofs}}\)</span></p></th>
+<th class="head"><p>极差 <span class="math notranslate nohighlight">\(\hat\theta_{\mathrm{ofs}}\)</span></p></th>
+<th class="head"><p>测试用例</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0.39°</p></td>
+<td><p>0.43°</p></td>
+<td><p>0.07°</p></td>
+<td><p>0.18°</p></td>
+<td><p>BLWS232D-24V-1350-1024SI5</p></td>
+</tr>
+<tr class="row-odd"><td><p>1.00°</p></td>
+<td><p>1.50°</p></td>
+<td><p>0.28°</p></td>
+<td><p>0.97°</p></td>
+<td><p>BLY171D-24V-4000 配 4096 线编码器</p></td>
+</tr>
+<tr class="row-even"><td><p>15.44°</p></td>
+<td><p>189.35°</p></td>
+<td><p>54.47°</p></td>
+<td><p>352.62°</p></td>
+<td><p>BLY342D-24V-3000-1024SI5, 30° angle shift</p></td>
+</tr>
+<tr class="row-odd"><td><p>3.68°</p></td>
+<td><p>4.43°</p></td>
+<td><p>0.44°</p></td>
+<td><p>2.46°</p></td>
+<td><p>BLY342D-24V-3000-1024SI5, 60° angle shift</p></td>
+</tr>
+<tr class="row-even"><td><p>3.44°</p></td>
+<td><p>3.91°</p></td>
+<td><p>0.42°</p></td>
+<td><p>1.41°</p></td>
+<td><p>BLY342D-48V-3200-1024SI5</p></td>
+</tr>
+</tbody>
+</table>
+<p>误差指标如下：</p>
+<ul class="simple">
+<li><p>均值 <span class="math notranslate nohighlight">\(\tilde\theta_{\mathrm{ofs}}\)</span> — 对齐方法与参考方法之间换相偏移差值的均值</p></li>
+<li><p>最大值 <span class="math notranslate nohighlight">\(\tilde\theta_{\mathrm{ofs}}\)</span> — 对齐方法与参考方法之间换相偏移差值的最大值</p></li>
+<li><p>标准差 <span class="math notranslate nohighlight">\(\hat\theta_{\mathrm{ofs}}\)</span> — 对齐方法估计的换相偏移的标准差</p></li>
+<li><p>极差 <span class="math notranslate nohighlight">\(\hat\theta_{\mathrm{ofs}}\)</span> — 对齐方法估计的换相偏移的最小值与最大值之差</p></li>
+</ul>
+<p>BLY342D-24V-3000-1024SI5 需要更大的角度偏移（60°）才能可靠工作。使用默认值 30° 时，接近 180° 平衡点的初始条件会导致电机卡在半稳定平衡中。这在 BLY342D-24V-3000 上比 BLY342D-48V-3200 更为严重；两个电机使用相同的叠片和转子，但绕组方式不同，BLY342D-24V-3000 具有更高的额定电流和更低的 <span class="math notranslate nohighlight">\(K_e\)</span>值，因此 2.08A 在对齐阶段无法产生同样大的转矩。</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">5.4.3.3.2. 对齐方法</a><ul>
+<li><a class="reference internal" href="#overview">5.4.3.3.2.1. 概述</a></li>
+<li><a class="reference internal" href="#limitations">5.4.3.3.2.2. 局限性</a></li>
+<li><a class="reference internal" href="#practical-implementation-issues">5.4.3.3.2.3. 实际实现问题</a></li>
+<li><a class="reference internal" href="#example-data">5.4.3.3.2.4. 示例数据</a></li>
+<li><a class="reference internal" href="#accuracy-and-repeatability-tests">5.4.3.3.2.5. 精度和可重复性测试</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="common.zh.html" title="上一章"><span class="section-number">5.4.3.3.1. </span>所有方法共有的实现问题</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="align-sweep.zh.html" title="下一章"><span class="section-number">5.4.3.3.3. </span>对齐并扫描方法</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="align-sweep.zh.html" title="5.4.3.3.3. Align-and-sweep method">下一页</a> |</li>
+<li class="right">
+<a href="common.zh.html" title="5.4.3.3.1. Implementation issues common to all methods">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="../estimators.zh.html"><span class="section-number">5.4. </span>位置和速度估计</a> »</li>
+<li class="nav-item nav-item-3"><a href="../qei.zh.html"><span class="section-number">5.4.3. </span>正交编码器支持</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4.3.3.2. </span>对齐方法</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../../_static/lang-switch.js"></script>
+</body>
+</html>

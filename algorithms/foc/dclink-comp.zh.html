@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.1.5. 母线电压补偿 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../../_static/rendermath.js"></script>
+<script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/svgcrop.js"></script>
+<script src="../../_static/mcaf-styling.js"></script>
+<link href="../../genindex.zh.html" rel="index" title="Index"/>
+<link href="../../search.zh.html" rel="search" title="Search"/>
+<link href="tuning.zh.html" rel="next" title="5.1.6. Current loop tuning"/>
+<link href="overmodulation.zh.html" rel="prev" title="5.1.4. Overmodulation"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="tuning.zh.html" title="5.1.6. Current loop tuning">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="overmodulation.zh.html" title="5.1.4. Overmodulation">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.zh.html"><span class="section-number">5.1. </span>磁场定向电流控制</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.1.5. </span>母线电压补偿</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="dc-link-compensation">
+<span id="algorithm-dclinkcompensation"></span><span id="index-0"></span><h1><span class="section-number">5.1.5. </span>母线电压补偿<a class="headerlink" href="#dc-link-compensation" title="本标题的永久链接">¶</a></h1>
+<p>母线电压的变化表现为功率电子模块一个随时间变化的增益；如果母线电压升高 10%，那么在向三相桥施加相同占空比的情况下，输出电压也会升高 10%。</p>
+<p>这会从几个重要方面影响 FOC 电机控制器的行为：</p>
+<ul class="simple">
+<li><p>电流控制器的环路增益随母线电压成正比变化。这种变化会降低电流控制器的稳定性。</p></li>
+<li><p>母线上的电压暂态会对电流环造成扰动。</p></li>
+<li><p>仅依赖占空比信号的无传感器估计器也会看到一个与母线电压成正比的增益偏移。</p></li>
+</ul>
+<p>我们可以通过在前向通路中将电压转换为占空比来补偿母线电压，如 <a class="reference internal" href="#fig-dclink-fwdpath"><span class="std std-numref">图 5.16</span></a>。</p>
+<figure class="align-center" id="id1">
+<span id="fig-dclink-fwdpath"></span><a class="reference internal image-reference" href="../../_images/accret-bdiag-fwdpath.png"><img alt="../../_images/accret-bdiag-fwdpath.png" src="../../_images/accret-bdiag-fwdpath.png" style="width: 900px;"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.16 </span><span class="caption-text">MCAF 磁场定向控制前向通路框图</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>本质上， <span class="math notranslate nohighlight">\(abc\)</span> 从逆 Clarke 变换模块输出的电压被乘以母线电压的倒数，然后作为零序调制（ZSM）模块的输入：</p>
+<div class="math notranslate nohighlight" id="equation-algorithms-foc-dclink-comp-0">
+<span class="eqno">(5.20)<a class="headerlink" href="#equation-algorithms-foc-dclink-comp-0" title="本公式的永久链接">¶</a></span>\[D_{abc0} = R_V V_{abc0} = \frac{1}{V_{dc}}V_{abc0}\]</div>
+<p>其中下标 <span class="math notranslate nohighlight">\(abc0\)</span> 表示逆 Clarke 变换未经修改的三相输出，即在 ZSM 模块进行平移和限幅之前的结果。</p>
+<p>此外，我们需要让电流控制器的输出限幅与 <span class="math notranslate nohighlight">\(V_{dc}\)</span>成正比地变化，以反映三相桥的物理限制。</p>
+<section id="transients">
+<h2><span class="section-number">5.1.5.1. </span>暂态过程<a class="headerlink" href="#transients" title="本标题的永久链接">¶</a></h2>
+<p>如果检测 <span class="math notranslate nohighlight">\(V_{dc}\)</span> 的动态比电压暂态本身的动态快得多，那么母线电压补偿在暂态下也能正确工作。</p>
+<p>在 <a class="reference external" href="https://www.microchip.com/DevelopmentTools/ProductDetails/dm330021-2">dsPICDEM<sup>®</sup> MCLV‑2 开发板</a>上，例如，有一个 188 μs 的 RC 滤波器（见 <a class="reference internal" href="#fig-dclink-rc"><span class="std std-numref">图 5.17</span></a>），它主导了检测的动态行为。其 3 dB 带宽约为 847 Hz，因此母线电压补偿应能抑制频率成分明显低于此值的暂态，而无法抑制处于或高于此频率的暂态成分。一般而言，电机驱动设计应使用时间常数更短的 RC 滤波器，通常在 1–10 μs 量级；由于母线电容已经限制了高频成分，抗混叠问题通常不如避免过大相位滞后重要。</p>
+<figure class="align-center" id="id2">
+<span id="fig-dclink-rc"></span><img alt="../../_images/mclv2-rcfilt.png" src="../../_images/mclv2-rcfilt.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.17 </span><span class="caption-text">MCLV-2 中的 RC 滤波器</span><a class="headerlink" href="#id2" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="implementation-notes">
+<h2><span class="section-number">5.1.5.2. </span>实现说明<a class="headerlink" href="#implementation-notes" title="本标题的永久链接">¶</a></h2>
+<p>计算 <span class="math notranslate nohighlight">\(R_V = 1/V_{dc}\)</span> 倒数的定点运算依赖于选择合理的比例因子。在 MCAF 中，我们采用 Q12 表示，比例因子为 <span class="math notranslate nohighlight">\(1/V_{dcmax}\)</span>，这使得在电压范围 <span class="math notranslate nohighlight">\(R_V\)</span> 内能够准确计算 <span class="math notranslate nohighlight">\(\frac{V_{dc}}{V_{dcmax}} \in [1/8, 1]\)</span>的倒数。对于 MCLV-2 板最大输入电压范围 52.8 V，这允许在 6.6 V 至 52.8 V 之间进行准确的倒数计算。对于 MCHV-2 和 MCHV-3 板最大输入电压范围 453.3 V，这允许在 56.7 V 至 453.3 V 之间进行准确的倒数计算。</p>
+<p>如果 <span class="math notranslate nohighlight">\(V_{dc} &lt; V_{dcmax}/8\)</span> ，倒数被限幅至其最大值（32767 个计数 = <span class="math notranslate nohighlight">\(7.99976/V_{dcmax}\)</span>），此时母线电压补偿将不完美；这种情况下总开环增益（包括硬件中三相桥的增益和软件中的母线电压补偿）将小于 1。</p>
+<section id="feature-support">
+<h3><span class="section-number">5.1.5.2.1. </span>功能支持<a class="headerlink" href="#feature-support" title="本标题的永久链接">¶</a></h3>
+<p>母线电压补偿在 MCAF R1 中不存在，已在 MCAF R2 中加入。</p>
+</section>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">5.1.5. 母线电压补偿</a><ul>
+<li><a class="reference internal" href="#transients">5.1.5.1. 暂态过程</a></li>
+<li><a class="reference internal" href="#implementation-notes">5.1.5.2. 实现说明</a><ul>
+<li><a class="reference internal" href="#feature-support">5.1.5.2.1. 功能支持</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="overmodulation.zh.html" title="上一章"><span class="section-number">5.1.4. </span>过调制</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="tuning.zh.html" title="下一章"><span class="section-number">5.1.6. </span>电流环整定</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="tuning.zh.html" title="5.1.6. Current loop tuning">下一页</a> |</li>
+<li class="right">
+<a href="overmodulation.zh.html" title="5.1.4. Overmodulation">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.zh.html"><span class="section-number">5.1. </span>磁场定向电流控制</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.1.5. </span>母线电压补偿</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../../_static/lang-switch.js"></script>
+</body>
+</html>

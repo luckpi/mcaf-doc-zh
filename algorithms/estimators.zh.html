@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.4. 位置和速度估计 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="estimator-interface.zh.html" rel="next" title="5.4.1. Firmware Interface"/>
+<link href="stopping.zh.html" rel="prev" title="5.3. Stopping"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="estimator-interface.zh.html" title="5.4.1. Firmware Interface">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="stopping.zh.html" title="5.3. Stopping">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4. </span>位置和速度估计</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="position-and-velocity-estimation">
+<span id="algorithm-estimators"></span><span id="index-0"></span><h1><span class="section-number">5.4. </span>位置和速度估计<a class="headerlink" href="#position-and-velocity-estimation" title="本标题的永久链接">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="estimator-interface.zh.html">5.4.1. 固件接口</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="estimator-interface.zh.html#overview">5.4.1.1. 概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="estimator-interface.zh.html#terminology">5.4.1.2. 术语</a></li>
+<li class="toctree-l2"><a class="reference internal" href="estimator-interface.zh.html#filesystem-location">5.4.1.3. 文件系统位置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="estimator-interface.zh.html#storage-and-types">5.4.1.4. 存储和类型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="estimator-interface.zh.html#entry-points-and-methods">5.4.1.5. 入口点和方法</a></li>
+<li class="toctree-l2"><a class="reference internal" href="estimator-interface.zh.html#method-summary">5.4.1.6. 方法概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="estimator-interface.zh.html#errata">5.4.1.7. 勘误</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pll.zh.html">5.4.2. AN1292 锁相环（PLL）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pll.zh.html#overview">5.4.2.1. 概述</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qei.zh.html">5.4.3. 正交编码器支持</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qei.zh.html#overview">5.4.3.1. 概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qei.zh.html#index-1">5.4.3.2. 跟踪环</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qei.zh.html#back-emf-synchronization">5.4.3.3. 反电动势同步</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="atpll.zh.html">5.4.4. 角度跟踪锁相环（ATPLL）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="atpll.zh.html#overview">5.4.4.1. 概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="atpll.zh.html#implementation-block-diagram-and-description">5.4.4.2. 实现方框图和描述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="atpll.zh.html#application-to-pmsms-with-saliency">5.4.4.3. 在具有凸性的 PMSM 中的应用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="atpll.zh.html#sample-results">5.4.4.4. 示例结果</a></li>
+<li class="toctree-l2"><a class="reference internal" href="atpll.zh.html#implementation-notes">5.4.4.5. 实现说明</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="zsmt.zh.html">5.4.5. 零速/最大转矩（ZS/MT）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="zsmt.zh.html#overview">5.4.5.1. 概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="zsmt.zh.html#further-information">5.4.5.2. 更多信息</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="smo.zh.html">5.4.6. 滑模观测器（SMO）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="smo.zh.html#overview">5.4.6.1. 概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="smo.zh.html#implementation-block-diagram-and-description">5.4.6.2. 实现方框图和描述</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="overview">
+<h2><span class="section-number">5.4.7. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
+<p>为了支持 <a class="reference internal" href="../appendix/glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a>的无传感器控制，MCAF 提供了 AN1292 锁相环（PLL）、角度跟踪锁相环（ATPLL）和 AN1078 滑模观测器（SMO）估计器的选择。除此之外，还通过 dsPIC<sup>®</sup> DSC 的 QEI（正交编码器接口）外设提供了正交编码器支持。</p>
+</section>
+<section id="comparative-analysis">
+<span id="index-1"></span><h2><span class="section-number">5.4.8. </span>比较分析<a class="headerlink" href="#comparative-analysis" title="本标题的永久链接">¶</a></h2>
+<section id="summary">
+<h3><span class="section-number">5.4.8.1. </span>概述<a class="headerlink" href="#summary" title="本标题的永久链接">¶</a></h3>
+<table class="docutils align-default" id="id9">
+<caption><span class="caption-number">表 5.5 </span><span class="caption-text">估计器比较</span><a class="headerlink" href="#id9" title="本表格的永久链接">¶</a></caption>
+<colgroup>
+<col style="width: 38%"/>
+<col style="width: 13%"/>
+<col style="width: 13%"/>
+<col style="width: 13%"/>
+<col style="width: 13%"/>
+<col style="width: 13%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>标准</p></th>
+<th class="head"><p>AN1292 PLL</p></th>
+<th class="head"><p>QEI</p></th>
+<th class="head"><p>ATPLL</p></th>
+<th class="head"><p>ZS/MT</p></th>
+<th class="head"><p>SMO</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>添加的 MCAF 版本</p></td>
+<td><p>R1</p></td>
+<td><p>R1, R4 <a class="footnote-reference brackets" href="#fn-est-qei" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></td>
+<td><p>R5 <a class="footnote-reference brackets" href="#fn-est-atpll" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a></p></td>
+<td><p>R7</p></td>
+<td><p>R9 <a class="footnote-reference brackets" href="#fn-est-smo" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>传感器</p></td>
+<td><p>相电流、电压 <a class="footnote-reference brackets" href="#fn-est-v" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a></p></td>
+<td><p>正交编码器</p></td>
+<td><p>相电流、电压</p></td>
+<td><p>相电流、电压</p></td>
+<td><p>相电流、电压</p></td>
+</tr>
+<tr class="row-even"><td><p>侵入式？ <a class="footnote-reference brackets" href="#fn-est-intrusive" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a></p></td>
+<td><p>否</p></td>
+<td><p>否</p></td>
+<td><p>否</p></td>
+<td><p>是 <a class="footnote-reference brackets" href="#fn-est-zsmt-intrusive" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a></p></td>
+<td><p>否</p></td>
+</tr>
+<tr class="row-odd"><td><p>可在零速或接近零速时使用？</p></td>
+<td><p>否</p></td>
+<td><p>是 <a class="footnote-reference brackets" href="#fn-est-qei-posctrl" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a></p></td>
+<td><p>否</p></td>
+<td><p>是</p></td>
+<td><p>否</p></td>
+</tr>
+<tr class="row-even"><td><p>可在满速或接近满速时使用？</p></td>
+<td><p>是</p></td>
+<td><p>是</p></td>
+<td><p>是</p></td>
+<td><p>是 <a class="footnote-reference brackets" href="#fn-est-zsmt-fullspeed" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a></p></td>
+<td><p>是</p></td>
+</tr>
+<tr class="row-odd"><td><p>支持显著的转子凸性？</p></td>
+<td><p>否</p></td>
+<td><p>是</p></td>
+<td><p>是</p></td>
+<td><p>是</p></td>
+<td><p>是</p></td>
+</tr>
+<tr class="row-even"><td><p>需要显著的转子凸性？</p></td>
+<td><p>否</p></td>
+<td><p>否</p></td>
+<td><p>否</p></td>
+<td><p>是</p></td>
+<td><p>否</p></td>
+</tr>
+<tr class="row-odd"><td><p>对电机参数不准确的敏感性</p></td>
+<td><p>中等</p></td>
+<td><p>无</p></td>
+<td><p>低</p></td>
+<td><p>中等</p></td>
+<td><p>中等</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">说明</p>
+<aside class="footnote brackets" id="fn-est-qei" role="note">
+<span class="label"><span class="fn-bracket">[</span><a href="#id1" role="doc-backlink">1</a><span class="fn-bracket">]</span></span>
+<p>正交编码器位置从 MCAF R1 开始存在，以限定形式仅可用于参考比较，但不可用于位置或速度反馈。MCAF R4 添加了 <a class="reference internal" href="qei.zh.html#qei-sync"><span class="std std-ref">换相偏移同步</span></a> 以允许其用于换相。</p>
+</aside>
+<aside class="footnote brackets" id="fn-est-atpll" role="note">
+<span class="label"><span class="fn-bracket">[</span><a href="#id2" role="doc-backlink">2</a><span class="fn-bracket">]</span></span>
+<p>ATPLL 算法在 MCAF R5 中添加，可能在未来版本中进行一些更改以改善其性能特性。</p>
+</aside>
+<aside class="footnote brackets" id="fn-est-v" role="note">
+<span class="label"><span class="fn-bracket">[</span><a href="#id4" role="doc-backlink">3</a><span class="fn-bracket">]</span></span>
+<p>从 MCAF R5 开始，相电压由直流母线电压和占空比推断；通过电压测量可以获得更准确的结果，但目前既不需要也不支持。</p>
+</aside>
+<aside class="footnote brackets" id="fn-est-qei-posctrl" role="note">
+<span class="label"><span class="fn-bracket">[</span><a href="#id7" role="doc-backlink">4</a><span class="fn-bracket">]</span></span>
+<p>MCAF 目前不支持位置控制和零速控制。</p>
+</aside>
+<aside class="footnote brackets" id="fn-est-zsmt-fullspeed" role="note">
+<span class="label"><span class="fn-bracket">[</span><a href="#id8" role="doc-backlink">5</a><span class="fn-bracket">]</span></span>
+<p>ZS/MT 本身需要一些额外的电压余量，无法独立在满速下运行，但它可以在混合估计器中用于覆盖低速和中速范围，由另一个估计器覆盖高速运行。</p>
+</aside>
+<aside class="footnote brackets" id="fn-est-intrusive" role="note">
+<span class="label"><span class="fn-bracket">[</span><a href="#id5" role="doc-backlink">6</a><span class="fn-bracket">]</span></span>
+<p><a class="reference internal" href="estimator-interface.zh.html#algorithm-estimator-terminology"><span class="std std-ref">侵入式估计器</span></a> 施加电压或电流信号以协助位置和速度估计。</p>
+</aside>
+<aside class="footnote brackets" id="fn-est-zsmt-intrusive" role="note">
+<span class="label"><span class="fn-bracket">[</span><a href="#id6" role="doc-backlink">7</a><span class="fn-bracket">]</span></span>
+<p>ZS/MT 施加高频电压扰动来估计转子位置。</p>
+</aside>
+<aside class="footnote brackets" id="fn-est-smo" role="note">
+<span class="label"><span class="fn-bracket">[</span><a href="#id3" role="doc-backlink">8</a><span class="fn-bracket">]</span></span>
+<p>SMO 在 MCAF R9 中添加，可能在未来版本中进行一些更改以改善其性能特性。</p>
+</aside>
+</section>
+<section id="additional-details">
+<h3><span class="section-number">5.4.8.2. </span>额外细节<a class="headerlink" href="#additional-details" title="本标题的永久链接">¶</a></h3>
+<p>AN1292 锁相环（PLL）估计器和角度跟踪锁相环（ATPLL）估计器算法都基于反电动势 d 轴分量的稳态值为零这一原理运行。与 AN1292 PLL 估计器不同的是，ATPLL 估计器在其结构中包含一个 PI 控制器模块。该 PI 控制器需要仔细调节，以便在整个运行速度范围内稳定且令人满意地运行。另一方面，AN1292 PLL 没有 PI 控制器，在实践中更易实现。以额外调节 PI 控制器为代价，ATPLL 估计器提供了以下相对于 AN1292 PLL 估计器的优势。</p>
+<p>ATPLL 估计器的优势之一是其适用于具有凸极和非凸极转子的电机。通过为凸极和非凸极转子的电机选择合适的反电动势计算方程，ATPLL 估计器可以正确估计转子角度和转子速度。</p>
+<p>ATPLL 估计器相对于 AN1292 PLL 估计器的另一主要优势是其对反电动势常数值的鲁棒性。对于 AN1292 PLL 估计器，估计器使用的反电动势常数与电机实际反电动势常数之间的偏差会导致估计转子角度的稳态误差。估计速度没有稳态误差。然而，ATPLL 估计器不受反电动势常数偏差的影响，能够准确估计转子速度和角度。</p>
+<p><a class="reference internal" href="#fig-atpll-pll-ke80pc-angle"><span class="std std-numref">图 5.77</span></a> 展示了稳态下的实际转子角度、ATPLL 估计器的估计角度和 AN1292 PLL 估计器的估计角度，当电机的实际反电动势常数（<span class="math notranslate nohighlight">\(K_{e\_act}\)</span>）比估计器使用的值（<span class="math notranslate nohighlight">\(K_{e\_estimator}\)</span>）低 20%。 <a class="reference internal" href="#fig-atpll-pll-ke80pc-angle"><span class="std std-numref">图 5.77</span></a> 还在单独的图中展示了 AN1292 PLL 估计器和 ATPLL 估计器的估计角度误差。可以观察到，AN1292 PLL 估计器的估计角度存在显著的稳态误差，而 ATPLL 估计器的估计角度没有稳态误差。</p>
+<p>类似的图展示在 <a class="reference internal" href="#fig-atpll-pll-ke120pc-angle"><span class="std std-numref">图 5.78</span></a> 其中电机的实际反电动势常数（<span class="math notranslate nohighlight">\(K_{e\_act}\)</span>）比估计器使用的值（<span class="math notranslate nohighlight">\(K_{e\_estimator}\)</span>）高 20%。可以观察到，在这种情况下 AN1292 PLL 估计器的估计转子角度也存在稳态误差，但误差的符号相反。然而，ATPLL 估计器的估计转子角度不显示任何穳态误差。</p>
+<figure class="align-center" id="id10">
+<span id="fig-atpll-pll-ke80pc-angle"></span><a class="reference internal image-reference" href="../_images/pll_atpll_angle_err_Ke_80pc.png"><img alt="../_images/pll_atpll_angle_err_Ke_80pc.png" src="../_images/pll_atpll_angle_err_Ke_80pc.png" style="width: 584.0px; height: 495.20000000000005px;"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.77 </span><span class="caption-text">ATPLL 和 AN1292 PLL 的估计转子角度（ <span class="math notranslate nohighlight">\(K_{e\_act} = 0.8 \times K_{e\_estimator}\)</span></span><a class="headerlink" href="#id10" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id11">
+<span id="fig-atpll-pll-ke120pc-angle"></span><a class="reference internal image-reference" href="../_images/pll_atpll_angle_err_Ke_120pc.png"><img alt="../_images/pll_atpll_angle_err_Ke_120pc.png" src="../_images/pll_atpll_angle_err_Ke_120pc.png" style="width: 584.0px; height: 495.20000000000005px;"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.78 </span><span class="caption-text">ATPLL 和 AN1292 PLL 的估计转子角度（ <span class="math notranslate nohighlight">\(K_{e\_act} = 1.2 \times K_{e\_estimator}\)</span></span><a class="headerlink" href="#id11" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">5.4. 位置和速度估计</a><ul>
+<li><a class="reference internal" href="#overview">5.4.7. 概述</a></li>
+<li><a class="reference internal" href="#comparative-analysis">5.4.8. 比较分析</a><ul>
+<li><a class="reference internal" href="#summary">5.4.8.1. 概述</a></li>
+<li><a class="reference internal" href="#additional-details">5.4.8.2. 额外细节</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="stopping.zh.html" title="上一章"><span class="section-number">5.3. </span>停止</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="estimator-interface.zh.html" title="下一章"><span class="section-number">5.4.1. </span>固件接口</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="estimator-interface.zh.html" title="5.4.1. Firmware Interface">下一页</a> |</li>
+<li class="right">
+<a href="stopping.zh.html" title="5.3. Stopping">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4. </span>位置和速度估计</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

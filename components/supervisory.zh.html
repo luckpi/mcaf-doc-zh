@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>4.6. 监控算法 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="ext-interface.zh.html" rel="next" title="4.7. External Interface"/>
+<link href="testharness.zh.html" rel="prev" title="4.5. Test Harness"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="ext-interface.zh.html" title="4.7. External Interface">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="testharness.zh.html" title="4.5. Test Harness">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">4. </span>组件</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">4.6. </span>监控算法</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="supervisory-algorithms">
+<span id="supervisory"></span><h1><span class="section-number">4.6. </span>监控算法<a class="headerlink" href="#supervisory-algorithms" title="本标题的永久链接">¶</a></h1>
+<p>监控算法包括：</p>
+<ul class="simple">
+<li><p>监控（包括故障检测）</p>
+<ul>
+<li><p>过压/欠压检测</p></li>
+<li><p>过流检测</p></li>
+<li><p>过温检测</p></li>
+<li><p>看门狗定时器管理</p></li>
+<li><p>堵转检测和恢复</p></li>
+</ul>
+</li>
+<li><p>其他监控算法</p>
+<ul>
+<li><p>热管理</p></li>
+<li><p>饱和和反饱和管理（如果速度和电流控制器中尚未包含）</p></li>
+<li><p>自适应估计器（例如在线电阻估计）</p></li>
+<li><p>弱磁控制</p></li>
+<li><p>最大转矩每安培（MTPA）控制器</p></li>
+</ul>
+</li>
+</ul>
+<section id="implementation-notes">
+<h2><span class="section-number">4.6.1. </span>实现说明<a class="headerlink" href="#implementation-notes" title="本标题的永久链接">¶</a></h2>
+<section id="stall-detection">
+<span id="supervisory-stall-detect"></span><h3><span class="section-number">4.6.1.1. </span>堵转检测<a class="headerlink" href="#stall-detection" title="本标题的永久链接">¶</a></h3>
+<p>堵转检测由五种方法组成，用于检测过载或堵转的电机：</p>
+<ul class="simple">
+<li><p><strong>速度不足</strong> ——如果电机速度估计器保持准确，当速度估计的幅值降至阈值以下时，可以检测到电机堵转。</p></li>
+<li><p><strong>方差</strong> ——如果无传感器角度估计器与电机反电动势失去同步，电机将趋于堵转，但无传感器估计器可能继续估计非零电气频率。在这种情况下，电压和电流在估计的电气频率处表现出振荡。方差检测试图识别电压和电流振荡。</p></li>
+<li><p><strong>负 Ed</strong> ——负 d 轴估计反电动势（<span class="math notranslate nohighlight">\(E_d\)</span>）的尖峰可能在电机堵转且无传感器角度估计器失去同步时出现。这可以用作检测方法。</p></li>
+<li><p><strong>转矩角</strong> ——估计反电动势与电机端电压之间的角度随电机负载增加或堵转而增大。这在数学上等价于反电动势幅值与端电压的比值降至低于速度相关阈值。</p></li>
+<li><p><strong>软件过流</strong> ——重载电机可能超过可接受的定子电流水平。</p></li>
+</ul>
+<p>不同电机呈现不同的堵转症状，由上述不同算法检测。所有算法都有某种滤波器或延迟以避免过早或误检测。（见 <a class="reference internal" href="#supervisory-errata"><span class="std std-ref">勘误</span></a>）</p>
+<p>更具体的信息可在 <a class="reference internal" href="../appendix/otherdocs.zh.html#otherdocs-monitoring"><span class="std std-ref">监控</span></a> （包括堵转检测）和 <a class="reference internal" href="../appendix/otherdocs.zh.html#otherdocs-recovery"><span class="std std-ref">恢复</span></a> 的相关文档中找到。</p>
+</section>
+<section id="overtemperature-detection">
+<span id="supervisory-overtemperature"></span><h3><span class="section-number">4.6.1.2. </span>过温检测<a class="headerlink" href="#overtemperature-detection" title="本标题的永久链接">¶</a></h3>
+<p>MCAF 为 <a class="reference internal" href="../algorithms/temperature-measure.zh.html#algorithm-temperature-board-support"><span class="std std-ref">提供桥臂温度测量的电路板</span></a>提供过温检测故障，在 MCAF R7 中添加。</p>
+<p>如果 <a class="reference internal" href="../algorithms/temperature-measure.zh.html#algorithm-temperature-filtering"><span class="std std-ref">滤波后的桥臂温度</span></a> 超过指定阈值，则触发故障。这提供了一定的抗噪声能力，以避免原始温度信号中的尖峰影响。</p>
+</section>
+<section id="other-algorithms">
+<h3><span class="section-number">4.6.1.3. </span>其他算法<a class="headerlink" href="#other-algorithms" title="本标题的永久链接">¶</a></h3>
+<p>MCAF R1 – R5 不包含以下任何算法：</p>
+<ul class="simple">
+<li><p>弱磁控制</p></li>
+<li><p>热管理</p></li>
+<li><p>自适应估计器</p></li>
+<li><p>MTPA</p></li>
+</ul>
+</section>
+<section id="watchdog-timer-management">
+<span id="watchdog"></span><h3><span class="section-number">4.6.1.4. </span>看门狗定时器管理<a class="headerlink" href="#watchdog-timer-management" title="本标题的永久链接">¶</a></h3>
+<p id="index-0">该 <code class="docutils literal notranslate"><span class="pre">watchdog</span></code> 模块利用了 PIC<sup>®</sup> 微控制器和 dsPIC<sup>®</sup> DSC 器件中的看门狗定时器。硬件看门狗超时相对简单，只是一个自动递增的计数器，溢出时会导致看门狗复位；固件通过清除看门狗定时器作为其正常运行的信号来防止这种情况，因此如果阻塞操作意外地使固件停止响应，将发生复位。</p>
+<p>MCAF 使用硬件看门狗定时器来捕获 <em>中</em> 主循环和控制 <a class="reference internal" href="../appendix/glossary.zh.html#term-ISR"><span class="xref std std-term">ISR</span></a>的不响应代码。它通过要求运行两个简单任务来实现，一个在主循环中，另一个在控制 <a class="reference internal" href="../appendix/glossary.zh.html#term-ISR"><span class="xref std std-term">ISR</span></a>中，以便看门狗定时器被复位。函数 <code class="docutils literal notranslate"><span class="pre">MCAF_WatchdogManageIsr()</span></code> 是在控制 <a class="reference internal" href="../appendix/glossary.zh.html#term-ISR"><span class="xref std std-term">ISR</span></a>中实际清除看门狗定时器的任务，但它还维护一个“软件看门狗”计数器 <code class="docutils literal notranslate"><span class="pre">isrCount</span></code> ，在每次控制环路更新时递增。主循环任务有责任调用 <code class="docutils literal notranslate"><span class="pre">MCAF_WatchdogManageMainLoop()</span></code>，该函数清除软件计数器，频率要足够高以使软件看门狗不会达到超时。</p>
+<ul class="simple">
+<li><p>如果 <a class="reference internal" href="../appendix/glossary.zh.html#term-ISR"><span class="xref std std-term">ISR</span></a> 变得不响应，它将不会清除硬件看门狗定时器，在下一次看门狗超时时，将发生看门狗复位。</p></li>
+<li><p>如果主循环变得不响应，它将不会清除软件看门狗定时器，当该定时器达到超时阈值时， <a class="reference internal" href="../appendix/glossary.zh.html#term-ISR"><span class="xref std std-term">ISR</span></a> 将停止清除硬件看门狗定时器。在下一次看门狗超时时，将发生看门狗复位。主循环软件看门狗超时本质上比硬件看门狗超时长得多，但它也是一个不太关键的任务线程。</p></li>
+</ul>
+<p>看门狗复位的原因可以通过检查软件看门狗计数器的值来确定；如果它高于超时阈值，则主循环不响应；如果软件计数器低于超时阈值，则控制 ISR 不响应。</p>
+</section>
+<section id="fault-clearing-logic">
+<span id="fault-clearing"></span><h3><span class="section-number">4.6.1.5. </span>故障清除逻辑<a class="headerlink" href="#fault-clearing-logic" title="本标题的永久链接">¶</a></h3>
+<p>该 <a class="reference internal" href="../appendix/glossary.zh.html#term-MCAPI"><span class="xref std std-term">MCAPI</span></a> 在 MCAF 中的各种故障处理过程调用 <code class="docutils literal notranslate"><span class="pre">handleFaultFlags()</span></code> 函数时实现故障清除逻辑。故障清除逻辑的目的是通过捕获故障信息、分析特定故障条件并执行适当的恢复操作来维持系统稳定性和安全性。</p>
+<section id="faults-detected-in-mcaf">
+<h4><span class="section-number">4.6.1.5.1. </span>MCAF 中检测到的故障<a class="headerlink" href="#faults-detected-in-mcaf" title="本标题的永久链接">¶</a></h4>
+<p>MCAF 中的故障标志映射到 MCAPI 中的相应故障标志，如 <a class="reference internal" href="mcapi.zh.html#mcapi-description"><span class="std std-ref">API 描述</span></a>中的 MCAPI 故障标志表所述。例如， <code class="docutils literal notranslate"><span class="pre">MCAF_GATE_DRIVER_FAULT_DETECT</span></code> 映射到 <code class="docutils literal notranslate"><span class="pre">MCAPI_FAULT_FLAG_GATE_DRIVER</span></code>。</p>
+<p>这些故障根据检测来源分类：</p>
+<ul class="simple">
+<li><p>MCAF 固件检测到的故障</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_OVERVOLTAGE_FAULT_DETECT</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_UNDERVOLTAGE_FAULT_DETECT</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_OVERTEMPERATURE_FAULT_DETECT</span></code></p></li>
+</ul>
+</li>
+<li><p>外部硬件检测到的故障</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_OVERCURRENT_HW_FAULT_DETECT</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_GATE_DRIVER_FAULT_DETECT</span></code></p></li>
+</ul>
+</li>
+</ul>
+<p>该 <code class="docutils literal notranslate"><span class="pre">MCAPI_FAULT_FLAG_MOTOR_DRIVE</span></code> 故障在 MCAPI 中定义为通用标志，用于表示所有未显式映射的 MCAF 故障。</p>
+<p>该 <code class="docutils literal notranslate"><span class="pre">MCAPI_FAULT_FLAG_OVERCURRENT</span></code> 用于报告过流条件，如果硬件配置共享过流和过压检测的硬件故障源，则也会报告过压。</p>
+<p>每种硬件组合都有自己配置的故障源引脚。（见 <a class="reference internal" href="../implementation/custom-board-support/custom_board_definitions.zh.html#custom-board-definitions"><span class="std std-ref">自定义电路板格式</span></a>。）</p>
+</section>
+<section id="clearing-mcaf-firmware-level-faults">
+<span id="fault-clearing-fw-level"></span><h4><span class="section-number">4.6.1.5.2. </span>清除 MCAF 固件级故障<a class="headerlink" href="#clearing-mcaf-firmware-level-faults" title="本标题的永久链接">¶</a></h4>
+<p>大多数 MCAF 固件级故障在当前 ISR 周期内通过以下序列清除：</p>
+<ul class="simple">
+<li><p>如果相应的故障清除标志已设置，MCAPI 清除故障标志。</p></li>
+<li><p>MCAPI 从 MCAF 读取活动故障状态。</p></li>
+<li><p>如果没有剩余的活动故障，MCAPI 请求 MCAF 退出故障状态。</p></li>
+</ul>
+</section>
+<section id="clearing-hardware-level-faults">
+<h4><span class="section-number">4.6.1.5.3. </span>清除硬件级故障<a class="headerlink" href="#clearing-hardware-level-faults" title="本标题的永久链接">¶</a></h4>
+<p>某些硬件级故障需要多个 ISR 周期才能清除，必须与固件级故障不同地处理。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAPI_FAULT_FLAG_OVERCURRENT</span></code> ——由于 PWM 故障锁定，至少需要两个 ISR 周期才能清除此故障。 <code class="docutils literal notranslate"><span class="pre">fault_handle</span></code> 模块与 MCAF 交互以清除故障。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAPI_FAULT_FLAG_GATE_DRIVER</span></code> ——执行电源循环是目前清除此故障的唯一可用方法。（见 <a class="reference internal" href="#supervisory-errata"><span class="std std-ref">勘误</span></a>）</p></li>
+</ul>
+</section>
+<section id="custom-boards-without-pwm-fault-input">
+<h4><span class="section-number">4.6.1.5.4. </span>无 PWM 故障输入的自定义电路板<a class="headerlink" href="#custom-boards-without-pwm-fault-input" title="本标题的永久链接">¶</a></h4>
+<p>MCAF 支持使用硬件 PWM 故障信号以处理器无关的方式检测过压或过流条件。通过在电路板定义中指定此故障源——作为指定引脚上的输入或片上比较器的输出——MCAF 可以配置 dsPIC<sup>®</sup> DSC 上的 PWM 发生器来监控此输入，并在发生硬件故障时自动禁用 PWM 输出。</p>
+<p>对于不包含此类故障信号的自定义电路板，故障源可以设置为 <code class="docutils literal notranslate"><span class="pre">无</span></code>，从而禁用基于硬件的故障检测。在这种配置下， <code class="docutils literal notranslate"><span class="pre">MCAF_OVERCURRENT_HW_FAULT_DETECT</span></code> 不会被触发。</p>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>不建议设计没有硬件 PWM 故障信号的电机控制电路板。这是一项关键功能，有助于检测故障并防止故障传播。</p>
+</div>
+</section>
+<section id="interaction-with-the-mcapi">
+<h4><span class="section-number">4.6.1.5.5. </span>与 MCAPI 的交互<a class="headerlink" href="#interaction-with-the-mcapi" title="本标题的永久链接">¶</a></h4>
+<p>应用程序可以查询和清除 MCAPI 故障标志：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAPI_FaultStatusGet()</span></code> 返回电机的当前故障位域。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAPI_FaultStatusClear()</span></code> 请求通过掩码清除选定的故障标志（清除不会重启电机）。</p></li>
+</ul>
+<p>典型序列是使用 <code class="docutils literal notranslate"><span class="pre">MCAPI_FaultStatusGet()</span></code>读取故障标志，调用 <code class="docutils literal notranslate"><span class="pre">MCAPI_FaultStatusClear()</span></code> 清除所需位，然后重新读取直到这些位清除。MCAPI 函数的延迟限制没有严格界定，但故障状态读取/清除请求通常在 2 个 ISR 周期内生效。 <code class="docutils literal notranslate"><span class="pre">MCAPI_FAULT_FLAG_OVERCURRENT</span></code> 由于 <a class="reference internal" href="#fault-clearing-fw-level"><span class="std std-ref">清除 MCAF 固件级故障</span></a>。</p>
+</section>
+</section>
+<section id="supervisory-errata">
+<span id="id1"></span><h3><span class="section-number">4.6.1.6. </span>监控勘误<a class="headerlink" href="#supervisory-errata" title="本标题的永久链接">¶</a></h3>
+<ul>
+<li><p>堵转检测的转矩角检测方法难以自动调优。它对某些电机效果良好，但对其他电机可能导致误检测故障。自 MCAF R3 起，我们默认禁用了此检测方法。可以通过更改 <code class="docutils literal notranslate"><span class="pre">MCAF_StallDetectInit()</span></code> 来重新启用，将堵转检测标志掩码初始化如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pstallDetect</span><span class="o">-&gt;</span><span class="n">stallDetectFlagMask</span> <span class="o">=</span> <span class="n">MCAF_ALL_STALL_DETECT_METHODS_ENABLED</span><span class="p">；</span>
+</pre></div>
+</div>
+</li>
+<li><p>MCAPI 不会清除 <code class="docutils literal notranslate"><span class="pre">MCAPI_FAULT_FLAG_GATE_DRIVER</span></code> 故障，因为栅极驱动器故障锁定。（DB_MC-5666；适用性：R8）</p></li>
+</ul>
+</section>
+<section id="modules">
+<h3><span class="section-number">4.6.1.7. </span>模块<a class="headerlink" href="#modules" title="本标题的永久链接">¶</a></h3>
+<span id="index-1"></span><table class="components-table docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>模块</p></th>
+<th class="head"><p>文件</p></th>
+<th class="head"><p>描述</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">fault_detect</span></code></td>
+<td class="longcolumn-3"><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">fault_detect.c</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">fault_detect.h</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">fault_detect_types.h</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">parameters/fault_detect_params.h</span></code></div>
+</div>
+</td>
+<td><p>故障检测</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">fault_handle</span></code></td>
+<td class="longcolumn-2"><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">fault_handle.c</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">fault_handle.h</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">fault_handle_types.h</span></code></div>
+</div>
+</td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td class="longcolumn-1"><code class="docutils literal notranslate"><span class="pre">mcaf_watchdog</span></code></td>
+<td class="longcolumn-1"><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">mcaf_watchdog.h</span></code></div>
+</div>
+</td>
+<td><p>看门狗定时器管理</p></td>
+<td><p>参见 <a class="reference internal" href="#watchdog"><span class="std std-ref">看门狗定时器管理</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">监控</span></code></td>
+<td class="longcolumn-1"><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">monitor.c</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">monitor.h</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">monitor_types.h</span></code></div>
+</div>
+</td>
+<td><p>故障处理</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">recover</span></code></td>
+<td><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">recover.c</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">recover.h</span></code></div>
+</div>
+</td>
+<td><p>堵转检测的恢复</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">stall_detect</span></code></td>
+<td class="longcolumn-2"><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">stall_detect.c</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">stall_detect.h</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">stall_detect_types.h</span></code></div>
+</div>
+</td>
+<td><p>堵转检测</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">4.6. 监控算法</a><ul>
+<li><a class="reference internal" href="#implementation-notes">4.6.1. 实现说明</a><ul>
+<li><a class="reference internal" href="#stall-detection">4.6.1.1. 堵转检测</a></li>
+<li><a class="reference internal" href="#overtemperature-detection">4.6.1.2. 过温检测</a></li>
+<li><a class="reference internal" href="#other-algorithms">4.6.1.3. 其他算法</a></li>
+<li><a class="reference internal" href="#watchdog-timer-management">4.6.1.4. 看门狗定时器管理</a></li>
+<li><a class="reference internal" href="#fault-clearing-logic">4.6.1.5. 故障清除逻辑</a><ul>
+<li><a class="reference internal" href="#faults-detected-in-mcaf">4.6.1.5.1. MCAF 中检测到的故障</a></li>
+<li><a class="reference internal" href="#clearing-mcaf-firmware-level-faults">4.6.1.5.2. 清除 MCAF 固件级故障</a></li>
+<li><a class="reference internal" href="#clearing-hardware-level-faults">4.6.1.5.3. 清除硬件级故障</a></li>
+<li><a class="reference internal" href="#custom-boards-without-pwm-fault-input">4.6.1.5.4. 无 PWM 故障输入的自定义电路板</a></li>
+<li><a class="reference internal" href="#interaction-with-the-mcapi">4.6.1.5.5. 与 MCAPI 的交互</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#supervisory-errata">4.6.1.6. 监控勘误</a></li>
+<li><a class="reference internal" href="#modules">4.6.1.7. 模块</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="testharness.zh.html" title="上一章"><span class="section-number">4.5. </span>测试框架</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="ext-interface.zh.html" title="下一章"><span class="section-number">4.7. </span>外部接口</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="ext-interface.zh.html" title="4.7. External Interface">下一页</a> |</li>
+<li class="right">
+<a href="testharness.zh.html" title="4.5. Test Harness">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">4. </span>组件</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">4.6. </span>监控算法</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

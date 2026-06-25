@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>4.7. 外部接口 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="diagnostics.zh.html" rel="next" title="4.8. Diagnostic Kernel"/>
+<link href="supervisory.zh.html" rel="prev" title="4.6. Supervisory Algorithms"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="diagnostics.zh.html" title="4.8. Diagnostic Kernel">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="supervisory.zh.html" title="4.6. Supervisory Algorithms">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">4. </span>组件</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">4.7. </span>外部接口</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="external-interface">
+<span id="ext-interface"></span><h1><span class="section-number">4.7. </span>外部接口<a class="headerlink" href="#external-interface" title="本标题的永久链接">¶</a></h1>
+<p>本节描述电机控制应用程序框架的外部接口，包括电位器、按键和 LED。</p>
+<p>在 MCAF R6 – R9 中， <a class="reference internal" href="hal.zh.html#board-service-module"><span class="std std-ref">板级服务模块</span></a> 实现了电位器和按键处理程序，而 <a class="reference internal" href="main.zh.html#sample-application"><span class="std std-ref">示例应用程序</span></a> 定义了按键按下时的行为。</p>
+<section id="general-ui-guidelines">
+<span id="ext-interface-ui-guidelines"></span><h2><span class="section-number">4.7.1. </span>通用 UI 指南<a class="headerlink" href="#general-ui-guidelines" title="本标题的永久链接">¶</a></h2>
+<p>下表总结了每个支持的开发板上可用的 UI 元素：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>电路板</p></th>
+<th class="head"><p>LED</p></th>
+<th class="head"><p>按键</p></th>
+<th class="head"><p>电位器</p></th>
+<th class="head"><p>LED 布局</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.microchip.com/DevelopmentTools/ProductDetails/dm330021-2">dsPICDEM<sup>®</sup> MCLV-2 开发板</a></p></td>
+<td><p>2</p></td>
+<td><p>2</p></td>
+<td><p>1</p></td>
+<td><p>相邻</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://www.microchip.com/en-us/development-tool/EV18H47A">MCS MCLV-48V-300W 开发板</a></p></td>
+<td><p>2</p></td>
+<td><p>2</p></td>
+<td><p>1</p></td>
+<td><p>相邻</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.microchip.com/en-us/development-tool/DM330031">dsPIC33CK 低压电机控制（LVMC）开发板</a></p></td>
+<td><p>2</p></td>
+<td><p>3</p></td>
+<td><p>1</p></td>
+<td><p>相邻</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://www.microchip.com/DevelopmentTools/ProductDetails/dm330023-2">dsPICDEM<sup>®</sup> MCHV-2 开发板</a></p></td>
+<td><p>2</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>位于 <a class="reference internal" href="../appendix/glossary.zh.html#term-PIM"><span class="xref std std-term">PIM</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.microchip.com/DevelopmentTools/ProductDetails/dm330023-3">dsPICDEM<sup>®</sup> MCHV-3 开发板</a></p></td>
+<td><p>2</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>位于 <a class="reference internal" href="../appendix/glossary.zh.html#term-PIM"><span class="xref std std-term">PIM</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://www.microchip.com/en-us/development-tool/ev78u65a">MCHV-230VAC-1.5kW 电机控制高压开发板</a></p></td>
+<td><p>2</p></td>
+<td><p>2</p></td>
+<td><p>1</p></td>
+<td><p>相邻</p></td>
+</tr>
+</tbody>
+</table>
+<p>为了支持所有这些系统以及在创建自定义电路板时，建议遵循以下指南。有关将 UI 元素添加到 <a class="reference internal" href="../implementation/custom-board-support/configuration.zh.html#custom-board-configuration"><span class="std std-ref">创建自定义电路板配置</span></a> 的更多信息，请参见 <a class="reference external" href="https://github.com/microchip-pic-avr-solutions/motorbench-release-collateral">入门电路板定义。</a></p>
+<ul class="simple">
+<li><p>按键</p>
+<ul>
+<li><p>强烈建议至少使用两个按键，但不是必需的。</p></li>
+<li><p>按键输入用于手动控制输入事件功能，例如两个示例应用程序输入事件：</p>
+<ul>
+<li><p>启动/停止电机并提供从故障中手动重启。建议由主按键控制。</p></li>
+<li><p>反转电机旋转方向。建议由副按键控制。</p></li>
+</ul>
+</li>
+<li><p>每个按键可以根据按下和释放的持续时间提供三种不同的输入：</p>
+<ul>
+<li><p>去抖：释放→按下和按下→释放转换在某个时间 T1（例如 20ms）内发生。此事件被忽略。</p></li>
+<li><p>单次按下：释放→按下和按下→释放转换在某个时间 T 内发生，其中 T1 ≤ T ≤ T2</p></li>
+<li><p>长按：释放→按下转换发生，且按下保持超过某个时间 T2（例如 2 秒）。这可用于提供不常用的输入。一旦时间 T2 已过，如果允许长按，LED 将提供某种视觉反馈以指示长按已发生。</p></li>
+<li><p>双击：两次单次按下事件在某个间隔 T3（例如 0.5 秒）内发生。这可用于提供不常用的输入。</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="simple" id="ext-interface-leds">
+<li><p>LED</p>
+<ul>
+<li><p>强烈建议至少使用两个 LED，但不是必需的。</p></li>
+<li><p>每个 LED 可以根据其随时间的通电方式提供不同类型的指示：</p>
+<ul>
+<li><p>完全关闭</p></li>
+<li><p>完全点亮</p></li>
+<li><p>以高频（&gt;100 Hz）调制以在 ½ 感知亮度下工作。（注意：由于人脑的特性，这可能不是 50% 占空比。）</p></li>
+<li><p>可感知的闪烁速率和占空比（例如 0.5 / 1 / 2Hz 闪烁速率下 5%/50%/95% 占空比）</p></li>
+<li><p>应避免 2Hz 至 55Hz 之间的闪烁速率：尽管 LED 的视觉范围相当小，但这些频率可能成为光敏性癫痫患者的触发因素。</p></li>
+<li><p>错误代码——重复且易于感知的开/关模式序列，例如 250ms 点亮时间被不同长度的熄灭间隔分隔（250ms、750ms、2250ms）；参见 <a class="reference internal" href="#ui-error-codes"><span class="std std-ref">错误代码</span></a> 一节了解更多信息</p></li>
+</ul>
+</li>
+<li><p>两个 LED 之间应保持一定的协调以提供简单的视觉信息（很难解读相邻的两个 LED 以不同速率闪烁）</p></li>
+<li><p>对于指示“活跃性”，应优先使用动态模式而非静态模式，以指示控制器处于活动状态且未卡在特定状态。</p></li>
+</ul>
+</li>
+<li><p>电位器</p>
+<ul>
+<li><p>强烈建议使用电位器，但不是必需的。</p></li>
+<li><p>电位器应提供连续范围输入，例如可用于控制速度、电流或电压。</p></li>
+</ul>
+</li>
+</ul>
+<p>除这些通用指南外，UI 行为的选择在一定程度上是任意的。 <a class="reference internal" href="../implementation/custom-board-support/configuration.zh.html#custom-board-without-ui"><span class="std std-ref">无按键或电位器的自定义电路板</span></a> 为 UI 元素数量少于推荐数量的自定义电路板提供了更多信息。</p>
+</section>
+<section id="implemented-behavior">
+<h2><span class="section-number">4.7.2. </span>已实现的行为<a class="headerlink" href="#implemented-behavior" title="本标题的永久链接">¶</a></h2>
+<ul class="simple">
+<li><p>启动/停止：</p>
+<ul>
+<li><p>主按键上的单次按下事件提供“启动”和“停止”输入。（如果电机已停止则请求启动电机；如果电机未停止则请求停止电机）这样做是为了与现有应用笔记 AN1078 和 AN1292 的行为保持一致。</p></li>
+</ul>
+</li>
+<li><p>反转方向：</p>
+<ul>
+<li><p>方向标志被保持</p></li>
+<li><p>反转方向请求：</p>
+<ul>
+<li><p>如果存在第二个按键：第二个按键的单次按下事件</p></li>
+<li><dl class="simple">
+<dt>如果不存在第二个按键：第一个按键的长按，首次在 MCAF R2 中支持。</dt><dd><p>所需时间标称为 3 秒，由 <code class="docutils literal notranslate"><span class="pre">MCAF_BOARDSERVICE_ISR_PRESCALER</span></code> 在 <code class="docutils literal notranslate"><span class="pre">board_service_types.h</span></code> 和 <code class="docutils literal notranslate"><span class="pre">BSP_EMULATED_BUTTON_DELAY_COUNT</span></code> 在 <code class="docutils literal notranslate"><span class="pre">hardware_access_functions_params.h</span></code>以及电机控制环路频率决定。（见 <a class="reference internal" href="#ext-interface-errata"><span class="std std-ref">勘误</span></a>）</p>
+</dd>
+</dl>
+</li>
+</ul>
+</li>
+<li><p>如果反转方向请求在电机停止时发生，方向标志被反转但不采取其他操作。</p></li>
+<li><p>如果反转方向请求在电机运行时发生，则以下序列发生：</p>
+<ul>
+<li><p>请求停止电机</p></li>
+<li><p>电机达到停止状态</p></li>
+<li><p>方向标志反转</p></li>
+<li><p>请求启动电机</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>从可恢复故障中手动重启（见 <a class="reference internal" href="#table-ui-error-recoverability"><span class="std std-numref">表 4.7</span></a>）：</p>
+<ul>
+<li><p>单次按下事件，如果处于故障状态，则清除故障锁定并重启正常操作。</p></li>
+</ul>
+</li>
+<li><p>速度控制：</p>
+<ul>
+<li><p>电位器从最小到最大调节速度（转速）的幅值。与现有应用笔记的行为相同。</p></li>
+</ul>
+</li>
+<li><p>状态指示：见下表</p></li>
+</ul>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>方向</p></th>
+<th class="head"><p>状态</p></th>
+<th class="head"><p>LED1</p></th>
+<th class="head"><p>LED2</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>两者</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RESTART</span></code></p></td>
+<td><p>关闭</p></td>
+<td><p>关闭</p></td>
+</tr>
+<tr class="row-odd"><td><p>正向</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">STOPPED</span></code></p></td>
+<td><p>关闭</p></td>
+<td><p>1/16 s on @ 1Hz</p></td>
+</tr>
+<tr class="row-even"><td><p>正向</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">STARTING</span></code></p></td>
+<td><p>on</p></td>
+<td><p>1/16 s on @ 1Hz</p></td>
+</tr>
+<tr class="row-odd"><td><p>正向</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RUNNING</span></code></p></td>
+<td><p>on</p></td>
+<td><p>15/16 s on @ 1Hz</p></td>
+</tr>
+<tr class="row-even"><td><p>正向</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">STOPPING</span></code></p></td>
+<td><p>关闭</p></td>
+<td><p>15/16 s on @ 1Hz</p></td>
+</tr>
+<tr class="row-odd"><td><p>反向</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">STOPPED</span></code></p></td>
+<td><p>1/16 s on @ 1Hz</p></td>
+<td><p>关闭</p></td>
+</tr>
+<tr class="row-even"><td><p>反向</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">STARTING</span></code></p></td>
+<td><p>1/16 s on @ 1Hz</p></td>
+<td><p>on</p></td>
+</tr>
+<tr class="row-odd"><td><p>反向</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RUNNING</span></code></p></td>
+<td><p>15/16 s on @ 1Hz</p></td>
+<td><p>on</p></td>
+</tr>
+<tr class="row-even"><td><p>反向</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">STOPPING</span></code></p></td>
+<td><p>15/16 s on @ 1Hz</p></td>
+<td><p>关闭</p></td>
+</tr>
+<tr class="row-odd"><td><p>两者</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TEST_DISABLED</span></code></p></td>
+<td><p>1/16 s on @ 1Hz</p></td>
+<td><p>1/16 s on @ 1Hz</p></td>
+</tr>
+<tr class="row-even"><td><p>两者</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TEST_ENABLED</span></code></p></td>
+<td><p>15/16 s on @ 1Hz</p></td>
+<td><p>15/16 s on @ 1Hz</p></td>
+</tr>
+<tr class="row-odd"><td><p>两者</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FAULT</span></code></p></td>
+<td><p>错误代码闪烁</p></td>
+<td><p>错误代码闪烁</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="error-codes">
+<span id="ui-error-codes"></span><h2><span class="section-number">4.7.3. </span>错误代码<a class="headerlink" href="#error-codes" title="本标题的永久链接">¶</a></h2>
+<p>MCAF 具有故障检测逻辑，可覆盖多种不同条件并汇总为唯一的故障代码。MCAF 将此故障代码显示为基于 1–4 次闪烁组的 LED 闪烁模式。采用此方法的原因是大于 4 次的闪烁计数难以计数。</p>
+<section id="error-code-led-behavior">
+<h3><span class="section-number">4.7.3.1. </span>错误代码 LED 行为<a class="headerlink" href="#error-code-led-behavior" title="本标题的永久链接">¶</a></h3>
+<section id="converting-error-code-to-led-blink-pattern">
+<h4><span class="section-number">4.7.3.1.1. </span>将错误代码转换为 LED 闪烁模式<a class="headerlink" href="#converting-error-code-to-led-blink-pattern" title="本标题的永久链接">¶</a></h4>
+<p>给定一个表示错误代码的正（非零）整数 X，以及一个可以点亮的 LED：</p>
+<ol class="arabic simple">
+<li><p>将 X 转换为基数为 4 的数字序列，最低有效位在前，以最后一个非零数字结尾。</p></li>
+<li><p>将序列中的每个值加 1。</p></li>
+<li><p>对于每个值 <em>k</em> 在序列中：</p>
+<ol class="loweralpha simple">
+<li><p>重复 <em>k</em> 次：</p>
+<ol class="lowerroman simple">
+<li><p>LED 点亮 250ms</p></li>
+<li><p>LED 熄灭 250ms</p></li>
+</ol>
+</li>
+<li><p>等待 500ms</p></li>
+</ol>
+</li>
+<li><p>等待 1500ms，然后转到步骤 3</p></li>
+</ol>
+<p>这总是产生一个包含至少一次双/三/四闪烁的序列。</p>
+</section>
+<section id="converting-led-blink-pattern-to-error-code">
+<h4><span class="section-number">4.7.3.1.2. </span>将 LED 闪烁模式转换为错误代码<a class="headerlink" href="#converting-led-blink-pattern-to-error-code" title="本标题的永久链接">¶</a></h4>
+<p>这通常不是必需的（错误代码表包含直接指示闪烁次数的列），但要转换回数字错误代码：</p>
+<ol class="arabic simple">
+<li><p>将闪烁次数计为 1–4 的数字序列</p></li>
+<li><p>从序列中的每个值减去 1</p></li>
+<li><p>将序列解释为基数为 4 的数字，最低有效位在前</p></li>
+</ol>
+</section>
+<section id="examples">
+<h4><span class="section-number">4.7.3.1.3. </span>示例<a class="headerlink" href="#examples" title="本标题的永久链接">¶</a></h4>
+<p>以下示例包含闪烁模式的视觉表示。每个 <code class="docutils literal notranslate"><span class="pre">+</span></code> 符号代表 LED 点亮，模式按时间比例绘制（每个字符代表 250ms）。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>错误代码</p></th>
+<th class="head"><p>基数为 4 的数字序列</p></th>
+<th class="head"><p><em>k</em> 序列</p></th>
+<th class="head"><p>闪烁模式的两次重复</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>[1]</p></td>
+<td><p>[2]</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">+</span>         <span class="pre">+</span> <span class="pre">+</span>                                    </code></p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>[2]</p></td>
+<td><p>[3]</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span>         <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span>                                </code></p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>[3]</p></td>
+<td><p>[4]</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span>         <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span>                            </code></p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>[0, 1]</p></td>
+<td><p>[1, 2]</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">+</span>   <span class="pre">+</span> <span class="pre">+</span>         <span class="pre">+</span>   <span class="pre">+</span> <span class="pre">+</span>                            </code></p></td>
+</tr>
+<tr class="row-even"><td><p>7</p></td>
+<td><p>[3, 1]</p></td>
+<td><p>[4, 2]</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span>   <span class="pre">+</span> <span class="pre">+</span>         <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span>   <span class="pre">+</span> <span class="pre">+</span>                </code></p></td>
+</tr>
+<tr class="row-odd"><td><p>13</p></td>
+<td><p>[1, 3]</p></td>
+<td><p>[2, 4]</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">+</span>   <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span>         <span class="pre">+</span> <span class="pre">+</span>   <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span>                </code></p></td>
+</tr>
+<tr class="row-even"><td><p>35</p></td>
+<td><p>[3, 0, 2]</p></td>
+<td><p>[4, 1, 3]</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span>   <span class="pre">+</span>   <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span>         <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span>   <span class="pre">+</span>   <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span>    </code></p></td>
+</tr>
+<tr class="row-odd"><td><p>100</p></td>
+<td><p>[0, 1, 2, 1]</p></td>
+<td><p>[1, 2, 3, 2]</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">+</span>   <span class="pre">+</span> <span class="pre">+</span>   <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span>   <span class="pre">+</span> <span class="pre">+</span>         <span class="pre">+</span>   <span class="pre">+</span> <span class="pre">+</span>   <span class="pre">+</span> <span class="pre">+</span> <span class="pre">+</span>   <span class="pre">+</span> <span class="pre">+</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+<section id="timing-and-fault-clearing-issues-in-ui-indicators">
+<span id="ui-timing-faultclear"></span><h2><span class="section-number">4.7.4. </span>UI 指示器中的时序和故障清除问题<a class="headerlink" href="#timing-and-fault-clearing-issues-in-ui-indicators" title="本标题的永久链接">¶</a></h2>
+<p>有两个与错误代码报告间接相关的关联问题：</p>
+<ul class="simple">
+<li><p>UI 指示器的时序（延迟如何实现）</p></li>
+<li><p>故障清除问题（系统返回正常操作需要发生什么）</p></li>
+</ul>
+<p>MCAF 根据可恢复性选择了以下策略：</p>
+<span id="table-ui-error-recoverability"></span><table class="docutils align-default" id="id2">
+<caption><span class="caption-number">表 4.7 </span><span class="caption-text">错误可恢复性</span><a class="headerlink" href="#id2" title="本表格的永久链接">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>可恢复性</p></th>
+<th class="head"><p>时序</p></th>
+<th class="head"><p>故障清除</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>可恢复</strong>：预期由瞬时条件引起的故障：过流、超速、过压等。</p></td>
+<td><p>我们依赖以周期性速率运行的系统状态机作为 UI 延迟的时基。</p></td>
+<td><p>需要用户干预：按下启动/停止输入按钮。</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>不可恢复</strong>：发生了严重问题，如振荡器故障、堆栈溢出或看门狗超时。</p></td>
+<td><p>我们不一定能依赖系统状态机正常运行，而是进入“偏执”模式（见下文）；使用忙等待固定数量的 CPU 周期来实现时序。</p></td>
+<td><p>需要通过手动复位进行用户干预。</p></td>
+</tr>
+</tbody>
+</table>
+<p>在不可恢复故障时（“偏执模式”），以下操作发生：</p>
+<ul class="simple">
+<li><p>禁用所有中断</p></li>
+<li><p>将 <a class="reference internal" href="../appendix/glossary.zh.html#term-PWM"><span class="xref std std-term">PWM</span></a> 输出置于安全状态</p></li>
+<li><p>通过 LED 报告错误代码，依赖忙等待创建 UI 的时间延迟</p></li>
+</ul>
+</section>
+<section id="implementation">
+<h2><span class="section-number">4.7.5. </span>实现<a class="headerlink" href="#implementation" title="本标题的永久链接">¶</a></h2>
+<section id="external-interface-errata">
+<span id="ext-interface-errata"></span><h3><span class="section-number">4.7.5.1. </span>外部接口勘误<a class="headerlink" href="#external-interface-errata" title="本标题的永久链接">¶</a></h3>
+<ul class="simple">
+<li><p>在 <code class="docutils literal notranslate"><span class="pre">TEST_DISABLE</span></code> 或 <code class="docutils literal notranslate"><span class="pre">TEST_ENABLE</span></code> 状态下不显示 LED 模式。（DB_MC-1922；适用性：MCAF R1 – R9。）</p></li>
+<li><p>MCHV-2 和 MCHV-3 的模拟按键按下时序不保证；如果主循环中有长时间运行的任务，这可能会延迟检测长按按钮所需的时间。（DB_MC-1920；适用性：MCAF R2 – R5；在 MCAF R6 中修复。）</p></li>
+</ul>
+</section>
+<section id="modules">
+<h3><span class="section-number">4.7.5.2. </span>模块<a class="headerlink" href="#modules" title="本标题的永久链接">¶</a></h3>
+<span id="index-0"></span><table class="components-table docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>模块</p></th>
+<th class="head"><p>文件</p></th>
+<th class="head"><p>描述</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">error_codes</span></code></td>
+<td class="longcolumn-1"><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">error_codes.h</span></code></div>
+</div>
+</td>
+<td><p>所有错误代码列表</p></td>
+<td><p>附录包含 <a class="reference internal" href="../appendix/error_codes.zh.html#appendix-error-codes"><span class="std std-ref">带注释的错误代码列表</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">ui</span></code></td>
+<td><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">ui.c</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">ui.h</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">ui_types.h</span></code></div>
+</div>
+</td>
+<td><p>用户界面</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">4.7. 外部接口</a><ul>
+<li><a class="reference internal" href="#general-ui-guidelines">4.7.1. 通用 UI 指南</a></li>
+<li><a class="reference internal" href="#implemented-behavior">4.7.2. 已实现的行为</a></li>
+<li><a class="reference internal" href="#error-codes">4.7.3. 错误代码</a><ul>
+<li><a class="reference internal" href="#error-code-led-behavior">4.7.3.1. 错误代码 LED 行为</a><ul>
+<li><a class="reference internal" href="#converting-error-code-to-led-blink-pattern">4.7.3.1.1. 将错误代码转换为 LED 闪烁模式</a></li>
+<li><a class="reference internal" href="#converting-led-blink-pattern-to-error-code">4.7.3.1.2. 将 LED 闪烁模式转换为错误代码</a></li>
+<li><a class="reference internal" href="#examples">4.7.3.1.3. 示例</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#timing-and-fault-clearing-issues-in-ui-indicators">4.7.4. UI 指示器中的时序和故障清除问题</a></li>
+<li><a class="reference internal" href="#implementation">4.7.5. 实现</a><ul>
+<li><a class="reference internal" href="#external-interface-errata">4.7.5.1. 外部接口勘误</a></li>
+<li><a class="reference internal" href="#modules">4.7.5.2. 模块</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="supervisory.zh.html" title="上一章"><span class="section-number">4.6. </span>监控算法</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="diagnostics.zh.html" title="下一章"><span class="section-number">4.8. </span>诊断内核</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="diagnostics.zh.html" title="4.8. Diagnostic Kernel">下一页</a> |</li>
+<li class="right">
+<a href="supervisory.zh.html" title="4.6. Supervisory Algorithms">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">4. </span>组件</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">4.7. </span>外部接口</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

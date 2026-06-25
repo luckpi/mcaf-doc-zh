@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*_nodes.txt
+*_nodes_disp.txt
+ext_urls.txt
+mirror_log.txt
+pending.txt
+residual_dump.txt
+untranslated_*.txt

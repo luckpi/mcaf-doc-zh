@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>6.2. 代码生成 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="ui-customization.zh.html" rel="next" title="6.3. Parameter customization"/>
+<link href="source-tree-structure.zh.html" rel="prev" title="6.1. Source Tree Structure"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="ui-customization.zh.html" title="6.3. Parameter customization">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="source-tree-structure.zh.html" title="6.1. Source Tree Structure">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> » <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.2. </span>代码生成</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="code-generation">
+<span id="impl-codegen"></span><h1><span class="section-number">6.2. </span>代码生成<a class="headerlink" href="#code-generation" title="本标题的永久链接">¶</a></h1>
+<section id="relationship-with-mb-and-mcc">
+<h2><span class="section-number">6.2.1. </span>与 motorBench 的关系<sup>®</sup> Development Suite 和 MCC<a class="headerlink" href="#relationship-with-mb-and-mcc" title="本标题的永久链接">¶</a></h2>
+<p>MPLAB<sup>®</sup> Code Configurator (MCC) 可作为 MCC 的插件库与 motorBench<sup>®</sup> Development Suite 一起使用。每个版本的 motorBench<sup>®</sup> Development Suite 都包含一个固件包，用于生成特定版本的 MCAF。</p>
+<p>自 <a class="reference internal" href="../appendix/rev_history.zh.html#appendix-revhistory-r4-mcc"><span class="std std-ref">MCAF R4</span></a>起，所有外设和系统初始化代码均由 MCC 而非 MCAF 生成。唯一的例外是 <a class="reference internal" href="../appendix/glossary.zh.html#term-QEI"><span class="xref std std-term">QEI</span></a> 外设，MCC 尚不支持 dsPIC33E 器件的该外设，需要在 MCC 中设置某些外设、振荡器和配置选项。详见 motorBench<sup>®</sup> Development Suite 帮助文档和发行说明以获取更多信息。</p>
+<p>自 <a class="reference internal" href="../appendix/rev_history.zh.html#appendix-revhistory-r7-mcc"><span class="std std-ref">MCAF R7</span></a>， <a class="reference internal" href="../appendix/glossary.zh.html#term-QEI"><span class="xref std std-term">QEI</span></a> 外设也包含在 MCC Melody 生成的外设和系统初始化代码中。MCAF 不再负责生成任何外设和/或系统初始化代码。这样 MCAF 可以利用 MCC Melody 来扩大对器件和硬件的支持。MCC Classic（33EP 器件所需）不支持 <a class="reference internal" href="../appendix/glossary.zh.html#term-QEI"><span class="xref std std-term">QEI</span></a> 外设，因此 MCAF 为该器件提供了适当的实现以替代代码生成。</p>
+</section>
+<section id="configurable-parameters">
+<span id="impl-config-params"></span><h2><span class="section-number">6.2.2. </span>可配置参数<a class="headerlink" href="#configurable-parameters" title="本标题的永久链接">¶</a></h2>
+<p>生成的文件位于 <code class="docutils literal notranslate"><span class="pre">parameters</span></code> 目录中，包含根据 motorBench<sup>®</sup> Development Suite 和 MPLAB<sup>®</sup> Code Configurator 中输入或推导的信息计算得出的可配置参数。</p>
+<p>Microchip 正在研究使这些参数计算更加透明、更易于在必要时调整的方法。</p>
+<p>完整的可配置参数表见文件 <code class="docutils literal notranslate"><span class="pre">aux-files/parameters.html</span></code> ，其内容类似以下摘录：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>键</p></th>
+<th class="head"><p>符号</p></th>
+<th class="head"><p>目标值</p></th>
+<th class="head"><p>单位</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td colspan="4"><p><strong>foc (10 items)</strong></p></td>
+<td><p><strong>磁场定向控制（FOC）参数</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">foc.kii</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(K_{ii}\)</span></p></td>
+<td><p>6.371e+02</p></td>
+<td><p>V/A/s</p></td>
+<td><p>电流环积分增益</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">foc.kip</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(K_{ip}\)</span></p></td>
+<td><p>0.4160799</p></td>
+<td><p>V/A</p></td>
+<td><p>电流环比例增益</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">foc.kwi</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(K_{\omega i}\)</span></p></td>
+<td><p>0.5869318</p></td>
+<td><p>A/rad</p></td>
+<td><p>速度环积分增益</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">foc.kwp</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(K_{\omega p}\)</span></p></td>
+<td><p>0.0355454</p></td>
+<td><p>A/(rad/s)</p></td>
+<td><p>速度环比例增益</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">foc.mcafCurrentCtrlDOutLimit</span></code></p></td>
+<td></td>
+<td><p>1.0000000</p></td>
+<td><p>线电压</p></td>
+<td><p>d 轴电流控制器输出线电压限值，以占 DC 母线电压的比例表示</p></td>
+</tr>
+</tbody>
+</table>
+<p>此处显示的是每个配置参数的实际工程值。对应的参数文件如下所示，包含定点整数值以及详细说明定点转换的 C 注释：</p>
+<div class="literal-block-wrapper docutils container" id="code-codegen-1">
+<div class="code-block-caption"><span class="caption-number">代码清单 6.1 </span><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">parameters/foc_params.h</span></code></span><a class="headerlink" href="#code-codegen-1" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="c1">//************** PI 系数 **************</span>
+<span class="c1">//// 电流环</span>
+<span class="c1">// 相位裕度 = 80 度</span>
+<span class="c1">// 交叉频率处的 PI 相位 = 45.000 度</span>
+<span class="c1">// 交叉频率 = 1.531 k rad/s (243.680 Hz)</span>
+<span class="cm">/* 电流环比例增益 */</span>
+<span class="cp">#define KIP 2272 </span><span class="c1">// Q15( 0.06934) = +416.01562 mV/A = +416.07990 mV/A - 0.0154%</span>
+<span class="cp">#define KIP_Q 15</span>
+<span class="cm">/* 电流环积分增益 */</span>
+<span class="cp">#define KII 174 </span><span class="c1">// Q15( 0.00531) = +637.20703 V/A/s = +637.05425 V/A/s + 0.0240%</span>
+<span class="cp">#define KII_Q 15</span>
+<span class="c1">//// 速度环</span>
+<span class="c1">// 相位裕度 = 65 度</span>
+<span class="c1">// 交叉频率处的 PI 相位 = 10.000 度</span>
+<span class="c1">// 交叉频率 = 93.645 rad/s (14.904 Hz)</span>
+<span class="cm">/* 速度环比例增益 */</span>
+<span class="cp">#define KWP 12422 </span><span class="c1">// Q13( 1.51636) = +35.54401 mA/(rad/s) = +35.54544 mA/(rad/s) - 0.0040%</span>
+<span class="cp">#define KWP_Q 13</span>
+<span class="cm">/* 速度环积分增益 */</span>
+<span class="cp">#define KWI 820 </span><span class="c1">// Q15( 0.02502) = +586.58211 mA/rad = +586.93179 mA/rad - 0.0596%</span>
+<span class="cp">#define KWI_Q 15</span>
+
+<span class="w">   </span><span class="p">...</span>
+
+<span class="cm">/* d 轴电流控制器输出线电压限值，以占 DC 母线电压的比例表示 */</span>
+<span class="cp">#define MCAF_CURRENT_CTRL_D_OUT_LIMIT 18919 </span><span class="c1">// Q15( 0.57736) = +1.00002 line-to-line = +1.00000 line-to-line + 0.0020%</span>
+</pre></div>
+</div>
+</div>
+<p>参数名采用“驼峰命名法”，但在 C 头文件中会转换为全大写并以下划线分隔单词，例如 <code class="docutils literal notranslate"><span class="pre">foc.mcafCurrentCtrlDOutLimit</span></code> 被转换为 <code class="docutils literal notranslate"><span class="pre">MCAF_CURRENT_CTRL_D_OUT_LIMIT</span></code> 在 <code class="docutils literal notranslate"><span class="pre">foc_params.h</span></code> 文件中。</p>
+<section id="out-of-range-errors">
+<h3><span class="section-number">6.2.2.1. </span>超范围错误<a class="headerlink" href="#out-of-range-errors" title="本标题的永久链接">¶</a></h3>
+<p>在少数情况下，配置参数可能在代码生成期间产生错误。这可能是由于电机参数与典型电机相比过大或过小。此时，代码生成将失败，并在 MPLAB<sup>®</sup> Code Configurator 中显示错误消息。（请阅读 motorBench<sup>®</sup> Development Suite 的发行说明以了解这些消息的显示方式。）</p>
+<p>典型的超范围错误消息如下所示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">ValueError</span><span class="p">：</span> <span class="n">Value</span> <span class="s1">'kip'</span> <span class="n">out</span> <span class="n">of</span> <span class="nb">range</span><span class="p">：</span> <span class="mf">345.055</span> <span class="n">Q8</span><span class="mf">.8</span> <span class="o">=</span> <span class="mf">4140.66</span> <span class="n">V</span><span class="o">/</span><span class="n">A</span>
+</pre></div>
+</div>
+<p>在此例中，代码生成引擎试图将实际值 4140.66 V/A 转换为 Q8 表示的 345.055，该值过大；Q8 仅支持 ± 128。</p>
+<p>Microchip 正在研究提供超范围错误排查和纠正指南的方法；在此期间，如果您遇到超范围错误，请 <a class="reference internal" href="../faq.zh.html#faq-support"><span class="std std-ref">联系 Microchip</span></a> 寻求帮助。</p>
+</section>
+</section>
+<section id="source-file-organization">
+<h2><span class="section-number">6.2.3. </span>源文件组织<a class="headerlink" href="#source-file-organization" title="本标题的永久链接">¶</a></h2>
+<p>每个源文件以如下头部开始：</p>
+<div class="literal-block-wrapper docutils container" id="code-codegen-2">
+<div class="code-block-caption"><span class="caption-number">代码清单 6.2 </span><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">foc.c</span></code></span><a class="headerlink" href="#code-codegen-2" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * foc.c</span>
+<span class="cm"> *</span>
+<span class="cm"> * 主磁场定向控制代码</span>
+<span class="cm"> *</span>
+<span class="cm"> * 组件：FOC</span>
+<span class="cm"> */</span>
+
+<span class="cm">/* *********************************************************************</span>
+<span class="cm"> *</span>
+<span class="cm"> * 电机控制应用框架</span>
+<span class="cm"> * R3/RC14 (commit 90529, build on 2018 Oct 04)</span>
+<span class="cm"> *</span>
+<span class="cm"> * (c) 2018 Microchip Technology Inc. 及其子公司。您可以使用</span>
+<span class="cm"> * 此软件及其任何衍生品仅与 Microchip 产品配合使用。</span>
+<span class="cm"> *</span>
+<span class="cm"> ...</span>
+</pre></div>
+</div>
+</div>
+<p>这是两个注释块。</p>
+<p>第一个用于某些计算机辅助文档，包含文件名、简要描述和 <a class="reference internal" href="../components/index.zh.html#components"><span class="std std-ref">组件</span></a> 名。</p>
+<p>第二个注释块包含 MCAF 版本（例如，R3 = 第 3 版，RC14 = 第 14 个候选发布版）、提交 ID 和构建日期，以及版权声明。</p>
+<p>通常，每个 <a class="reference internal" href="../architecture/overview.zh.html#architecture-modules"><span class="std std-ref">模块</span></a> 的代码分为两到三个文件，例如 <code class="docutils literal notranslate"><span class="pre">foc</span></code> 模块：</p>
+<ul class="simple">
+<li><p>编译单元（<code class="docutils literal notranslate"><span class="pre">foc.c</span></code>）——包含可 C 调用的函数定义</p></li>
+<li><p>头文件：</p>
+<ul>
+<li><p>主头文件（<code class="docutils literal notranslate"><span class="pre">foc.h</span></code>）——包含函数声明和内联函数实现</p></li>
+<li><p>类型头文件（<code class="docutils literal notranslate"><span class="pre">foc_types.h</span></code>）——包含与函数声明分离的类型定义</p></li>
+</ul>
+</li>
+</ul>
+<p>除类型头文件外，这是 C 代码中的典型组织方式。类型头文件被分离出来是为了帮助消除模块间不必要的依赖，使得状态变量可以在不引入额外模块依赖的情况下进行分配。</p>
+</section>
+<section id="auxiliary-reports">
+<h2><span class="section-number">6.2.4. </span>辅助报告<a class="headerlink" href="#auxiliary-reports" title="本标题的永久链接">¶</a></h2>
+<p>MCAF 包含在 <code class="docutils literal notranslate"><span class="pre">aux-files</span></code> 目录中生成的若干附加文件：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parameters.html</span></code> ——一个 <a class="reference internal" href="#impl-config-params"><span class="std std-ref">可配置参数表</span></a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">report.html</span></code> ——一个电机参数和指标表。如果您在排查特定电机的行为时需要帮助，请将此文件提供给 Microchip 工作人员，以便他们更好地了解电机的特性。派生参数或指标如 <span class="math notranslate nohighlight">\(\tau_e = L_s/R_s\)</span> 和 <span class="math notranslate nohighlight">\(\tau_{m1} = JR_s/\frac{3}{2}{K_e}^2\)</span> 和 <span class="math notranslate nohighlight">\(\alpha_J = \tau_{m1}/\tau_e\)</span> 可以帮助解释某些观察结果，或引导经验丰富的电机控制工程师指出使用该特定电机时的某些挑战。电气时间常数 <span class="math notranslate nohighlight">\(\tau_e\)</span> 和机械时间常数 <span class="math notranslate nohighlight">\(\tau_{m1}\)</span> 等时间常数可以帮助说明电气和机械动态的时间尺度。归一化惯量 <span class="math notranslate nohighlight">\(\alpha_J\)</span> 是这两个时间常数的比值，可以突出系统是否具有小惯量（<span class="math notranslate nohighlight">\(\alpha_J &lt; 2\)</span>），此时电气和机械动态不能很好地分离，可能导致控制稳定性挑战；或大惯量（<span class="math notranslate nohighlight">\(\alpha_J \gg 1\)</span>），此时可以预期速度控制环较慢。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">report.json</span></code> ——机器可读的电机参数值，采用 <a class="reference external" href="https://www.json.org/">JSON</a> 格式。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">report.xml.txt</span></code> ——机器可读的电机参数值，采用 <a class="reference external" href="https://en.wikipedia.org/wiki/XML">XML</a> 格式。</p></li>
+</ul>
+<p>这些文件是实验性的。欢迎任何关于改进这些文件内容的意见或建议；请 <a class="reference internal" href="../faq.zh.html#faq-support"><span class="std std-ref">联系 Microchip</span></a>。</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">6.2. 代码生成</a><ul>
+<li><a class="reference internal" href="#relationship-with-mb-and-mcc">6.2.1. 与 motorBench 的关系<sup>®</sup> Development Suite 和 MCC</a></li>
+<li><a class="reference internal" href="#configurable-parameters">6.2.2. 可配置参数</a><ul>
+<li><a class="reference internal" href="#out-of-range-errors">6.2.2.1. 超范围错误</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#source-file-organization">6.2.3. 源文件组织</a></li>
+<li><a class="reference internal" href="#auxiliary-reports">6.2.4. 辅助报告</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="source-tree-structure.zh.html" title="上一章"><span class="section-number">6.1. </span>源代码树结构</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="ui-customization.zh.html" title="下一章"><span class="section-number">6.3. </span>参数定制</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="ui-customization.zh.html" title="6.3. Parameter customization">下一页</a> |</li>
+<li class="right">
+<a href="source-tree-structure.zh.html" title="6.1. Source Tree Structure">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> » <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.2. </span>代码生成</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo"> © 版权所有 2017-2026，Microchip Technology, Inc.. </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

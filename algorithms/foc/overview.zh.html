@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.1.1. 磁场定向控制（FOC）：概述 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../../_static/rendermath.js"></script>
+<script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/svgcrop.js"></script>
+<script src="../../_static/mcaf-styling.js"></script>
+<link href="../../genindex.zh.html" rel="index" title="Index"/>
+<link href="../../search.zh.html" rel="search" title="Search"/>
+<link href="fundamentals.zh.html" rel="next" title="5.1.2. Fundamentals of FOC"/>
+<link href="index.zh.html" rel="prev" title="5.1. Field-oriented Current Control"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="fundamentals.zh.html" title="5.1.2. Fundamentals of FOC">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="index.zh.html" title="5.1. Field-oriented Current Control">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.zh.html"><span class="section-number">5.1. </span>磁场定向电流控制</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.1.1. </span>磁场定向控制（FOC）：概述</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="field-oriented-control-foc-an-overview">
+<span id="foc-overview"></span><h1><span class="section-number">5.1.1. </span>磁场定向控制（FOC）：概述<a class="headerlink" href="#field-oriented-control-foc-an-overview" title="本标题的永久链接">¶</a></h1>
+<p>磁场定向控制（FOC），又称矢量控制，是一种相对于电励磁的旋转参考坐标系来控制电机定子磁场的技术。它能够实现平滑转矩、高转矩能力、高效率和高带宽。</p>
+<p>FOC 可用于多种类型的电机：永磁同步电机、同步磁阻电机和感应电机。通过选择适当的参考坐标系，可将定子磁场的分量解耦为产生磁通的分量和产生转矩的分量，从而分别加以控制。在永磁同步电机和同步磁阻电机中，所采用的参考坐标系与转子同步旋转，并沿转子磁通轴线对齐。在感应电机中，参考坐标系以实现所需转差率所要求的同步转速旋转。</p>
+<p>与六步控制相比，FOC 对信号检测与调理的要求更为严格，需要以下条件：</p>
+<ul class="simple">
+<li><p>相电流测量，用于估计定子磁场矢量</p></li>
+<li><p>转子角度估计，通常精度需在 5–10 电角度以内（极对数越多的电机要求更高的机械精度）</p></li>
+</ul>
+<p>FOC 的计算量因实现而异，但通常高于六步控制。电流和电压通过矩阵乘法在不同参考坐标系之间转换，实际上就是若干形如 <span class="math notranslate nohighlight">\(ax + by\)</span> 或 <span class="math notranslate nohighlight">\(ax + by + cz\)</span>的计算。如果转子角度未直接检测（例如使用旋变或正交编码器），则可基于电流和电压测量，通过无传感器估计器计算得到。</p>
+<p>高性能转矩控制所带来的收益通常值得其代价，即使在动态响应相对较慢的应用（如水泵和风机）中也是如此。</p>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="index.zh.html" title="上一章"><span class="section-number">5.1. </span>磁场定向电流控制</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="fundamentals.zh.html" title="下一章"><span class="section-number">5.1.2. </span>FOC 基础</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="fundamentals.zh.html" title="5.1.2. Fundamentals of FOC">下一页</a> |</li>
+<li class="right">
+<a href="index.zh.html" title="5.1. Field-oriented Current Control">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.zh.html"><span class="section-number">5.1. </span>磁场定向电流控制</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.1.1. </span>磁场定向控制（FOC）：概述</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo"> © 版权所有 2017-2026，Microchip Technology, Inc.. </div>
+<script src="../../_static/lang-switch.js"></script>
+</body>
+</html>

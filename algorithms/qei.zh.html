@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.4.3. 正交编码器支持 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="qei_sync/common.zh.html" rel="next" title="5.4.3.3.1. Implementation issues common to all methods"/>
+<link href="pll.zh.html" rel="prev" title="5.4.2. AN1292 Phase-locked Loop (PLL)"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="qei_sync/common.zh.html" title="5.4.3.3.1. Implementation issues common to all methods">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="pll.zh.html" title="5.4.2. AN1292 Phase-locked Loop (PLL)">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="estimators.zh.html"><span class="section-number">5.4. </span>位置和速度估计</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4.3. </span>正交编码器支持</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="quadrature-encoder-support">
+<span id="algorithm-qei"></span><span id="index-0"></span><h1><span class="section-number">5.4.3. </span>正交编码器支持<a class="headerlink" href="#quadrature-encoder-support" title="本标题的永久链接">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">5.4.3.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
+<p>MCAF 支持通过 dsPIC<sup>®</sup> DSC 的 QEI（正交编码器接口）外设使用正交编码器（带或不带索引脉冲）进行闭环速度运行。</p>
+<p>在原型开发阶段，使用正交编码器非常有价值，它可以与无传感器估计器配合使用，以验证或排查估计器的运行。MCAF 允许多个估计器同时执行 — 以额外的 CPU 开销为代价 — 但只能有一个估计器用于换相。</p>
+<p>只要编码器信号接收无显著误差，正交编码器就能提供相对位置变化的准确跟踪。此外，角度分辨率是编码器的函数；高端编码器可以每机械转提供数千个脉冲。然而，编码器本身无法提供以下功能：</p>
+<ul class="simple">
+<li><p>始终保持绝对位置精度</p>
+<ul>
+<li><p>无索引脉冲的编码器无法提供绝对位置精度</p></li>
+<li><p>带索引脉冲的编码器在检测到索引脉冲后可以提供绝对精度，但在此之前，无法从编码器确定绝对位置</p></li>
+</ul>
+</li>
+<li><p>速度测量 — 编码器提供量化位置；速度必须通过单独的算法从位置估计</p></li>
+<li><p>确定 <a class="reference internal" href="../appendix/glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a>的电气换相偏移，以定位电机最大转子磁通相对于编码器位置的位置</p></li>
+</ul>
+<p>MCAF 通过 <a class="reference internal" href="#qei-sync"><span class="std std-ref">反电动势同步</span></a> 来确定换相偏移，并通过 <a class="reference internal" href="#tracking-loop"><span class="std std-ref">跟踪环</span></a> 从位置估计速度。</p>
+<section id="usage-notes">
+<h3><span class="section-number">5.4.3.1.1. </span>使用说明<a class="headerlink" href="#usage-notes" title="本标题的永久链接">¶</a></h3>
+<ul class="simple">
+<li><p>编码器通常以“线数”或“每转周期数”（CPR）表示。每转脉冲数与线数或 CPR 之间存在 4:1 的关系：例如，256 线 = 256 CPR = 1024 每转脉冲数。</p></li>
+<li><p>dsPICDEM<sup>®</sup> MCLV-2 开发板的编码器/Hall 输入上有 100 pF 滤波电容。这些电容可能对高脉冲率的编码器造成问题，在这种情况下应移除电容 C49、C50 和 C51，或替换为更小的值，如 10 pF。</p></li>
+</ul>
+</section>
+<section id="limitations">
+<h3><span class="section-number">5.4.3.1.2. </span>局限性<a class="headerlink" href="#limitations" title="本标题的永久链接">¶</a></h3>
+<p>截至 MCAF R9：</p>
+<ul class="simple">
+<li><p>不支持位置控制</p></li>
+<li><p>不支持零速附近的运行 — QEI 支持仅限于作为无传感器估计器的直接替代品使用，需要通过强制换相启动。</p></li>
+<li><p>索引脉冲在 dsPIC<sup>®</sup> DSC 33F、33E、33C 和部分 33A 器件中仅支持 2 的幂次方编码器分辨率。非 2 的幂次方编码器脉冲数由 QEI 外设的取模模式支持；索引脉冲由 QEI 外设的位置捕获功能支持，该功能在这些器件中不能与取模模式同时使用。</p></li>
+</ul>
+<span class="target" id="tracking-loop"></span></section>
+</section>
+<section id="index-1">
+<span id="id1"></span><h2><span class="section-number">5.4.3.2. </span>跟踪环<a class="headerlink" href="#index-1" title="本标题的永久链接">¶</a></h2>
+<section id="id2">
+<h3><span class="section-number">5.4.3.2.1. </span>概述<a class="headerlink" href="#id2" title="本标题的永久链接">¶</a></h3>
+<p>从编码器位置估计速度有很多方法。一种简单的实现会尝试对速度信号求导，但由于编码器对转子位置进行量化，在中等速度下结果将是一堆零和一。（例如，考虑一个 1024 每转脉冲数的编码器在以 1000 RPM = 16.667 转/秒运行的电机上。这产生大约 17067 脉冲/秒的编码器脉冲率。以 20 kHz 运行的控制 ISR 每次 ISR 会看到 0 或 1 个脈冲的变化。在 10000 RPM 时，同一电机/编码器将产生 170667 脉冲/秒，控制 ISR 每次会看到 8 或 9 个脉冲的变化。在两种情况下，速度的最大量化误差都等于 0.5 脉冲/ISR = 1/2048 轪c * 20 kHz = 9.77 转/秒 = 586 RPM。）</p>
+<p>估计速度的一种方法是计算每个控制周期的位置变化，并使用低通滤波器确定速度。MCAF 使用的是略有不同的方法，称为跟踪环。</p>
+<p>跟踪环本质上只是以状态变量形式实现的低通滤波器，以产生有用的估计。在 <a class="reference internal" href="#fig-tracking-loop"><span class="std std-numref">图 5.56</span></a>所示的跟踪环中，输入角度 <span class="math notranslate nohighlight">\(\theta\)</span> 可能含有噪声，无论是模拟噪声还是（对于编码器）量化噪声。环本身仅包含一个 PI 控制器来估计速度 <span class="math notranslate nohighlight">\(\hat{\omega}\)</span> ，然后积分形成估计角度 <span class="math notranslate nohighlight">\(\hat{\theta}\)</span> 用于形成 PI 环的误差项。</p>
+<figure class="align-center" id="id3">
+<span id="fig-tracking-loop"></span><img alt="../_images/tracking-loop-bdiag.png" src="../_images/tracking-loop-bdiag.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.56 </span><span class="caption-text">用于从位置估计速度的跟踪环</span><a class="headerlink" href="#id3" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>跟踪环的输出为</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\hat\omega_{LPF}\)</span> — 积分器输出可用作中等带宽的速度估计。</p></li>
+<li><p><span class="math notranslate nohighlight">\(\hat\omega\)</span> — PI 输出包含将误差驱动至零所需的高频分量。它通常不适合通用，因为来自 <span class="math notranslate nohighlight">\(\theta\)</span> 的噪声通过比例（P）项直接馈入。</p></li>
+<li><p><span class="math notranslate nohighlight">\(\hat\theta\)</span> — 估计角度滤除了量化噪声的高频分量，可用于位置控制应用；也可用于换相应用，但相位滞后至关重要，必须仔细分析。</p></li>
+</ul>
+<p><strong>关于单位选择的说明：</strong> 跟踪环可以同样适用于任何需要估计低频导数的物理量；其输入可以是以 °C 为单位的温度，输出为 °C/s，而不是以位置为输入、速度为输出。</p>
+</section>
+<section id="frequency-domain-equivalent">
+<h3><span class="section-number">5.4.3.2.2. </span>频域等效<a class="headerlink" href="#frequency-domain-equivalent" title="本标题的永久链接">¶</a></h3>
+<p>从实际角度/速度输入（假设加性噪声）到输出的传递函数为：</p>
+<div class="math notranslate nohighlight" id="equation-algorithms-qei-0">
+<span class="eqno">(5.26)<a class="headerlink" href="#equation-algorithms-qei-0" title="本公式的永久链接">¶</a></span>\[\begin{aligned}
+H_{\theta\rightarrow\hat{\omega}_{LPF}}(s) &amp;= \frac{K_i/s}{1+K_p/s+K_i/s^2} = \frac{s}{1/K_is^2+K_p/K_is+1} \cr
+H_{\theta\rightarrow\hat{\omega}}(s) &amp;= \frac{K_p+K_i/s}{1+K_p/s+K_i/s^2} = \frac{K_p/K_is^2+s}{1/K_is^2+K_p/K_is+1}\cr
+H_{\theta\rightarrow\hat{\theta}}(s) &amp;= \frac{K_p/s+K_i/s^2}{1+K_p/s+K_i/s^2}= \frac{K_p/K_is+1}{1/K_is^2+K_p/K_is+1}\cr
+H_{\omega\rightarrow\hat{\omega}_{LPF}}(s) &amp;= \frac{K_i}{1+K_p/s+K_i/s^2} = \frac{1}{1/K_is^2+K_p/K_is+1} \cr
+H_{\omega\rightarrow\hat{\omega}}(s) &amp;= \frac{K_ps+K_i}{1+K_p/s+K_i/s^2} = \frac{K_p/K_is+1}{1/K_is^2+K_p/K_is+1}\cr
+\end{aligned}\]</div>
+<p>需要注意以下几点：</p>
+<ul class="simple">
+<li><p>所有情况下分母都构成二阶系，可以写成 <span class="math notranslate nohighlight">\(\tau^2s^2 + 2\zeta\tau s+1\)</span> 其中 <span class="math notranslate nohighlight">\(K_i = 1/\tau^2\)</span> 和 <span class="math notranslate nohighlight">\(K_p = 2\zeta/\tau\)</span>。量 <span class="math notranslate nohighlight">\(\zeta\)</span> 表示阻尼因子，应保守设置，可能在 1–1.5 范围内。时间常数 <span class="math notranslate nohighlight">\(\tau = 1/\omega_n\)</span> 与带宽成反比。</p></li>
+<li><p>到 <span class="math notranslate nohighlight">\(\hat{\omega}_{LPF}\)</span> 的速度传递函数没有零点；到 <span class="math notranslate nohighlight">\(\hat{\omega}\)</span> 的速度传递函数在 <span class="math notranslate nohighlight">\(s=-K_i/K_p=-1/2\zeta\tau\)</span>。</p></li>
+</ul>
+</section>
+<section id="implementation-notes">
+<h3><span class="section-number">5.4.3.2.3. </span>实现说明<a class="headerlink" href="#implementation-notes" title="本标题的永久链接">¶</a></h3>
+<p>MCAF 用于正交编码器支持的跟踪环对机械角度 <span class="math notranslate nohighlight">\(\theta_m\)</span>运行，输出为估计机械角速度 <span class="math notranslate nohighlight">\(\omega_m\)</span>。此选择保留了一个完整机械轮内的角度位置，以支持未来的位置控制应用。</p>
+<p>MCAF 使用滤波后的速度， <span class="math notranslate nohighlight">\(\hat{\omega}_{LPF}\)</span>用于速度估计。</p>
+<p>MCAF 的跟踪环实现添加了一个限庅器模块，如 <a class="reference internal" href="#fig-tracking-loop-impl"><span class="std std-numref">图 5.57</span></a>所示，防止计算 <span class="math notranslate nohighlight">\(\hat\omega\)</span>。</p>
+<figure class="align-center" id="id4">
+<span id="fig-tracking-loop-impl"></span><img alt="../_images/tracking-loop-impl-bdiag.png" src="../_images/tracking-loop-impl-bdiag.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.57 </span><span class="caption-text">跟踪环实现</span><a class="headerlink" href="#id4" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="back-emf-synchronization">
+<span id="qei-sync"></span><span id="index-2"></span><h2><span class="section-number">5.4.3.3. </span>反电动势同步<a class="headerlink" href="#back-emf-synchronization" title="本标题的永久链接">¶</a></h2>
+<p>反电动势同步的目标是估计换相偏移，使得 <a class="reference internal" href="../appendix/glossary.zh.html#term-FOC"><span class="xref std std-term">FOC</span></a> 能够在完美对齐的参考坐标系下运行。当转子（<span class="math notranslate nohighlight">\(dq\)</span>）参考坐标系与 <a class="reference internal" href="../appendix/glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a>的转子磁通和反电动势完美对齐时，具有以下性质：</p>
+<ul class="simple">
+<li><p><strong>反电动势</strong> — 当 <span class="math notranslate nohighlight">\(I_q = I_d = 0\)</span> 以非零速度运行时，电机的端电压沿 q 轴方向并与机械速度 <span class="math notranslate nohighlight">\(\omega_m\)</span>成正比；端电压没有 d 轴分量。换相偏移的变化会导致非零的 d 轴分量。</p></li>
+<li><p><strong>d 轴转矩</strong> — 当 <span class="math notranslate nohighlight">\(I_q = 0, I_d \ne 0\)</span>时，不产生转矩。换相偏移的小变化会导致与 <span class="math notranslate nohighlight">\(\tilde\theta\)</span>（换相偏移误差）成正比的净电机械转矩： <span class="math notranslate nohighlight">\(T_{em} = \frac{3}{2}K_eI_d \sin\tilde\theta\)</span>。</p></li>
+<li><p><strong>q 轴转矩方向</strong> — 当 <span class="math notranslate nohighlight">\(I_d = 0, I_q &gt; 0\)</span>时，产生正转矩。（180° 偏移误差产生负转矩）</p></li>
+<li><p><strong>MTPA</strong> — 对于表贴永磁电机（SPMSM）， <span class="math notranslate nohighlight">\(I_d = 0, I_q &gt; 0\)</span> 产生最大转矩，换相偏移的任何变化都会减小产生的转矩。此条件称为“每安培最大转矩”或 MTPA。</p></li>
+<li><p><strong>饱和导致的各向异性</strong> — 当 <span class="math notranslate nohighlight">\(I_q = 0, I_d &gt; 0\)</span>时，铁饱和发生的电流低于换相偏移发生任何变化时的电流。饱和导致增量电感减小 <span class="math notranslate nohighlight">\(\partial \psi \over \partial I\)</span>。这是因为定子磁场与转子磁场叠加，以在给定定子电流下最大化定子磁场。</p></li>
+<li><p><strong>凸性导致的各向异性</strong> — 对于具有转子凸性的电机（如内置永磁电机 = IPMSM），d 轴和 q 轴是电感矩阵的特征矢量，因此 <span class="math notranslate nohighlight">\(I_d\)</span> 的变化产生定子磁通 <span class="math notranslate nohighlight">\(\psi_d\)</span> 的变化，而 <span class="math notranslate nohighlight">\(\psi_q\)</span>不变，同样 <span class="math notranslate nohighlight">\(I_q\)</span> 的变化产生定子磁通 <span class="math notranslate nohighlight">\(\psi_q\)</span> 的变化，而 <span class="math notranslate nohighlight">\(\psi_d\)</span>。换句话说，磁通方程可以写成方程 <a class="reference internal" href="#equation-eqn-ipmsm-flux">5.27</a>所示的形式，其电感矩阵没有非对角项。换相偏移的变化会导致磁通方程中出现非零的交叉轴项。</p></li>
+</ul>
+<div class="math notranslate nohighlight" id="equation-eqn-ipmsm-flux">
+<span class="eqno">(5.27)<a class="headerlink" href="#equation-eqn-ipmsm-flux" title="本公式的永久链接">¶</a></span>\[\begin{bmatrix}\psi_d \cr \psi_q\end{bmatrix} =
+\begin{bmatrix}L_d &amp; 0\cr 0 &amp; L_q\end{bmatrix}
+\begin{bmatrix}I_d \cr I_q\end{bmatrix} +
+\begin{bmatrix}\psi_m \cr 0\end{bmatrix}\]</div>
+<p>所有无传感器估计器都利用了至少一个这些性质来辨别真实的转子参考坐标系，在带宽、稳定性、收敛性、复杂性、功耗和精度方面有不同的权衡。</p>
+<p>MCAF R4 在 <code class="docutils literal notranslate"><span class="pre">qei_sync</span></code> 模块中引入了反电动势同步。可以选择三种方法之一，每种方法都与 <a class="reference internal" href="startup.zh.html#startup-sequence"><span class="std std-ref">启动序列</span></a>：</p>
+<ul class="simple">
+<li><p><strong>align（对齐）</strong> — 对齐方法在启动的对齐阶段以固定角度施加固定电流，并期望转子在低速时具有最小的机械负载，会旋转使其 d 轴与施加的电流矢量对齐。（此方法依赖 d 轴转矩性质。）这是 MCAF 的默认方法，速度很快，对大多数电机效果良好，只要齿槽转矩或其他机械负载相对较低，且在低转矩负载下转子凸性的影响较小。</p></li>
+<li><p><strong>pullout（失步）</strong> — 失步方法减小启动稳速阶段使用的电流，直到观察到转子角度开始从施加电流的角度显著减小。（此方法依赖 MTPA 性质。）此方法不受齿槽转矩误差的影响，但对强制换相的动态特性敏感。</p></li>
+<li><p><strong>align-and-sweep（对齐并扫描）</strong> — 对齐并扫描方法在启动的对齐阶段以缓慢变化的角度施加固定电流。施加的电气角度在正向和反向旋转一个完整的机械轮，在两个结果区间内，对施加的电气角度与测量的编码器角度之差取平均，以获得换相偏移的估计。此方法较慢，但可以在大多数电机中产生非常准确的换相偏移估计。</p></li>
+</ul>
+<p>这些方法在以下章节中有更详细的描述。</p>
+<p>在所有情况下，换相偏移仅在一次启动迭代中估计；一旦完成，结果值被重复使用，后续的启动序列将跳过反电动势同步。</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="qei_sync/common.zh.html">5.4.3.3.1. 所有方法共有的实现问题</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qei_sync/common.zh.html#api-of-qei-sync">5.4.3.3.1.1. API <code class="docutils literal notranslate"><span class="pre">qei_sync</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="qei_sync/common.zh.html#important-data-elements">5.4.3.3.1.2. 重要数据元素</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qei_sync/align.zh.html">5.4.3.3.2. 对齐方法</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qei_sync/align.zh.html#overview">5.4.3.3.2.1. 概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qei_sync/align.zh.html#limitations">5.4.3.3.2.2. 局限性</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qei_sync/align.zh.html#practical-implementation-issues">5.4.3.3.2.3. 实际实现问题</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qei_sync/align.zh.html#example-data">5.4.3.3.2.4. 示例数据</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qei_sync/align.zh.html#accuracy-and-repeatability-tests">5.4.3.3.2.5. 精度和可重复性测试</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qei_sync/align-sweep.zh.html">5.4.3.3.3. 对齐并扫描方法</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qei_sync/align-sweep.zh.html#overview">5.4.3.3.3.1. 概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qei_sync/align-sweep.zh.html#limitations">5.4.3.3.3.2. 局限性</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qei_sync/align-sweep.zh.html#practical-implementation-issues">5.4.3.3.3.3. 实际实现问题</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qei_sync/align-sweep.zh.html#example-data">5.4.3.3.3.4. 示例数据</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qei_sync/align-sweep.zh.html#accuracy-and-repeatability-tests">5.4.3.3.3.5. 精度和可重复性测试</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qei_sync/pullout.zh.html">5.4.3.3.4. 失步转矩方法</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="qei_sync/pullout.zh.html#overview">5.4.3.3.4.1. 概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qei_sync/pullout.zh.html#limitations">5.4.3.3.4.2. 局限性</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qei_sync/pullout.zh.html#practical-implementation-issues">5.4.3.3.4.3. 实际实现问题</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qei_sync/pullout.zh.html#example-data">5.4.3.3.4.4. 示例数据</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qei_sync/pullout.zh.html#accuracy-and-repeatability-tests">5.4.3.3.4.5. 精度和可重复性测试</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">5.4.3. 正交编码器支持</a><ul>
+<li><a class="reference internal" href="#overview">5.4.3.1. 概述</a><ul>
+<li><a class="reference internal" href="#usage-notes">5.4.3.1.1. 使用说明</a></li>
+<li><a class="reference internal" href="#limitations">5.4.3.1.2. 局限性</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#index-1">5.4.3.2. 跟踪环</a><ul>
+<li><a class="reference internal" href="#id2">5.4.3.2.1. 概述</a></li>
+<li><a class="reference internal" href="#frequency-domain-equivalent">5.4.3.2.2. 频域等效</a></li>
+<li><a class="reference internal" href="#implementation-notes">5.4.3.2.3. 实现说明</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#back-emf-synchronization">5.4.3.3. 反电动势同步</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="pll.zh.html" title="上一章"><span class="section-number">5.4.2. </span>AN1292 锁相环（PLL）</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="qei_sync/common.zh.html" title="下一章"><span class="section-number">5.4.3.3.1. </span>所有方法共有的实现问题</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="qei_sync/common.zh.html" title="5.4.3.3.1. Implementation issues common to all methods">下一页</a> |</li>
+<li class="right">
+<a href="pll.zh.html" title="5.4.2. AN1292 Phase-locked Loop (PLL)">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="estimators.zh.html"><span class="section-number">5.4. </span>位置和速度估计</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4.3. </span>正交编码器支持</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.5.1.3.1. 基于方程的弱磁控制 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../../../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../../../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+<script src="../../../_static/jquery.js"></script>
+<script src="../../../_static/underscore.js"></script>
+<script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../../../_static/doctools.js"></script>
+<script src="../../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../../../_static/rendermath.js"></script>
+<script async="async" src="../../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../../_static/svgcrop.js"></script>
+<script src="../../../_static/mcaf-styling.js"></script>
+<link href="../../../genindex.zh.html" rel="index" title="Index"/>
+<link href="../../../search.zh.html" rel="search" title="Search"/>
+<link href="../mtpa.zh.html" rel="next" title="5.5.2. Maximum Torque Per Ampere (MTPA)"/>
+<link href="../flux_weakening.zh.html" rel="prev" title="5.5.1. Flux weakening"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="../mtpa.zh.html" title="5.5.2. Maximum Torque Per Ampere (MTPA)">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="../flux_weakening.zh.html" title="5.5.1. Flux weakening">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="../index.zh.html"><span class="section-number">5.5. </span>磁链控制</a> »</li>
+<li class="nav-item nav-item-3"><a accesskey="U" href="../flux_weakening.zh.html"><span class="section-number">5.5.1. </span>弱磁控制</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.5.1.3.1. </span>基于方程的弱磁控制</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="equation-based-flux-weakening">
+<span id="algorithm-fw-eqn-based"></span><span id="index-0"></span><h1><span class="section-number">5.5.1.3.1. </span>基于方程的弱磁控制<a class="headerlink" href="#equation-based-flux-weakening" title="本标题的永久链接">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">5.5.1.3.1.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
+<p>弱磁（FW）模块需要计算适当的 d 轴电流参考 <span class="math notranslate nohighlight">\(I_{d\_fw}\)</span> ，以使电机在不增加电机电压的情况下以高于额定速度的速度运行。实现了一种基于方程的弱磁算法。该算法基于开环方法计算 FW 运行的电流参考（<span class="math notranslate nohighlight">\(I_{d\_fw}\)</span>），使用电机电压方程。根据应用需求，用户可以启用或禁用弱磁。</p>
+</section>
+<section id="flow-chart-and-description">
+<h2><span class="section-number">5.5.1.3.1.2. </span>流程图和说明<a class="headerlink" href="#flow-chart-and-description" title="本标题的永久链接">¶</a></h2>
+<p><a class="reference internal" href="#fig-fw-implementation"><span class="std std-numref">图 5.82</span></a> 展示了弱磁算法的流程图。</p>
+<figure class="align-center" id="id1">
+<span id="fig-fw-implementation"></span><a class="reference internal image-reference" href="../../../_images/fw_eq_based_implementation.png"><img alt="../../../_images/fw_eq_based_implementation.png" src="../../../_images/fw_eq_based_implementation.png" style="width: 650px;"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.82 </span><span class="caption-text">弱磁算法流程图</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>基于方程的 FW 算法执行两个重要任务。首先，它检查是否需要注入负的 <span class="math notranslate nohighlight">\(I_{d}\)</span> 。这是通过考虑电机在稳态下的 q 轴电压方程（由 <a class="reference internal" href="#equation-vq-equation-steadystate">5.47</a>给出）来完成的。如果可用的 q 轴电压（<span class="math notranslate nohighlight">\(V_{qs\_fw}\)</span>）足以克服 <span class="math notranslate nohighlight">\(R_{s}I_{q} + E_{\mathrm{mag}}\)</span>的加和，则不需要弱磁， <span class="math notranslate nohighlight">\(I_{d\_fw}\)</span> 被设为零。这里， <span class="math notranslate nohighlight">\(E_{\mathrm{mag}}\)</span> 为反电动势幅值。</p>
+<div class="math notranslate nohighlight" id="equation-vq-equation-steadystate">
+<span class="eqno">(5.47)<a class="headerlink" href="#equation-vq-equation-steadystate" title="本公式的永久链接">¶</a></span>\[V_{qs\_fw} = R_{s}I_{q} + \omega L_{d} I_{d} + E_{\mathrm{mag}}\]</div>
+<p>可用的 q 轴电压（<span class="math notranslate nohighlight">\(V_{qs\_fw}\)</span>）是通过取 d 轴定子电压（<span class="math notranslate nohighlight">\(V_{ds}\)</span>）作为输入并执行以下计算得出的。这里， <span class="math notranslate nohighlight">\(V_{\max}\)</span> 是可以安全施加到电机的最大可能电压。这是基于直流母线电压 <span class="math notranslate nohighlight">\(V_{dc}\)</span> 和电压限制乘数 <span class="math notranslate nohighlight">\(V_{lim,ll}\)</span> 的值计算的，如 <a class="reference internal" href="../../../implementation/ui-customization.zh.html#impl-customization"><span class="std std-ref">参数自定义</span></a>。</p>
+<div class="math notranslate nohighlight" id="equation-vqs-fw-calc">
+<span class="eqno">(5.48)<a class="headerlink" href="#equation-vqs-fw-calc" title="本公式的永久链接">¶</a></span>\[V_{qs\_fw} = \sqrt{V_{\max}{}^2 - V_{ds}{}^2}\]</div>
+<p>右侧的项 <a class="reference internal" href="#equation-vq-equation-steadystate">5.47</a> 是通过将 <span class="math notranslate nohighlight">\(E_{\mathrm{mag}}\)</span> 加到 <span class="math notranslate nohighlight">\(R_{s}I_{q}\)</span>来计算的。然后计算 <span class="math notranslate nohighlight">\(V_{qs\_fw}\)</span> 与（<span class="math notranslate nohighlight">\(R_{s}I_{q} + E_{\mathrm{mag}}\)</span>）之间的差。如果该差为正，表示有足够的 q 轴电压可用于在该速度和负载下运行。在此情况下， <span class="math notranslate nohighlight">\(I_{d\_fw}\)</span> 被设为零。</p>
+<p>如果该差为负，则需要弱磁，算法随后计算参考电流 <span class="math notranslate nohighlight">\(I_{d\_fw}\)</span>。如 <a class="reference internal" href="#equation-vq-equation-steadystate">5.47</a>所示，计算得到的差应匹配项 <span class="math notranslate nohighlight">\(\omega L_{d} I_{d}\)</span> 以满足此方程。此差值项除以 <span class="math notranslate nohighlight">\(\omega L_{d}\)</span> 以求得 <span class="math notranslate nohighlight">\(I_{d\_fw}\)</span>。计算后， <span class="math notranslate nohighlight">\(I_{d\_fw}\)</span> 作为 <a class="reference internal" href="../flux_weakening_mtpa_integration.zh.html#algorithm-fw-and-mtpa-integration"><span class="std std-ref">D 轴电流参考生成</span></a> 模块的输入，用于 <span class="math notranslate nohighlight">\(I_{d\_ref}\)</span> 生成。</p>
+</section>
+<section id="implementation-notes">
+<h2><span class="section-number">5.5.1.3.1.3. </span>实现说明<a class="headerlink" href="#implementation-notes" title="本标题的永久链接">¶</a></h2>
+<p>在 R6 中添加。</p>
+<p>以下是与基于方程的 FW 实现相关的一些重要点。</p>
+<ul class="simple">
+<li><p>滤波 <span class="math notranslate nohighlight">\(E_{\mathrm{mag}}\)</span>：计算后，反电动势幅值 <span class="math notranslate nohighlight">\(E_{\mathrm{mag}}\)</span> 通过低通滤波器以平滑。此滤波后的值随后用于计算 <span class="math notranslate nohighlight">\(I_{d\_fw}\)</span>。</p></li>
+<li><p>电压限制：最大电压幅值（<span class="math notranslate nohighlight">\(V_{\max}\)</span>）是电压幅值的限制。这也等于在弱磁运行区域施加到电机的电压。它由直流母线电压幅值和电压限制参数（<span class="math notranslate nohighlight">\(V_{lim,ll}\)</span>）计算得出。计算基于以下方程。分母中的 <span class="math notranslate nohighlight">\(\sqrt{3}\)</span> 是由于从线电压到相电压的转换。</p></li>
+</ul>
+<div class="math notranslate nohighlight" id="equation-vmax-calc">
+<span class="eqno">(5.49)<a class="headerlink" href="#equation-vmax-calc" title="本公式的永久链接">¶</a></span>\[V_{\max} = V_{dc} \frac{V_{lim,ll}}{\sqrt{3}}\]</div>
+</section>
+<section id="factors-affecting-flux-weakening-operation">
+<h2><span class="section-number">5.5.1.3.1.4. </span>影响弱磁运行的因素<a class="headerlink" href="#factors-affecting-flux-weakening-operation" title="本标题的永久链接">¶</a></h2>
+<ul>
+<li><p>的影响 <span class="math notranslate nohighlight">\(V_{\max}\)</span>： <span class="math notranslate nohighlight">\(V_{\max}\)</span> 的值在 FW 运行中起着关键作用。它影响可用 q 轴电压（<span class="math notranslate nohighlight">\(V_{qs\_fw}\)</span>）的计算值，进而影响电机过渡到 FW 运行区域的速度。应注意此值是基于直流母线电压（<span class="math notranslate nohighlight">\(V_{dc}\)</span>）和电压限制参数（<span class="math notranslate nohighlight">\(V_{lim,ll}\)</span>）计算的。 <span class="math notranslate nohighlight">\(V_{lim,ll}\)</span> 的最大值为 1。</p>
+<p>下面给出了一组简化方程，以理解 <span class="math notranslate nohighlight">\(V_{\max}\)</span> 的值与过渡到 FW 区域的速度之间的关系。 <a class="reference internal" href="#equation-vmax-transition">5.50</a> 给出了稳态电机电压方程以及可用 q 轴电压（<span class="math notranslate nohighlight">\(V_{qs\_fw}\)</span>）的计算。</p>
+<div class="math notranslate nohighlight" id="equation-vmax-transition">
+<span class="eqno">(5.50)<a class="headerlink" href="#equation-vmax-transition" title="本公式的永久链接">¶</a></span>\[\begin{split}\begin{aligned}
+V_{ds} &amp;= - \omega L_q I_q \\
+    V_{qs\_fw} &amp;= \sqrt{V_{\max}{}^2 - V_{ds}{}^2} \\
+V_{qs\_fw} &amp;= R_s I_q + \omega L_{d} I_{d} + E_{\mathrm{mag}}\\
+    E_{\mathrm{mag}} &amp;= \omega_e \Psi_{\mathrm{PM}}
+\end{aligned}\end{split}\]</div>
+<p>随着电机速度（此处假设为正）的增加， <span class="math notranslate nohighlight">\(V_{ds}\)</span> 的幅值增加，因此 <span class="math notranslate nohighlight">\(V_{qs\_fw}\)</span> 的幅值减小。由此，初始为正的项 <span class="math notranslate nohighlight">\(\omega L_{d} I_{d}\)</span> （由 <span class="math notranslate nohighlight">\(V_{qs\_fw}\)</span> 方程计算）的幅值减小。在过渡到 FW 区域的边界处，此项变为零。如果定子电阻项（<span class="math notranslate nohighlight">\(R_{s} I_{q}\)</span>）为简化而忽略，则过渡到 FW 区域的速度（<span class="math notranslate nohighlight">\(\omega_{fw\_tr}\)</span>）可由 <a class="reference internal" href="#equation-vel-transition">5.51</a>给出。因此，随着 <span class="math notranslate nohighlight">\(V_{\max}\)</span> 的增加， <span class="math notranslate nohighlight">\(\omega_{fw\_tr}\)</span> 也增加。</p>
+<div class="math notranslate nohighlight" id="equation-vel-transition">
+<span class="eqno">(5.51)<a class="headerlink" href="#equation-vel-transition" title="本公式的永久链接">¶</a></span>\[\omega_{fw\_tr} = \frac{V_{\max}}{\sqrt{(L_q I_q)^2 + \Psi_{\mathrm{PM}}{}^2}}\]</div>
+<p>对于给定的 <span class="math notranslate nohighlight">\(V_{lim,ll}\)</span>，如果直流母线电压更高， <span class="math notranslate nohighlight">\(V_{\max}\)</span> 也将按比例增加（<a class="reference internal" href="#equation-vmax-calc">5.49</a>）。这将导致电机在更高的速度下过渡到 FW 区域。同样，直流母线电压或 <span class="math notranslate nohighlight">\(V_{lim,ll}\)</span> 的值的减小将导致过渡到 FW 区域发生在更低的速度。</p>
+</li>
+<li><p>FW 区域的速度扩展：FW 区域中速度扩展的限制取决于电机的额定电流、电感和反电动势常数等因素。 <a class="reference internal" href="#equation-v-gain">5.52</a> 展示了速度的近似增益作为电机最大电流 <span class="math notranslate nohighlight">\(I_{\max}\)</span>， <span class="math notranslate nohighlight">\(L_{d}\)</span> 和 <span class="math notranslate nohighlight">\(\Psi_{\mathrm{PM}}\)</span>的函数的关系。对于电感更大和额定电流更大的电机，FW 区域的速度扩展更大；而对于反电动势常数更低的电机，FW 区域的扩展也更大。</p>
+<div class="math notranslate nohighlight" id="equation-v-gain">
+<span class="eqno">(5.52)<a class="headerlink" href="#equation-v-gain" title="本公式的永久链接">¶</a></span>\[\frac{\omega_{\max}}{\omega_{\mathrm{rated}}} = \frac{1}{1 - \frac{L_d I_{\max}}{\Psi_{\mathrm{PM}}}}\]</div>
+<p><a class="reference internal" href="#fig-fw-plot-nonsalient-original"><span class="std std-numref">图 5.83</span></a> 展示了非凸性电机的转矩-速度能力曲线。标义值电机参数标注在图的顶部。最外层的虚线红曲线表示作为速度函数的最大可能转矩。实线红曲线为恒定电流曲线，实线黑曲线为恒定电压曲线。浅蓝色阴影区域为无弱磁区域，粉红色阳影区域为弱磁区域。阴影曲线 <span class="math notranslate nohighlight">\(A-D_1-O-A'\)</span> 表示弱磁与无弱磁区域之间的边界，阳影曲线 <span class="math notranslate nohighlight">\(P-D_2-B-C-P'\)</span> 表示弱磁区域的极限边界。点 B 和点 C 分别表示无负载条件下 FW 电动和 FW 发电区域的速度。这些值是在无库仑摩擦和黏性阻力情况下的理论最大可达速度值。在 <a class="reference internal" href="#fig-fw-plot-nonsalient-original"><span class="std std-numref">图 5.83</span></a>中，电动区域的最大速度约为 1.28 标义值。</p>
+<p><a class="reference internal" href="#fig-fw-plot-nonsalient-ldlq1pt5"><span class="std std-numref">图 5.84</span></a> 展示了同一电机的转矩-速度能力曲线，但电机电感值增加了 50%。可以看出，FW 电动区域的速度限制增加了，约为 1.5 标义值。</p>
+<p><a class="reference internal" href="#fig-fw-plot-nonsalient-imax1pt5"><span class="std std-numref">图 5.85</span></a> 展示了同一电机在原始电感值下的转矩-速度能力曲线，但电机电流额定增加了 50%。FW 电动区域的速度限制约为 1.48 标义值，大于 <a class="reference internal" href="#fig-fw-plot-nonsalient-original"><span class="std std-numref">图 5.83</span></a>。</p>
+<p><a class="reference internal" href="#fig-fw-plot-nonsalient-ke0pt75"><span class="std std-numref">图 5.86</span></a> 展示了同一电机在原始电感值和电机电流额定下的转矩-速度能力曲线，但反电动势常数减小到原始值的 75%。FW 电动区域的速度限制约为 1.4 标义值，大于 <a class="reference internal" href="#fig-fw-plot-nonsalient-original"><span class="std std-numref">图 5.83</span></a>。</p>
+</li>
+</ul>
+<figure class="align-center" id="id2">
+<span id="fig-fw-plot-nonsalient-original"></span><a class="reference internal image-reference" href="../../../_images/fw_plot_nonsalient_original.png"><img alt="../../../_images/fw_plot_nonsalient_original.png" src="../../../_images/fw_plot_nonsalient_original.png" style="width: 500px;"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.83 </span><span class="caption-text">非凸性电机的转矩-速度能力曲线</span><a class="headerlink" href="#id2" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id3">
+<span id="fig-fw-plot-nonsalient-ldlq1pt5"></span><a class="reference internal image-reference" href="../../../_images/fw_plot_nonsalient_LdLq1pt5.png"><img alt="../../../_images/fw_plot_nonsalient_LdLq1pt5.png" src="../../../_images/fw_plot_nonsalient_LdLq1pt5.png" style="width: 500px;"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.84 </span><span class="caption-text">非凸性电机的转矩-速度能力曲线（更高电感）</span><a class="headerlink" href="#id3" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id4">
+<span id="fig-fw-plot-nonsalient-imax1pt5"></span><a class="reference internal image-reference" href="../../../_images/fw_plot_nonsalient_Imax1pt5.png"><img alt="../../../_images/fw_plot_nonsalient_Imax1pt5.png" src="../../../_images/fw_plot_nonsalient_Imax1pt5.png" style="width: 500px;"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.85 </span><span class="caption-text">非凸性电机的转矩-速度能力曲线（更高电流额定）</span><a class="headerlink" href="#id4" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id5">
+<span id="fig-fw-plot-nonsalient-ke0pt75"></span><a class="reference internal image-reference" href="../../../_images/fw_plot_nonsalient_Ke0pt75.png"><img alt="../../../_images/fw_plot_nonsalient_Ke0pt75.png" src="../../../_images/fw_plot_nonsalient_Ke0pt75.png" style="width: 500px;"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.86 </span><span class="caption-text">非凸性电机的转矩-速度能力曲线（更低反电动势常数）</span><a class="headerlink" href="#id5" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../../../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">5.5.1.3.1. 基于方程的弱磁控制</a><ul>
+<li><a class="reference internal" href="#overview">5.5.1.3.1.1. 概述</a></li>
+<li><a class="reference internal" href="#flow-chart-and-description">5.5.1.3.1.2. 流程图和说明</a></li>
+<li><a class="reference internal" href="#implementation-notes">5.5.1.3.1.3. 实现说明</a></li>
+<li><a class="reference internal" href="#factors-affecting-flux-weakening-operation">5.5.1.3.1.4. 影响弱磁运行的因素</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="../flux_weakening.zh.html" title="上一章"><span class="section-number">5.5.1. </span>弱磁控制</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="../mtpa.zh.html" title="下一章"><span class="section-number">5.5.2. </span>每安培最大转矩（MTPA）</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="../mtpa.zh.html" title="5.5.2. Maximum Torque Per Ampere (MTPA)">下一页</a> |</li>
+<li class="right">
+<a href="../flux_weakening.zh.html" title="5.5.1. Flux weakening">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="../index.zh.html"><span class="section-number">5.5. </span>磁链控制</a> »</li>
+<li class="nav-item nav-item-3"><a href="../flux_weakening.zh.html"><span class="section-number">5.5.1. </span>弱磁控制</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.5.1.3.1. </span>基于方程的弱磁控制</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../../../_static/lang-switch.js"></script>
+</body>
+</html>

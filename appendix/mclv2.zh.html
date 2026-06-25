@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>7.3. MCLV-2 采样电阻 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="otherdocs.zh.html" rel="next" title="7.4. Related Documents"/>
+<link href="error_codes.zh.html" rel="prev" title="7.2. Error code list"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="otherdocs.zh.html" title="7.4. Related Documents">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="error_codes.zh.html" title="7.2. Error code list">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">7. </span>附录</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">7.3. </span>MCLV-2 采样电阻</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="mclv-2-sense-resistors">
+<span id="appendix-mclv2"></span><h1><span class="section-number">7.3. </span>MCLV-2 采样电阻<a class="headerlink" href="#mclv-2-sense-resistors" title="本标题的永久链接">¶</a></h1>
+<p> <a class="reference external" href="https://www.microchip.com/DevelopmentTools/ProductDetails/dm330021-2">dsPICDEM<sup>®</sup> MCLV-2 开发板</a> 包含一个三相桥，在桥的 A 和 B 支路以及 DC 电流路径上具有低边 25 mΩ 分流电阻用于电流检测电路，如 <a class="reference internal" href="#fig-mclv2-1"><span class="std std-numref">图 7.1</span></a>所示。采样电阻上的电压用于检测电流 <span class="math notranslate nohighlight">\(I_a\)</span>， <span class="math notranslate nohighlight">\(I_b\)</span>和 <span class="math notranslate nohighlight">\(I_{dc} = I_a + I_b + I_c\)</span>。</p>
+<figure class="align-center" id="id1">
+<span id="fig-mclv2-1"></span><img alt="../_images/bridge3a.png" src="../_images/bridge3a.png"/>
+<figcaption>
+<p><span class="caption-number">图 7.1 </span><span class="caption-text">MCLV-2 中的三相桥，理想电路</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>在实际电路板中，连接桥的 A、B 和 C 支路的节点 Ⓛ 处的电流走线电压不均匀，因为它包含沿走线寄生电阻的非零电压降。在 MCLV-2 板中，该电阻可建模为三个串联电阻 <span class="math notranslate nohighlight">\(R_{p1}\)</span>， <span class="math notranslate nohighlight">\(R_{p2}\)</span>和 <span class="math notranslate nohighlight">\(R_{p3}\)</span>，如 <a class="reference internal" href="#fig-mclv2-2"><span class="std std-numref">图 7.2</span></a>。开尔文连接直接从采样电阻端子到差分放大器，使这些寄生电阻上的电压降不影响电流测量。</p>
+<figure class="align-center" id="id2">
+<span id="fig-mclv2-2"></span><img alt="../_images/bridge3b.png" src="../_images/bridge3b.png"/>
+<figcaption>
+<p><span class="caption-number">图 7.2 </span><span class="caption-text">MCLV-2 中的三相桥，布局正确的实际电路</span><a class="headerlink" href="#id2" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>遗憾的是，MCLV-2 板存在一些布局错误。虽然使用了开尔文连接，但在信号走线中被短路在一起，因此这些寄生电阻上的电压降 <em>确实</em> 影响电流测量，可有效建模如 <a class="reference internal" href="#fig-mclv2-3"><span class="std std-numref">图 7.3</span></a>，其中短路的节点 ⑦ 用作所有三个电流检测电路的公共端。</p>
+<figure class="align-center" id="id3">
+<span id="fig-mclv2-3"></span><img alt="../_images/bridge3c.png" src="../_images/bridge3c.png"/>
+<figcaption>
+<p><span class="caption-number">图 7.3 </span><span class="caption-text"> </span><a class="headerlink" href="#id3" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>这些走线电阻在室温下的近似值（通过将限流电源连接到各对电路节点，测量电源输出的电流和各点电压来测量，例如将电流注入采样电阻 <span class="math notranslate nohighlight">\(R_{sa}\)</span> 并从采样电阻 <span class="math notranslate nohighlight">\(R_{s,dc}\)</span>的节点 ⑦ 引出，以测量 <span class="math notranslate nohighlight">\(R_{p1}\)</span>， <span class="math notranslate nohighlight">\(R_{p2}\)</span>和 <span class="math notranslate nohighlight">\(R_{p3}\)</span>）为</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(R_{p1} \approx 3.3\ \text{m}\Omega\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(R_{p2} \approx 2.9\ \text{m}\Omega\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(R_{p3} \approx 0.3\ \text{m}\Omega\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(R_{p4} \approx 90\  \text{m}\Omega\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(R_{p5} \approx 58\  \text{m}\Omega\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(R_{p6} \approx 63\  \text{m}\Omega\)</span></p></li>
+</ul>
+<p>这实际上意味着节点 ⑧ 处的电压 <span class="math notranslate nohighlight">\(V_{7}\)</span> 在节点 ⑦ 处是三个电压的加权平均值 <span class="math notranslate nohighlight">\(V_a\)</span> 在节点 ② 处，<span class="math notranslate nohighlight">\(V_b\)</span> 在节点 ③ 处，和<span class="math notranslate nohighlight">\(V_{dc}\)</span> 在节点 ⑤ 处：<span class="math notranslate nohighlight">\(V_7 = K_aV_a + K_bV_b + K_{dc}V_{dc}\)</span>。还使用测试电流测量了近似权重 <span class="math notranslate nohighlight">\(K_a \approx 0.25\)</span>， <span class="math notranslate nohighlight">\(K_b \approx 0.39\)</span>和 <span class="math notranslate nohighlight">\(K_{dc} \approx 0.36\)</span>。</p>
+<p>如果我们在所有低侧开关导通时采样电流，且 <span class="math notranslate nohighlight">\(I_a + I_b + I_c\)</span> 为 0，则 <span class="math notranslate nohighlight">\(R_{p3}\)</span> 上的电压降为 0，另外两个电压降为 <span class="math notranslate nohighlight">\(I_aR_{p1}\)</span> 和 <span class="math notranslate nohighlight">\((I_a + I_b)R_{p2}\)</span>。我们可以分析电路以确定对电流检测的影响，如果我们将采样电阻写为标称电阻 <span class="math notranslate nohighlight">\(R_s\)</span> 带有容差 <span class="math notranslate nohighlight">\(R_{sa} = R_s(1+\delta_a)\)</span> 和 <span class="math notranslate nohighlight">\(R_{sb} = R_s(1+\delta_b)\)</span>，则可将结果简化为：</p>
+<div class="math notranslate nohighlight" id="equation-appendix-mclv2-0">
+<span class="eqno">(7.1)<a class="headerlink" href="#equation-appendix-mclv2-0" title="本公式的永久链接">¶</a></span>\[\begin{aligned}
+ V_{sa} &amp;= I_a\left(R_{s}(1+\delta_a) + K_bR_{p1} + K_{dc}(R_{p1} + R_{p2})\right) + I_bK_{dc}R_{p2} \cr
+ V_{sb} &amp;= I_b\left(R_{s}(1+\delta_b) + K_{dc}R_{p2}\right) + I_a\left(K_{dc}R_{p2} - K_aR_{p1}\right)
+\end{aligned}\]</div>
+<p>或以矩阵形式：</p>
+<div class="math notranslate nohighlight" id="equation-appendix-mclv2-1">
+<span class="eqno">(7.2)<a class="headerlink" href="#equation-appendix-mclv2-1" title="本公式的永久链接">¶</a></span>\[\begin{bmatrix}
+ V_{sa} \cr
+ V_{sb}
+\end{bmatrix}
+=
+\mathbf{K}
+\begin{bmatrix}
+ I_a \cr
+ I_b
+\end{bmatrix}
+R_s
+=
+\begin{bmatrix}
+ 1+\epsilon_{aa}+\delta_a &amp; \phantom{1+}\epsilon_{ab}\phantom{+\delta_b} \cr
+ \phantom{1+}\epsilon_{ba}\phantom{+\delta_a} &amp; 1+\epsilon_{bb}+\delta_b
+\end{bmatrix}
+\begin{bmatrix}
+ I_a \cr
+ I_b
+\end{bmatrix}
+R_s\]</div>
+<p>其中</p>
+<div class="math notranslate nohighlight" id="equation-appendix-mclv2-2">
+<span class="eqno">(7.3)<a class="headerlink" href="#equation-appendix-mclv2-2" title="本公式的永久链接">¶</a></span>\[\begin{split}\begin{aligned}
+ \epsilon_{aa} &amp;= \frac{K_bR_{p1} + K_{dc}R_{p1} + K_{dc}R_{p2}}{R_s} &amp;\approx 0.141 \\[3ex]
+ \epsilon_{ab} &amp;= \frac{K_{dc}R_{p2}}{R_s}                            &amp;\approx 0.042 \\[3ex]
+ \epsilon_{ba} &amp;= \frac{K_{dc}R_{p2} - K_a{R_{p1}}}{R_s}              &amp;\approx 0.009 \\[3ex]
+ \epsilon_{bb} &amp;= \frac{K_{dc}R_{p2}}{R_s}                            &amp;\approx 0.042
+\end{aligned}\end{split}\]</div>
+<p>换言之，如果采样电阻没有容差误差（<span class="math notranslate nohighlight">\(\delta_a = \delta_b = 0\)</span>），则 <span class="math notranslate nohighlight">\(\mathbf{K} \approx \begin{bmatrix}1.141 &amp; 0.042 \cr 0.009 &amp; 1.042 \end{bmatrix}\)</span>。</p>
+<p>补偿增益将为 <span class="math notranslate nohighlight">\(\mathbf{K}_\text{comp} \, = \, \mathbf{K}^{-1} \, \approx \begin{bmatrix}\phantom{-}0.877 &amp; -0.035 \cr -0.008 &amp; \phantom{-}0.960\end{bmatrix}\)</span> （对于标称值）。</p>
+<p>这与实验室测量基本一致——向 A 相和 B 相注入已知电流并测量数字化 <a class="reference internal" href="glossary.zh.html#term-ADC"><span class="xref std std-term">ADC</span></a> 值；其中一组测量产生了经验估计 <span class="math notranslate nohighlight">\(\mathbf{K}_\text{empirical}\, = \begin{bmatrix}1.150 &amp; 0.044\cr 0.012 &amp; 1.048\end{bmatrix}\)</span>。</p>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="error_codes.zh.html" title="上一章"><span class="section-number">7.2. </span>错误代码列表</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="otherdocs.zh.html" title="下一章"><span class="section-number">7.4. </span>相关文档</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="otherdocs.zh.html" title="7.4. Related Documents">下一页</a> |</li>
+<li class="right">
+<a href="error_codes.zh.html" title="7.2. Error code list">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">7. </span>附录</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">7.3. </span>MCLV-2 采样电阻</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

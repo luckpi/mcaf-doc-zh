@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>6.6.9. 自定义板级定义格式 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../../_static/rendermath.js"></script>
+<script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/svgcrop.js"></script>
+<script src="../../_static/mcaf-styling.js"></script>
+<link href="../../genindex.zh.html" rel="index" title="Index"/>
+<link href="../../search.zh.html" rel="search" title="Search"/>
+<link href="../resource-usage.zh.html" rel="next" title="6.7. Resource Usage"/>
+<link href="verification.zh.html" rel="prev" title="6.6.8. Verification and board bring-up"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="../resource-usage.zh.html" title="6.7. Resource Usage">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="verification.zh.html" title="6.6.8. Verification and board bring-up">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.zh.html"><span class="section-number">6.6. </span>自定义板级支持</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.6.9. </span>自定义板级定义格式</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="custom-board-definition-format">
+<span id="custom-board-definitions"></span><h1><span class="section-number">6.6.9. </span>自定义板级定义格式<a class="headerlink" href="#custom-board-definition-format" title="本标题的永久链接">¶</a></h1>
+<p>自定义板级定义文件在 motorBench<sup>®</sup> Development Suite 中遵循规定格式。它们可读且可手动编辑，但基于定义的数据结构，组织为数据模型。</p>
+<ul class="simple">
+<li><p>数据模型必须符合 <a class="reference internal" href="#custom-board-schema"><span class="std std-ref">板级定义 schema</span></a></p></li>
+<li><p>数据模型 <a class="reference internal" href="#custom-board-data-models"><span class="std std-ref">被序列化为文本格式</span></a> （motorBench 2.50 中为 YAML）</p></li>
+</ul>
+<p>以下章节描述这些约束。</p>
+<section id="working-with-serialized-data-models">
+<span id="custom-board-data-models"></span><h2><span class="section-number">6.6.9.1. </span>使用序列化数据模型<a class="headerlink" href="#working-with-serialized-data-models" title="本标题的永久链接">¶</a></h2>
+<section id="introduction">
+<h3><span class="section-number">6.6.9.1.1. </span>简介<a class="headerlink" href="#introduction" title="本标题的永久链接">¶</a></h3>
+<p>术语数据模型指用于建模系统的任何层次树结构。在 motorBench<sup>®</sup> Development Suite 中，我们使用多个数据模型，用于 <a class="reference internal" href="../../architecture/codegen.zh.html#codegen-operation"><span class="std std-ref">代码生成</span></a>， <a class="reference internal" href="../ui-customization.zh.html#impl-customization"><span class="std std-ref">参数定制</span></a> 和 <a class="reference internal" href="index.zh.html#custom-board"><span class="std std-ref">自定义板级支持</span></a>。</p>
+<p>某些数据模型可以序列化为文本格式，如 <a class="reference external" href="https://www.json.org/json-en.html">JSON</a>， <a class="reference external" href="https://en.wikipedia.org/wiki/YAML">YAML</a>，以及 <a class="reference external" href="https://toml.io/en/">TOML</a>，这便于在适当情况下使用版本控制和手动编辑。motorBench<sup>®</sup> Development Suite 2.50 的自定义板功能支持导入 YAML 格式的文件。</p>
+<p>motorBench 中板级定义的数据模型</p>
+<ul>
+<li><p>可序列化为 JSON 并可从 JSON 反序列化，支持以下值类型</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>数字</p></li>
+<li><p>字符串</p></li>
+<li><p>布尔值（<code class="docutils literal notranslate"><span class="pre">true</span></code> 和 <code class="docutils literal notranslate"><span class="pre">false</span></code>）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></li>
+<li><p>值列表（= 数组/有序序列）</p></li>
+<li><p>值映射（= 字典/无序键值对集合）</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>通常以 YAML 格式描述（比 JSON 更易读写）</p></li>
+<li><p>通过以点分隔的路径引用，例如 <code class="docutils literal notranslate"><span class="pre">characteristics.current.phase.fullscale</span></code></p></li>
+</ul>
+</section>
+<section id="example-in-yaml">
+<span id="data-models-yaml-example"></span><h3><span class="section-number">6.6.9.1.2. </span>YAML 示例<a class="headerlink" href="#example-in-yaml" title="本标题的永久链接">¶</a></h3>
+<p>以下是 YAML 格式的部分板级定义摘录。其层次结构通过缩进层级表达。</p>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>编辑时，建议使用支持 YAML 的编辑器，如 VSCode 或 Notepad++，具备语法高亮和展开/折叠层次结构部分的功能。</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>为避免对齐不当和不兼容，请使用空格而非制表符进行缩进。</p>
+</div>
+<div class="literal-block-wrapper docutils container" id="code-data-model1">
+<div class="code-block-caption"><span class="caption-number">代码清单 6.3 </span><span class="caption-text"> </span><a class="headerlink" href="#code-data-model1" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="nt">identification</span><span class="p">：</span>
+<span class="w">   </span><span class="nt">id</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom_board</span>
+<span class="w">   </span><span class="nt">displayName</span><span class="p">：</span><span class="w"> </span><span class="s">"Custom</span><span class="nv"> </span><span class="s">Board"</span>
+<span class="w">   </span><span class="nt">description</span><span class="p">：</span><span class="w"> </span><span class="s">"Custom</span><span class="nv"> </span><span class="s">Board"</span>
+<span class="w"> </span><span class="nt">characteristics</span><span class="p">：</span>
+<span class="w">   </span><span class="nt">device</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dsPIC33CK256MP508</span>
+<span class="w">   </span><span class="c1"># 这是一个注释</span>
+<span class="w">   </span><span class="nt">current</span><span class="p">：</span>
+<span class="w">     </span><span class="nt">phase</span><span class="p">：</span>
+<span class="w">       </span><span class="nt">fullscale</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">21.8</span>
+<span class="w">       </span><span class="nt">maximum</span><span class="p">：</span>
+<span class="w">         </span><span class="c1"># WOO HOO HOO</span>
+<span class="w">         </span><span class="nt">continuous</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">14.1</span>
+<span class="w">       </span><span class="nt">timeConstant</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">184.0e-9</span>
+<span class="w">     </span><span class="nt">dcLink</span><span class="p">：</span>
+<span class="w">       </span><span class="nt">fullscale</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">21.8</span>
+<span class="w">       </span><span class="nt">timeConstant</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">184.0e-9</span>
+<span class="w"> </span><span class="nt">peripherals</span><span class="p">：</span>
+<span class="w">   </span><span class="nt">adc</span><span class="p">：</span>
+<span class="w">     </span><span class="nt">current</span><span class="p">：</span>
+<span class="w">       </span><span class="nt">a</span><span class="p">：</span>
+<span class="w">         </span><span class="nt">channel</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AN0</span>
+<span class="w">         </span><span class="nt">inverted</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">         </span><span class="nt">signed</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">       </span><span class="nt">b</span><span class="p">：</span>
+<span class="w">         </span><span class="nt">channel</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AN1</span>
+<span class="w">         </span><span class="nt">inverted</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">         </span><span class="nt">signed</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">   </span><span class="nt">opamp</span><span class="p">：</span>
+<span class="w">     </span><span class="nt">enabled</span><span class="p">：</span>
+<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+</pre></div>
+</div>
+</div>
+<ul>
+<li><p><strong>注释</strong> 表示为 <code class="docutils literal notranslate"><span class="pre">#</span></code> 后跟任意文本，该文本将被忽略至行尾</p>
+</li>
+<li id="data-model-number"><span id="data-model-types"></span><p><strong>数字</strong> 表示为整数、浮点值或科学记数法</p>
+<blockquote>
+<div></div></blockquote>
+<ul id="data-model-float">
+<li><p><strong>浮点值</strong> 可以表示为小数（示例： <code class="docutils literal notranslate"><span class="pre">0.38</span></code>， <code class="docutils literal notranslate"><span class="pre">8702.1</span></code>）或科学记数法（示例： <code class="docutils literal notranslate"><span class="pre">-3.02e-5</span></code>， <code class="docutils literal notranslate"><span class="pre">4.73e3</span></code>）。</p>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>使用科学记数法时，请确保在指数前使用小数点，例如 <code class="docutils literal notranslate"><span class="pre">3.0e-5</span></code> 而非 <code class="docutils literal notranslate"><span class="pre">3e-5</span></code>。这可避免某些软件库中的问题。</p>
+</div>
+</li>
+</ul>
+</li>
+<li id="data-model-bool"><p><strong>Booleans</strong> 表示为固定文本 <code class="docutils literal notranslate"><span class="pre">true</span></code> 和 <code class="docutils literal notranslate"><span class="pre">false</span></code> （注：内容区分大小写）</p></li>
+<li><p><strong>Null</strong> 值表示为固定文本 <code class="docutils literal notranslate"><span class="pre">null</span></code></p>
+</li>
+<li id="data-model-string"><p><strong>字符串</strong> 表示为非数字、非布尔值、非 null 的文本。</p>
+<ul class="simple">
+<li><p>为安全起见，在 YAML 中使用引号分隔字符串；YAML 包含其他令人困惑的表示方式，如 <code class="docutils literal notranslate"><span class="pre">on</span></code> 和 <code class="docutils literal notranslate"><span class="pre">off</span></code> （用于布尔值）或 <code class="docutils literal notranslate"><span class="pre">12:00</span></code> 这是一个时间值。</p></li>
+<li><p>YAML 中还有其他几种表达多行字符串的方式；板级定义文件中不需要也不应使用它们。</p></li>
+</ul>
+</li>
+<li id="data-model-list"><p><strong>列表</strong> 是缩进值的有序序列，每个值前以连字符开头（末尾 <code class="docutils literal notranslate"><span class="pre">opamp.enabled</span></code>）</p>
+<ul class="simple">
+<li><p>列表也可以用替代的紧凑语法表示 <code class="docutils literal notranslate"><span class="pre">[value1,</span> <span class="pre">value2,</span> <span class="pre">value3]</span></code> 如 Javascript 和 Python 中所示，但我们通常不在示例中使用。</p></li>
+</ul>
+</li>
+<li id="data-model-map"><p><strong>映射</strong> 是缩进键/值对的无序序列，其中键为字符串，后跟冒号，再跟一个与冒号以空格或换行符分隔的值。</p>
+<ul>
+<li><p>上面的示例文档是一个包含三个键的映射， <code class="docutils literal notranslate"><span class="pre">identification</span></code>， <code class="docutils literal notranslate"><span class="pre">characteristics</span></code>，以及 <code class="docutils literal notranslate"><span class="pre">peripherals</span></code>。</p></li>
+<li><p>与 <code class="docutils literal notranslate"><span class="pre">identification</span></code> 键关联的值本身是一个包含三个键的映射： <code class="docutils literal notranslate"><span class="pre">id</span></code>， <code class="docutils literal notranslate"><span class="pre">displayName</span></code>，以及 <code class="docutils literal notranslate"><span class="pre">description</span></code>。这些键各自引用紧随键后（空格之后）的字符串值。</p></li>
+<li><p>映射也可以用 Javascript 中的替代紧凑语法表示，但我们通常不在示例中使用：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">{</span><span class="nt">key1</span><span class="p">：</span><span class="w"> </span><span class="nv">value1</span><span class="p p-Indicator">，</span><span class="nt"> key2</span><span class="p">：</span><span class="w"> </span><span class="nv">value2</span><span class="p p-Indicator">，</span><span class="nt"> key3</span><span class="p">：</span><span class="w"> </span><span class="nv">value3</span><span class="p p-Indicator">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>映射中元素的顺序不重要，可以排列而不改变值，即使生成的序列化 YAML 文件不同。</p></li>
+</ul>
+</li>
+<li><p>数据模型中的值可以通过 <strong>路径</strong>引用，它是一个使用句点/点 <code class="docutils literal notranslate"><span class="pre">。</span></code> 来表示按键索引映射，使用方括号 <code class="docutils literal notranslate"><span class="pre">[]</span></code> 来表示按整数值索引列表。在上面的示例数据模型中：</p>
+<ul>
+<li><p>路径 <code class="docutils literal notranslate"><span class="pre">identification.id</span></code> 引用字符串 <code class="docutils literal notranslate"><span class="pre">custom_board</span></code></p></li>
+<li><p>路径 <code class="docutils literal notranslate"><span class="pre">peripherals.opamp.enabled[1]</span></code> 引用数字 <code class="docutils literal notranslate"><span class="pre">2</span></code></p></li>
+<li><p>路径 <code class="docutils literal notranslate"><span class="pre">peripherals.adc.current.a</span></code> 引用以下映射：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">channel</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AN0</span>
+<span class="nt">inverted</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">signed</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+</ul>
+<p>有关 YAML 的更详细介绍，有各种公开资源；以下似乎是较为易读的教程：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.cloudbees.com/blog/yaml-tutorial-everything-you-need-get-started">CloudBees YAML Tutorial: Everything You Need to Get Started in Minutes</a></p></li>
+<li><p><a class="reference external" href="https://dojofive.com/blog/yaml-tutorial-how-tos-best-practices-getting-started/">Dojo Five YAML Tutorial: How To’s, Best Practices &amp; Getting Started</a></p></li>
+<li><p><a class="reference external" href="https://learnxinyminutes.com/yaml/">Learn X in Y minutes, Where X = YAML</a></p></li>
+</ul>
+</section>
+</section>
+<section id="custom-board-schema">
+<span id="id1"></span><h2><span class="section-number">6.6.9.2. </span>自定义板级 schema<a class="headerlink" href="#custom-board-schema" title="本标题的永久链接">¶</a></h2>
+<p>自定义板级定义中的数据模型是符合下表所列 schema 的层次树结构，组织在三个顶层节下：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">identification</span></code> — 涵盖与板名称和描述相关的数据</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">characteristics</span></code> — 涵盖与板相关的参数，如最大 PWM 频率、满量程 DC 母线电压、最大连续相电流等</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">peripherals</span></code> — 涵盖外设配置选择，如 UART 引脚分配、ADC 通道映射、PWM 故障源和极性等</p></li>
+</ul>
+<p>表格的每一行描述树中的一个条目，具有以下属性：</p>
+<ul>
+<li><p>一个类型，可以是 <a class="reference internal" href="#data-model-types"><span class="std std-ref">标准数据模型类型</span></a> 之一，或以下之一：</p>
+<ul class="simple">
+<li><p>命名类型，如 <a class="reference internal" href="#board-schema-digitalpolarity"><span class="std std-ref">[digitalPolarity]</span></a>，具有约束结构。这些类型列在表格末尾。</p></li>
+<li><p>一个 <code class="docutils literal notranslate"><span class="pre">enum</span></code>，即从若干固定选项中选择（这些在描述中列出）</p></li>
+<li><p>约束数值范围，此处以不等式表示为 <span class="math notranslate nohighlight">\(n\)</span> or <span class="math notranslate nohighlight">\(x\)</span>：</p>
+<ul>
+<li><p><span class="math notranslate nohighlight">\(n\)</span>：整数范围，例如 <span class="math notranslate nohighlight">\(1 \le n \le 3\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(x\)</span>：浮点范围，例如 <span class="math notranslate nohighlight">\(0.0 \le x \le 1.0\)</span> or <span class="math notranslate nohighlight">\(x \ge 0.0\)</span></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>单位（如适用）——例如 V（伏特）或 A（安培）或 s（秒）</p></li>
+<li><p>该条目是否为必填（Req'd，以绿色勾号 <a class="reference internal" href="../../_images/icon-green-check.svg"><img alt="greencheck" src="../../_images/icon-green-check.svg" width="20px"/></a>）或可选</p>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>条目在其父条目的上下文中为必填或可选。例如， <code class="docutils literal notranslate"><span class="pre">peripherals.qei</span></code> 是可选的，但如果存在，则 <code class="docutils literal notranslate"><span class="pre">peripherals.qei.pins</span></code> 为必填。</p>
+</div>
+</li>
+<li><p>“Description”下的进一步描述性注释</p></li>
+</ul>
+<table class="board-schema docutils align-default" id="table-board-schema">
+<thead>
+<tr class="row-odd"><th class="head"><p>路径</p></th>
+<th class="head"><p>类型</p></th>
+<th class="head"><p>单位</p></th>
+<th class="head"><p>必填</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate"><span class="pre">identification</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>板级标识 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.id</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>板的给定实例的唯一 ID。此参数限于可打印 ASCII 字符（代码 32-126，包括空格但不包括 DELETE (127)）。 </p>
+<p>regex:descriptor = <code class="docutils literal notranslate"><span class="pre">^[</span> <span class="pre">-~]+$</span></code></p>
+</td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.displayName</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>加载板级配置文件时在 motorBench 中显示的板名称。此参数限于可打印 ASCII 字符（代码 32-126，包括空格但不包括 DELETE (127)）。 </p>
+<p>regex:descriptor = <code class="docutils literal notranslate"><span class="pre">^[</span> <span class="pre">-~]+$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.description</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>板级配置的描述 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate"><span class="pre">characteristics</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>板级特性 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.device</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>微控制器型号。限于 dsPIC33CK 和 dsPIC33AK 独立器件以及 dsPIC33CDV、dsPIC33CDVC 和 dsPIC33CDVL SiP 器件。 <p>使用 MPLAB X 中的器件名，不含任何表示封装或温度范围的后缀。例如， <code class="docutils literal notranslate"><span class="pre">dsPIC33CK256MP508</span></code> 而非 <code class="docutils literal notranslate"><span class="pre">dsPIC33CK256MP508T-I/PT</span></code>。</p>
+</p>
+<p>regex:deviceName = <code class="docutils literal notranslate"><span class="pre">^(dsPIC33)([A-Za-z]+)([0-9]+)([A-Za-z]+)([0-9]+)$</span></code></p>
+</td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.gateDriver</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>使用 MCP802(1/2/7) 栅极驱动器或基于 SiP 的板的 PWM 栅极驱动器配置 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.device</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>栅极驱动器器件名。限于 <a class="reference external" href="https://www.microchip.com/en-us/product/mcp8021"><code class="docutils literal notranslate"><span class="pre">MCP8021</span></code></a>， <a class="reference external" href="https://www.microchip.com/en-us/product/mcp8022"><code class="docutils literal notranslate"><span class="pre">MCP8022</span></code></a>， <a class="reference external" href="https://www.microchip.com/en-us/product/mcp8027"><code class="docutils literal notranslate"><span class="pre">MCP8027</span></code></a>。 </p>
+<p>regex:identifier = <code class="docutils literal notranslate"><span class="pre">^[A-Za-z_][A-Za-z0-9_]*$</span></code></p>
+</td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.configuration</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>栅极驱动器配置。各参数详情请参见器件数据手册。 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.sleepMode</span></code></td>
+<td class="board-schema-type"><p>enum</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>禁用时的器件模式 (SLEEP) </p>
+<p>选项：<ul class="simple">
+</ul>
+<li><code class="docutils literal notranslate"><span class="pre">'sleep'</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">'standby'</span></code></li>
+</p>
+</td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.shortCircuitDetect</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>启用外部 MOSFET 短路检测 (EXTSC) </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.underVoltageLockout</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>启用外部 MOSFET 欠压锁定 (EXTUVLO) </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.opampEnabledDuringDeviceStandby</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>在器件待机模式下启用运放 (OPAMP)。仅在使用 MCP8022 时需要。 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.linPullUpsEnabled</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>启用 LIN 上拉电阻 (PU30K)。仅在使用 MCP8027 时需要。 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.dacReference</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p>V</p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>设置 DAC 电流参考值 (DACREF)。仅在使用 MCP8027 时需要。 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.pins</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>MCP802x 栅极驱动器 RX、TX、fault 和 device enable 引脚的引脚分配。如果使用 SiP 器件，请参阅器件数据手册的内部连接框图。 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.RX</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>GPIO 引脚名。可用引脚请参见器件数据手册。 </p>
+<p>regex:pin = <code class="docutils literal notranslate"><span class="pre">^R([A-HJK])([0-9]|1[0-5])$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.TX</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>GPIO 引脚名。可用引脚请参见器件数据手册。 </p>
+<p>regex:pin = <code class="docutils literal notranslate"><span class="pre">^R([A-HJK])([0-9]|1[0-5])$</span></code></p>
+</td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.fault</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>GPIO 引脚名。可用引脚请参见器件数据手册。 </p>
+<p>regex:pin = <code class="docutils literal notranslate"><span class="pre">^R([A-HJK])([0-9]|1[0-5])$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.outputEnable</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>GPIO 引脚名。可用引脚请参见器件数据手册。 </p>
+<p>regex:pin = <code class="docutils literal notranslate"><span class="pre">^R([A-HJK])([0-9]|1[0-5])$</span></code></p>
+</td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.voltage</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>板级电压测量特性 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.phase</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>相电压测量特性 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.timeConstant</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p>s</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>相电压测量电路的时间常数 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.fullscale</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p>V</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>相电压测量的满量程值 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.dcLink</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>DC 母线电压测量特性 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.timeConstant</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p>s</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>DC 母线电压测量电路的时间常数 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.fullscale</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p>V</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>DC 母线电压测量的满量程值。ADC 的 0V 至 3.3V 范围对应 0V 至满量程范围。 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.minimum</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p>V</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>DC 母线电压的最小允许值 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.maximum</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p>V</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>DC 母线电压的最大允许值 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.default</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p>V</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>DC 母线电压的默认值。用于 motorBench 启动新项目时初始化“标称 DC 母线电压”系统参数。 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.current</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>板级 <a class="reference internal" href="../../algorithms/foc/current_measure.zh.html#algorithm-current-measure"><span class="std std-ref">电流测量</span></a> characteristics </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.dcLink</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>DC 母线电流测量特性 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.fullscale</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p>A</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>DC 母线电流测量的满量程值 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.timeConstant</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p>s</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>DC 母线电流测量电路的时间常数 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.phase</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>相电流测量特性 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.fullscale</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p>A</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>相电流测量的满量程值 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.timeConstant</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p>s</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>相电流测量电路的时间常数 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.maximum</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>最大相电流特性 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.continuous</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p>A</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>最大连续相电流。此值必须远低于满量程相电流测量范围，以考虑电流纹波和硬件容差，同时为电流控制器过冲留出足够裕量。 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.peak</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p>A</p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>最大峰值相电流。此值必须远低于满量程相电流测量范围，以考虑电流纹波和硬件容差，同时为电流控制器过冲留出足够裕量。 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.gainCorrectionFactors</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>相电流测量增益校正因子。这五个参数构成 3x3 矩阵（Kac、Kbc、Kca 和 Kcb 设为零），用于电流测量补偿。可选；如不存在，使用 3x3 单位矩阵。 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.Kaa</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(0.5 \le x \le 1.5\)</span></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p></p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.Kab</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(-0.5 \le x \le 0.5\)</span></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.Kba</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(-0.5 \le x \le 0.5\)</span></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p></p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.Kbb</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(0.5 \le x \le 1.5\)</span></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.Kcc</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(0.5 \le x \le 1.5\)</span></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>可选；支持测量 C 相电流并需要增益校正的板 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.pwm</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>三相 PWM 特性 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.frequency</span></code></td>
+<td class="board-schema-type"><p><a class="reference internal" href="#board-schema-rangewithdefault"><code class="xref std std-ref docutils literal notranslate"><span class="pre">[rangeWithDefault]</span></code></a></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>三相 PWM 信号的开关频率 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.minimum</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(x \ge 0.0\)</span></td>
+<td class="board-schema-unit"><p>Hz</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>最小允许值 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.maximum</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(x \ge 0.0\)</span></td>
+<td class="board-schema-unit"><p>Hz</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>Default value </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.default</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(x \ge 0.0\)</span></td>
+<td class="board-schema-unit"><p>Hz</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>默认值 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.deadTime</span></code></td>
+<td class="board-schema-type"><p><a class="reference internal" href="#board-schema-rangewithdefault"><code class="xref std std-ref docutils literal notranslate"><span class="pre">[rangeWithDefault]</span></code></a></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p><a class="reference internal" href="../../algorithms/dead-time-comp.zh.html#dtc-definition"><span class="std std-ref">死区时间</span></a> 三相 PWM 信号的。即一相中高侧和低侧 PWM 信号同时关闭的短暂时间，防止 DC 母线电压与地之间的导通和短路。 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.minimum</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(x \ge 0.0\)</span></td>
+<td class="board-schema-unit"><p>s</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>最小允许值 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.maximum</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(x \ge 0.0\)</span></td>
+<td class="board-schema-unit"><p>s</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>Default value </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.default</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(x \ge 0.0\)</span></td>
+<td class="board-schema-unit"><p>s</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>默认值 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.dutyCycle</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>PWM 占空比特性 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.minimum</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>板支持的最小占空比，考虑了逆变级的最小脉冲宽度限制。 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.maximum</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>板支持的最大占空比，考虑了逆变级的最小脉冲宽度限制、栅极驱动器（如存在）的自举限制以及低侧分流电流放大电路（如存在）的电流测量限制。 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.powerOn</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>上电特性 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.delay</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>上电延迟特性 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.maximum</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(x \ge 0.0\)</span></td>
+<td class="board-schema-unit"><p>s</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>电路稳定并准备好使用前的最坏情况上电延迟 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate"><span class="pre">peripherals</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p></p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.debugger</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>编程/调试配置 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.channel</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(1 \le n \le 3\)</span></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>用于编程/调试的 PGDx/PGCx 通道。可用编程/调试通道请参见器件数据手册。 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.oscillator</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>振荡器配置 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path" id="custom-board-clocksource"><code class="docutils literal notranslate">    <span class="pre">.clockSource</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>时钟源选择。可用选项为 <code class="docutils literal notranslate"><span class="pre">crystal</span> <span class="pre">oscillator</span></code>， <code class="docutils literal notranslate"><span class="pre">internal</span> <span class="pre">FRC</span></code>，或 <code class="docutils literal notranslate"><span class="pre">external</span> <span class="pre">clock</span></code>。 <dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">crystal</span> <span class="pre">oscillator</span></code></dt><dd><p>带 PLL 的主振荡器</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">internal</span> <span class="pre">FRC</span></code></dt><dd><p>带 PLL 的 FRC 振荡器</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">external</span> <span class="pre">clock</span></code></dt><dd><p>带 PLL 的外部振荡器</p>
+</dd>
+</dl>
+</p>
+<p>regex:clockSource = <code class="docutils literal notranslate"><span class="pre">^[</span> <span class="pre">-~]+$</span></code></p>
+</td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.inputClockFrequency</span></code></td>
+<td class="board-schema-type"><p>integer</p></td>
+<td class="board-schema-unit"><p>Hz</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>用于生成系统时钟频率的输入时钟频率 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.adc</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>ADC 外设和 ADC 通道的配置。可用 ADC 通道请参见器件数据手册。 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.samplingTime</span></code></td>
+<td class="board-schema-type"><p><a class="reference internal" href="#board-schema-rangewithdefault"><code class="xref std std-ref docutils literal notranslate"><span class="pre">[rangeWithDefault]</span></code></a></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>ADC 通道的采样时间 <p>所有器件的 ADC 采样时间都有有限的有效范围。请参阅器件数据手册，确保生成的代码中相应的寄存器（33C 器件为 ADCON2H.SHRSAMC，33A 器件为 ADxCHyCON.SAMC）产生适合终端应用的采样时间。</p>
+</p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.minimum</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(x \ge 0.0\)</span></td>
+<td class="board-schema-unit"><p>s</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>最小允许值 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.maximum</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(x \ge 0.0\)</span></td>
+<td class="board-schema-unit"><p>s</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>Default value </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.default</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(x \ge 0.0\)</span></td>
+<td class="board-schema-unit"><p>s</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>默认值 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.current</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>配置 <a class="reference internal" href="configuration.zh.html#custom-board-current-sense"><span class="std std-ref">用于电流测量的 ADC 通道</span></a>。这决定了哪些 <a class="reference internal" href="../../algorithms/foc/current_measure.zh.html#algorithm-current-measure"><span class="std std-ref">电流测量</span></a> 方法可用。 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.dcLink</span></code></td>
+<td class="board-schema-type"><p><a class="reference internal" href="#board-schema-adcchannelcurrent"><code class="xref std std-ref docutils literal notranslate"><span class="pre">[adcChannelCurrent]</span></code></a></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>电流测量 ADC 通道配置 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.channel</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>要采样的 ADC 通道 </p>
+<p>regex:adcChannel = <code class="docutils literal notranslate"><span class="pre">^((ANA?)|(AD[0-5]ANN?))([0-9]|([1-3][0-9]))$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.inverted</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 通道测量是否反相。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 反相， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 非反相 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.signed</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 测量是否被视为相对于中点 (AVdd/2) 的有符号值或相对于 AVss 的无符号值。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 有符号， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 无符号 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.a</span></code></td>
+<td class="board-schema-type"><p><a class="reference internal" href="#board-schema-adcchannelcurrent"><code class="xref std std-ref docutils literal notranslate"><span class="pre">[adcChannelCurrent]</span></code></a></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>电流测量 ADC 通道配置 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.channel</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>要采样的 ADC 通道 </p>
+<p>regex:adcChannel = <code class="docutils literal notranslate"><span class="pre">^((ANA?)|(AD[0-5]ANN?))([0-9]|([1-3][0-9]))$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.inverted</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 通道测量是否反相。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 反相， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 非反相 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.signed</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 测量是否被视为相对于中点 (AVdd/2) 的有符号值或相对于 AVss 的无符号值。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 有符号， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 无符号 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.b</span></code></td>
+<td class="board-schema-type"><p><a class="reference internal" href="#board-schema-adcchannelcurrent"><code class="xref std std-ref docutils literal notranslate"><span class="pre">[adcChannelCurrent]</span></code></a></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>电流测量 ADC 通道配置 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.channel</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>要采样的 ADC 通道 </p>
+<p>regex:adcChannel = <code class="docutils literal notranslate"><span class="pre">^((ANA?)|(AD[0-5]ANN?))([0-9]|([1-3][0-9]))$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.inverted</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 通道测量是否反相。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 反相， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 非反相 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.signed</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 测量是否被视为相对于中点 (AVdd/2) 的有符号值或相对于 AVss 的无符号值。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 有符号， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 无符号 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.c</span></code></td>
+<td class="board-schema-type"><p><a class="reference internal" href="#board-schema-adcchannelcurrent"><code class="xref std std-ref docutils literal notranslate"><span class="pre">[adcChannelCurrent]</span></code></a></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>电流测量 ADC 通道配置 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.channel</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>要采样的 ADC 通道 </p>
+<p>regex:adcChannel = <code class="docutils literal notranslate"><span class="pre">^((ANA?)|(AD[0-5]ANN?))([0-9]|([1-3][0-9]))$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.inverted</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 通道测量是否反相。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 反相， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 非反相 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.signed</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 测量是否被视为相对于中点 (AVdd/2) 的有符号值或相对于 AVss 的无符号值。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 有符号， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 无符号 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.voltage</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>用于电压测量的 ADC 通道配置。DC 母线电压测量为必填，所有其他电压测量为可选。 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.dcLink</span></code></td>
+<td class="board-schema-type"><p><a class="reference internal" href="#board-schema-adcchannelvoltage"><code class="xref std std-ref docutils literal notranslate"><span class="pre">[adcChannelVoltage]</span></code></a></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>DC 母线电压测量通道配置 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.channel</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>要采样的 ADC 通道 </p>
+<p>regex:adcChannel = <code class="docutils literal notranslate"><span class="pre">^((ANA?)|(AD[0-5]ANN?))([0-9]|([1-3][0-9]))$</span></code></p>
+</td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.signed</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 测量是否被视为相对于中点 (AVdd/2) 的有符号值或相对于 AVss 的无符号值。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 有符号， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 无符号 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.a</span></code></td>
+<td class="board-schema-type"><p><a class="reference internal" href="#board-schema-adcchannelvoltage"><code class="xref std std-ref docutils literal notranslate"><span class="pre">[adcChannelVoltage]</span></code></a></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>A 相电压测量通道配置 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.channel</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>要采样的 ADC 通道 </p>
+<p>regex:adcChannel = <code class="docutils literal notranslate"><span class="pre">^((ANA?)|(AD[0-5]ANN?))([0-9]|([1-3][0-9]))$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.signed</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 测量是否被视为相对于中点 (AVdd/2) 的有符号值或相对于 AVss 的无符号值。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 有符号， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 无符号 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.b</span></code></td>
+<td class="board-schema-type"><p><a class="reference internal" href="#board-schema-adcchannelvoltage"><code class="xref std std-ref docutils literal notranslate"><span class="pre">[adcChannelVoltage]</span></code></a></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>B 相电压测量通道配置 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.channel</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>要采样的 ADC 通道 </p>
+<p>regex:adcChannel = <code class="docutils literal notranslate"><span class="pre">^((ANA?)|(AD[0-5]ANN?))([0-9]|([1-3][0-9]))$</span></code></p>
+</td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.signed</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 测量是否被视为相对于中点 (AVdd/2) 的有符号值或相对于 AVss 的无符号值。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 有符号， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 无符号 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.c</span></code></td>
+<td class="board-schema-type"><p><a class="reference internal" href="#board-schema-adcchannelvoltage"><code class="xref std std-ref docutils literal notranslate"><span class="pre">[adcChannelVoltage]</span></code></a></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>C 相电压测量通道配置 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.channel</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>要采样的 ADC 通道 </p>
+<p>regex:adcChannel = <code class="docutils literal notranslate"><span class="pre">^((ANA?)|(AD[0-5]ANN?))([0-9]|([1-3][0-9]))$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.signed</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 测量是否被视为相对于中点 (AVdd/2) 的有符号值或相对于 AVss 的无符号值。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 有符号， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 无符号 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.absoluteReference</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>绝对电压参考通道配置 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.nominal</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p>V</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>标称模拟电压 (AVdd) <p>未使用的参数</p>
+</p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.channel</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>要采样的 ADC 通道 </p>
+<p>regex:adcChannel = <code class="docutils literal notranslate"><span class="pre">^((ANA?)|(AD[0-5]ANN?))([0-9]|([1-3][0-9]))$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.signed</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 测量是否被视为相对于中点 (AVdd/2) 的有符号值或相对于 AVss 的无符号值。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 有符号， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 无符号 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.other</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>MCAF 支持的不属于电流或电压类别的 ADC 测量。此类 ADC 测量为可选。 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.bridgeTemperature</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>桥温度测量通道配置 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.offset</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p>V</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>桥温度测量的偏移 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.gain</span></code></td>
+<td class="board-schema-type"><p>float</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>桥温度测量的增益 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.channel</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>要采样的 ADC 通道 </p>
+<p>regex:adcChannel = <code class="docutils literal notranslate"><span class="pre">^((ANA?)|(AD[0-5]ANN?))([0-9]|([1-3][0-9]))$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.signed</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 测量是否被视为相对于中点 (AVdd/2) 的有符号值或相对于 AVss 的无符号值。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 有符号， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 无符号 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.potentiometer</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>电位器测量通道配置 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.inverted</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>测量的极性。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 反相， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 非反相 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.minimum</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(0.0 \le x \le 1.0\)</span></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>最小测量电压，以 AVdd 的比例表示。默认为 0.0。 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.maximum</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(0.0 \le x \le 1.0\)</span></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>最大测量电压，以 AVdd 的比例表示。默认为 1.0。 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.channel</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>要采样的 ADC 通道 </p>
+<p>regex:adcChannel = <code class="docutils literal notranslate"><span class="pre">^((ANA?)|(AD[0-5]ANN?))([0-9]|([1-3][0-9]))$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">        <span class="pre">.signed</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 测量是否被视为相对于中点 (AVdd/2) 的有符号值或相对于 AVss 的无符号值。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 有符号， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 无符号 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.custom</span></code></td>
+<td class="board-schema-type"><p></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>自定义 ADC 通道配置。这些 ADC 通道不由 MCAF 使用，可由应用管理。它们以与其他 MCAF ADC 通道相同的频率（PWM 频率）采样。通道的自定义名称必须为有效的 C 标识符。 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.*</span></code></td>
+<td class="board-schema-type"><p><a class="reference internal" href="#board-schema-adcchannelcustom"><code class="xref std std-ref docutils literal notranslate"><span class="pre">[adcChannelCustom]</span></code></a></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>key = regex:cStandardName = <code class="docutils literal notranslate"><span class="pre">^[A-Za-z_][A-Za-z0-9_]*$</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.pwm</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>三相 PWM 配置 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.polarity</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>高侧 (PWMxH) 和低侧 (PWMxL) PWM 信号的极性 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.upper</span></code></td>
+<td class="board-schema-type"><p><a class="reference internal" href="#board-schema-digitalpolarity"><code class="xref std std-ref docutils literal notranslate"><span class="pre">[digitalPolarity]</span></code></a></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>数字极性 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.lower</span></code></td>
+<td class="board-schema-type"><p><a class="reference internal" href="#board-schema-digitalpolarity"><code class="xref std std-ref docutils literal notranslate"><span class="pre">[digitalPolarity]</span></code></a></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>数字极性 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.generators</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>PWM 发生器到电机相位的映射。可用 PWM 发生器请参见器件数据手册。 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.a</span></code></td>
+<td class="board-schema-type"><p>integer</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>PWM 发生器编号。可用 PWM 发生器请参见器件数据手册。 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.b</span></code></td>
+<td class="board-schema-type"><p>integer</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>PWM 发生器编号。可用 PWM 发生器请参见器件数据手册。 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.c</span></code></td>
+<td class="board-schema-type"><p>integer</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>PWM 发生器编号。可用 PWM 发生器请参见器件数据手册。 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.outputSwap</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>交换每个发生器的高侧 (PWMxH) 和低侧 (PWMxL) 信号输出 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.a</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>确定 PWMxH 和 PWMxL 信号是否交换 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.b</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>确定 PWMxH 和 PWMxL 信号是否交换 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.c</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>确定 PWMxH 和 PWMxL 信号是否交换 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path" id="custom-board-pwm-fault"><code class="docutils literal notranslate">    <span class="pre">.fault</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>PWM 故障配置。当数字信号跳变（低或高，取决于极性配置）时，此信号将导致 PWM 发生器关断。 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.polarity</span></code></td>
+<td class="board-schema-type"><p><a class="reference internal" href="#board-schema-digitalpolarity"><code class="xref std std-ref docutils literal notranslate"><span class="pre">[digitalPolarity]</span></code></a></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>数字极性 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path" id="custom-board-pwm-fault-source"><code class="docutils literal notranslate">      <span class="pre">.source</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>故障源选择 <dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">none</span></code></dt><dd><p>故障源连接至 0V</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">CMP1</span></code></dt><dd><p>比较器 1 输出</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">CMP2</span></code></dt><dd><p>比较器 2 输出</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">CMP3</span></code></dt><dd><p>比较器 3 输出</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PCI19</span></code></dt><dd><p>器件引脚，PCI19</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PCI20</span></code></dt><dd><p>器件引脚，PCI20</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PCI21</span></code></dt><dd><p>器件引脚，PCI21</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PCI22</span></code></dt><dd><p>器件引脚，PCI22</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">CLC1</span></code></dt><dd><p>可配置逻辑单元 1</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PCI18R</span></code></dt><dd><p>可重映射外设功能输入，PCI18R</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PCI17R</span></code></dt><dd><p>可重映射外设功能输入，PCI17R</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PCI16R</span></code></dt><dd><p>可重映射外设功能输入，PCI16R</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PCI15R</span></code></dt><dd><p>可重映射外设功能输入，PCI15R</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PCI14R</span></code></dt><dd><p>可重映射外设功能输入，PCI14R</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PCI13R</span></code></dt><dd><p>可重映射外设功能输入，PCI13R</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PCI12R</span></code></dt><dd><p>可重映射外设功能输入，PCI12R</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PCI11R</span></code></dt><dd><p>可重映射外设功能输入，PCI11R</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PCI10R</span></code></dt><dd><p>可重映射外设功能输入，PCI10R</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PCI9R</span></code></dt><dd><p>可重映射外设功能输入，PCI9R</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">PCI8R</span></code></dt><dd><p>可重映射外设功能输入，PCI8R</p>
+</dd>
+</dl>
+</p>
+<p>regex:faultSource = <code class="docutils literal notranslate"><span class="pre">^[</span> <span class="pre">-~]+$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.pin</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>GPIO 引脚名。可用引脚请参见器件数据手册。 </p>
+<p>regex:pin = <code class="docutils literal notranslate"><span class="pre">^R([A-HJK])([0-9]|1[0-5])$</span></code></p>
+</td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.opamp</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>内部运放配置 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.enabled</span></code></td>
+<td class="board-schema-type"><p>list</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>已启用的运放列表 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.*</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(1 \le n \le 3\)</span></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.comparator</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>内部比较器/DAC 配置。比较器/DAC 可配置为 PWM 故障源。 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.source</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>触发比较器输出的源 </p>
+<p>regex:cmpTrigSource = <code class="docutils literal notranslate"><span class="pre">^CMP[1-3][A-D]$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.inverted</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>比较器输出的极性。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 反相， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 非反相 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.threshold</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(0.0 \le x \le 1.0\)</span></td>
+<td class="board-schema-unit"><p>AVDD 的比例</p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>触发阈值，以 AVdd 的比例表示 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.gpio</span></code></td>
+<td class="board-schema-type"><p></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>GPIO 配置 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.*</span></code></td>
+<td class="board-schema-type"><p><a class="reference internal" href="#board-schema-gpio"><code class="xref std std-ref docutils literal notranslate"><span class="pre">[gpio]</span></code></a></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>key = regex:cStandardName = <code class="docutils literal notranslate"><span class="pre">^[A-Za-z_][A-Za-z0-9_]*$</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.qei</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>QEI 配置。使用 QEI 估计器时必须配置。可用引脚请参见器件数据手册。 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.pins</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>QEI 引脚配置 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.A</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>GPIO 引脚名。可用引脚请参见器件数据手册。 </p>
+<p>regex:pin = <code class="docutils literal notranslate"><span class="pre">^R([A-HJK])([0-9]|1[0-5])$</span></code></p>
+</td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.B</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>GPIO 引脚名。可用引脚请参见器件数据手册。 </p>
+<p>regex:pin = <code class="docutils literal notranslate"><span class="pre">^R([A-HJK])([0-9]|1[0-5])$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.Z</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>GPIO 引脚名。可用引脚请参见器件数据手册。 </p>
+<p>regex:pin = <code class="docutils literal notranslate"><span class="pre">^R([A-HJK])([0-9]|1[0-5])$</span></code></p>
+</td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.uart</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>UART 配置。如需实时调试则必须配置。可用引脚请参见器件数据手册。 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">    <span class="pre">.pins</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>UART 引脚配置 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.RX</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>GPIO 引脚名。可用引脚请参见器件数据手册。 </p>
+<p>regex:pin = <code class="docutils literal notranslate"><span class="pre">^R([A-HJK])([0-9]|1[0-5])$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">      <span class="pre">.TX</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>GPIO 引脚名。可用引脚请参见器件数据手册。 </p>
+<p>regex:pin = <code class="docutils literal notranslate"><span class="pre">^R([A-HJK])([0-9]|1[0-5])$</span></code></p>
+</td>
+</tr>
+<tr class="row-even"><td colspan="7"><strong>引用类型</strong></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate" id="board-schema-generator"><span id="board-schema-generator"></span><span class="pre">[generator]</span></code></td>
+<td class="board-schema-type"><p>integer</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>PWM 发生器编号。可用 PWM 发生器请参见器件数据手册。 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate" id="board-schema-pin"><span id="board-schema-pin"></span><span class="pre">[pin]</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>GPIO 引脚名。可用引脚请参见器件数据手册。 </p>
+<p>regex:pin = <code class="docutils literal notranslate"><span class="pre">^R([A-HJK])([0-9]|1[0-5])$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate" id="board-schema-adcchannelcustom"><span id="board-schema-adcchannelcustom"></span><span class="pre">[adcChannelCustom]</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p></p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.channel</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>要采样的 ADC 通道 </p>
+<p>regex:adcChannel = <code class="docutils literal notranslate"><span class="pre">^((ANA?)|(AD[0-5]ANN?))([0-9]|([1-3][0-9]))$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.signed</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 测量是否被视为相对于中点 (AVdd/2) 的有符号值或相对于 AVss 的无符号值。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 有符号， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 无符号 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate" id="board-schema-adcchannelvoltage"><span id="board-schema-adcchannelvoltage"></span><span class="pre">[adcChannelVoltage]</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.channel</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>要采样的 ADC 通道 </p>
+<p>regex:adcChannel = <code class="docutils literal notranslate"><span class="pre">^((ANA?)|(AD[0-5]ANN?))([0-9]|([1-3][0-9]))$</span></code></p>
+</td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.signed</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 测量是否被视为相对于中点 (AVdd/2) 的有符号值或相对于 AVss 的无符号值。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 有符号， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 无符号 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate" id="board-schema-digitalpolarity"><span id="board-schema-digitalpolarity"></span><span class="pre">[digitalPolarity]</span></code></td>
+<td class="board-schema-type"><p>enum</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>数字极性 </p>
+<p>选项：<ul class="simple">
+</ul>
+<li><code class="docutils literal notranslate"><span class="pre">'active-high'</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">'active-low'</span></code></li>
+</p>
+</td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate" id="board-schema-gpio"><span id="board-schema-gpio"></span><span class="pre">[gpio]</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.pin</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>GPIO 引脚名。可用引脚请参见器件数据手册。 </p>
+<p>regex:pin = <code class="docutils literal notranslate"><span class="pre">^R([A-HJK])([0-9]|1[0-5])$</span></code></p>
+</td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.direction</span></code></td>
+<td class="board-schema-type"><p>enum</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>GPIO 方向 </p>
+<p>选项：<ul class="simple">
+</ul>
+<li><code class="docutils literal notranslate"><span class="pre">'input'</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">'output'</span></code></li>
+</p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.polarity</span></code></td>
+<td class="board-schema-type"><p><a class="reference internal" href="#board-schema-digitalpolarity"><code class="xref std std-ref docutils literal notranslate"><span class="pre">[digitalPolarity]</span></code></a></p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>数字极性 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.openDrain</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>开漏引脚配置 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.weakPullUp</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>启用内部弱上拉电阻 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.weakPullDown</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>启用内部弱下拉电阻 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.startHigh</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>引脚起始条件 (LATx) </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate" id="board-schema-generatoroutputsswap"><span id="board-schema-generatoroutputsswap"></span><span class="pre">[generatorOutputsSwap]</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>确定 PWMxH 和 PWMxL 信号是否交换 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate" id="board-schema-rangewithdefault"><span id="board-schema-rangewithdefault"></span><span class="pre">[rangeWithDefault]</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p></p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.minimum</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(x \ge 0.0\)</span></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>最小允许值 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.maximum</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(x \ge 0.0\)</span></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>Default value </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.default</span></code></td>
+<td class="board-schema-type"><span class="math notranslate nohighlight">\(x \ge 0.0\)</span></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>默认值 </p></td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate" id="board-schema-adcchannelcurrent"><span id="board-schema-adcchannelcurrent"></span><span class="pre">[adcChannelCurrent]</span></code></td>
+<td class="board-schema-type"><p>map</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"></td>
+<td class="board-schema-description"><p>电流测量 ADC 通道配置 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.channel</span></code></td>
+<td class="board-schema-type"><p>string</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>要采样的 ADC 通道 </p>
+<p>regex:adcChannel = <code class="docutils literal notranslate"><span class="pre">^((ANA?)|(AD[0-5]ANN?))([0-9]|([1-3][0-9]))$</span></code></p>
+</td>
+</tr>
+<tr class="row-odd"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.inverted</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 通道测量是否反相。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 反相， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 非反相 </p></td>
+</tr>
+<tr class="row-even"><td class="board-schema-path"><code class="docutils literal notranslate">  <span class="pre">.signed</span></code></td>
+<td class="board-schema-type"><p>boolean</p></td>
+<td class="board-schema-unit"><p></p></td>
+<td class="board-schema-required"><a class="align-center reference internal image-reference" href="../../_images/icon-green-check.svg"><img alt="../../_images/icon-green-check.svg" class="align-center" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></a>
+</td>
+<td class="board-schema-description"><p>确定 ADC 测量是否被视为相对于中点 (AVdd/2) 的有符号值或相对于 AVss 的无符号值。 <code class="docutils literal notranslate"><span class="pre">true</span></code> = 有符号， <code class="docutils literal notranslate"><span class="pre">false</span></code> = 无符号 </p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">6.6.9. 自定义板级定义格式</a><ul>
+<li><a class="reference internal" href="#working-with-serialized-data-models">6.6.9.1. 使用序列化数据模型</a><ul>
+<li><a class="reference internal" href="#introduction">6.6.9.1.1. 简介</a></li>
+<li><a class="reference internal" href="#example-in-yaml">6.6.9.1.2. YAML 示例</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#custom-board-schema">6.6.9.2. 自定义板级 schema</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="verification.zh.html" title="上一章"><span class="section-number">6.6.8. </span>验证与板级调试</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="../resource-usage.zh.html" title="下一章"><span class="section-number">6.7. </span>资源使用</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="../resource-usage.zh.html" title="6.7. Resource Usage">下一页</a> |</li>
+<li class="right">
+<a href="verification.zh.html" title="6.6.8. Verification and board bring-up">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.zh.html"><span class="section-number">6.6. </span>自定义板级支持</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.6.9. </span>自定义板级定义格式</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../../_static/lang-switch.js"></script>
+</body>
+</html>

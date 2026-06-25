@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>4.1. 主应用程序 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="adc.zh.html" rel="next" title="4.2. ADC Calibration and Compensation"/>
+<link href="index.zh.html" rel="prev" title="4. Components"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="adc.zh.html" title="4.2. ADC Calibration and Compensation">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="index.zh.html" title="4. Components">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">4. </span>组件</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">4.1. </span>主应用程序</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="main-application">
+<span id="component-main"></span><h1><span class="section-number">4.1. </span>主应用程序<a class="headerlink" href="#main-application" title="本标题的永久链接">¶</a></h1>
+<p>如 <a class="reference internal" href="../architecture/schedopt.zh.html#scheduling"><span class="std std-ref">调度</span></a>一节中所述，主应用程序由一部分在 <code class="docutils literal notranslate"><span class="pre">main()</span></code>。</p>
+<section id="implementation-notes">
+<h2><span class="section-number">4.1.1. </span>实现说明<a class="headerlink" href="#implementation-notes" title="本标题的永久链接">¶</a></h2>
+<section id="mcaf-r1-r5">
+<h3><span class="section-number">4.1.1.1. </span>MCAF R1 – R5<a class="headerlink" href="#mcaf-r1-r5" title="本标题的永久链接">¶</a></h3>
+<p>在 MCAF R6 之前，主应用程序与 MCAF 紧密集成，同时将用户界面的职责完全交由 <a class="reference internal" href="ext-interface.zh.html#ext-interface"><span class="std std-ref">外部接口</span></a> 组件定义和实现。</p>
+</section>
+<section id="mcaf-r6">
+<span id="component-main-r6"></span><h3><span class="section-number">4.1.1.2. </span>MCAF R6<a class="headerlink" href="#mcaf-r6" title="本标题的永久链接">¶</a></h3>
+<p>主应用程序已被重写以包含一个示例应用程序。示例应用程序通过 <a class="reference internal" href="mcapi.zh.html#mcapi"><span class="std std-ref">运动控制 API（MCAPI）</span></a> 与 MCAF 交互，以控制电机并获取反馈。</p>
+</section>
+<section id="mcaf-r7">
+<span id="component-main-r7"></span><h3><span class="section-number">4.1.1.3. </span>MCAF R7<a class="headerlink" href="#mcaf-r7" title="本标题的永久链接">¶</a></h3>
+<p>主应用程序现在使用 <a class="reference internal" href="mcapi.zh.html#mcapi"><span class="std std-ref">运动控制 API</span></a> 作为与 MCAF 接口的唯一入口，减少了对 MCAF 内部的暴露。</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>示例应用程序可以在电机停止过程中尝试重新启动电机</p></li>
+<li><p>新增了两个文件：mcaf_main.c 和 mcaf_sample_application.h</p></li>
+<li><dl class="simple">
+<dt>将 <code class="docutils literal notranslate"><span class="pre">MCAF_MOTOR_DATA</span> <span class="pre">motor</span></code> 和 <code class="docutils literal notranslate"><span class="pre">MCAF_SYSTEM_DATA</span> <span class="pre">systemData</span></code> 的定义从</dt><dd><p>sample_mcaf_application.c 到 mcaf_main.c</p>
+</dd>
+</dl>
+</li>
+<li><p>更新了 <code class="docutils literal notranslate"><span class="pre">APP_ApplicationInitialize()</span></code> 和 <code class="docutils literal notranslate"><span class="pre">APP_ApplicationStep()</span></code> 的函数签名，以包含指向 MCAPI 数据结构的指针。</p></li>
+<li><p>将 <code class="docutils literal notranslate"><span class="pre">MCAF_Init()</span></code> 和 <code class="docutils literal notranslate"><span class="pre">MCAF_MainLoop()</span></code> 移至 mcaf_main.c</p></li>
+</ul>
+</div></blockquote>
+<section id="sample-application">
+<span id="id1"></span><h4><span class="section-number">4.1.1.3.1. </span>示例应用程序<a class="headerlink" href="#sample-application" title="本标题的永久链接">¶</a></h4>
+<p>示例应用程序的用户界面行为可概括如下：</p>
+<blockquote>
+<div><ul>
+<li><p>如果电机正在停止/已停止，则主按键启动电机。如果在 <code class="docutils literal notranslate"><span class="pre">STOPPING</span></code> 状态下按下主按键， <a class="reference internal" href="statemach.zh.html#component-statemachine"><span class="std std-ref">状态机</span></a> 将根据 <a class="reference internal" href="../algorithms/stopping.zh.html#algorithm-stopping"><span class="std std-ref">停止模式</span></a>：</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../algorithms/stopping.zh.html#algorithm-stopping-min-impact"><span class="std std-ref">最小影响 PWM</span></a> 状态转换序列： <code class="docutils literal notranslate"><span class="pre">STOPPING</span></code>， <code class="docutils literal notranslate"><span class="pre">STOPPED</span></code>， <code class="docutils literal notranslate"><span class="pre">STARTING</span></code>， <code class="docutils literal notranslate"><span class="pre">RUNNING</span></code></p></li>
+<li><p><a class="reference internal" href="../algorithms/stopping.zh.html#algorithm-stopping-closed-loop"><span class="std std-ref">闭环（电流或速度）</span></a> 状态转换序列： <code class="docutils literal notranslate"><span class="pre">STOPPING</span></code>， <code class="docutils literal notranslate"><span class="pre">RUNNING</span></code></p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>如果电机正在启动/运行，则主按键停止电机。</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><p>如果电机处于故障状态，则主按键清除所有待处理的故障。</p></li>
+<li><p>如果 MCAF 处于其某种测试模式，则主按键和副按键不起任何作用。</p></li>
+<li><p>副按键改变旋转方向。</p></li>
+<li><p>电位器为电机设定速度参考值，其最小和最大限值由 MCAF 定义并通过 MCAPI 函数 <code class="docutils literal notranslate"><span class="pre">MCAPI_VelocityReferenceMinimumGet()</span></code> 和 <code class="docutils literal notranslate"><span class="pre">MCAPI_VelocityReferenceMaximumGet()</span></code> 提供。</p></li>
+<li><p>在示例应用程序中，可以通过清除 <code class="docutils literal notranslate"><span class="pre">hardwareUiEnabled</span></code> 来禁用按键和电位器用户界面，例如使用实时诊断工具 <a class="reference external" href="https://x2cscope.github.io/">X2Cscope</a>。</p></li>
+</ul>
+<p>有关按键用户界面的实现细节，请参见 <a class="reference internal" href="ext-interface.zh.html#ext-interface"><span class="std std-ref">外部接口</span></a> 。</p>
+<p>LED 的用户界面由 <a class="reference internal" href="ext-interface.zh.html#ext-interface"><span class="std std-ref">外部接口</span></a> 组件定义和实现。</p>
+</section>
+</section>
+<section id="modules">
+<h3><span class="section-number">4.1.1.4. </span>模块<a class="headerlink" href="#modules" title="本标题的永久链接">¶</a></h3>
+<span id="index-0"></span><table class="components-table docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>模块</p></th>
+<th class="head"><p>文件</p></th>
+<th class="head"><p>描述</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">isr</span></code></td>
+<td><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">isr.c</span></code></div>
+</div>
+</td>
+<td><p>顶层 ISR</p></td>
+<td><p>主控制 <a class="reference internal" href="../appendix/glossary.zh.html#term-ISR"><span class="xref std std-term">ISR</span></a> 函数周期性运行。它在 <a class="reference internal" href="../appendix/glossary.zh.html#term-ADC"><span class="xref std std-term">ADC</span></a> 采样完成时触发，而采样又由 <a class="reference internal" href="../appendix/glossary.zh.html#term-PWM"><span class="xref std std-term">PWM</span></a> 周期触发一次，如 <a class="reference internal" href="../architecture/schedopt.zh.html#scheduling"><span class="std std-ref">调度</span></a> 一节中所述。它包含性能分析逻辑：</p>
+<ul class="simple">
+<li><p>在 GPIO 引脚上生成一个脉冲，该脉冲在 <a class="reference internal" href="../appendix/glossary.zh.html#term-ISR"><span class="xref std std-term">ISR</span></a> 入口开始，在 <a class="reference internal" href="../appendix/glossary.zh.html#term-ISR"><span class="xref std std-term">ISR</span></a> 出口结束</p></li>
+<li><p>捕获定时器计数值（参见 <a class="reference internal" href="testharness.zh.html#test-timestamps"><span class="std std-ref">测试框架</span></a>）</p></li>
+</ul>
+<p>各种 <a class="reference internal" href="../appendix/glossary.zh.html#term-ISR"><span class="xref std std-term">ISR</span></a> 子任务按大致的优先级顺序执行（状态机任务优先，测试框架和诊断任务最后）。</p>
+<p>实际的 <a class="reference internal" href="../appendix/glossary.zh.html#term-ADC"><span class="xref std std-term">ADC</span></a> <a class="reference internal" href="../appendix/glossary.zh.html#term-ISR"><span class="xref std std-term">ISR</span></a> 函数名称与硬件相关，并由 <a class="reference internal" href="hal.zh.html#hal"><span class="std std-ref">HAL</span></a> 中的 <code class="docutils literal notranslate"><span class="pre">HAL_ADC_ISR</span></code> 宏封装。</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">mcaf_main</span></code></td>
+<td><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">mcaf_main.c</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">mcaf_main.h</span></code></div>
+</div>
+</td>
+<td><p>从 <code class="docutils literal notranslate"><span class="pre">main()</span></code> 调用的 MCAF 主入口点（初始化和主循环）</p></td>
+<td><p>提供 <code class="docutils literal notranslate"><span class="pre">MCAF_MainInit()</span></code> 和 <code class="docutils literal notranslate"><span class="pre">MCAF_MainLoop()</span></code>。这些是 MCAF 从 <code class="docutils literal notranslate"><span class="pre">main()</span></code>。</p></td>
+</tr>
+<tr class="row-even"><td class="longcolumn-3"><code class="docutils literal notranslate"><span class="pre">mcaf_sample_application</span></code></td>
+<td class="longcolumn-3"><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">mcaf_sample_application.c</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">mcaf_sample_application.h</span></code></div>
+</div>
+</td>
+<td><p>示例应用程序</p></td>
+<td><p>示例应用程序使用按键启动/停止电机，并使用电位器设定电机速度参考值。</p></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">mcaf_traps</span></code></td>
+<td><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">mcaf_traps.c</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">mcaf_traps.h</span></code></div>
+</div>
+</td>
+<td><p>陷阱中断处理程序</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">system_init</span></code></td>
+<td class="longcolumn-1"><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">system_init.c</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">system_init.h</span></code></div>
+</div>
+</td>
+<td><p>系统初始化</p></td>
+<td><p>在主循环之前初始化状态变量和特殊功能寄存器（预期在 <code class="docutils literal notranslate"><span class="pre">MCAF_MainInit()</span></code>）</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_SystemInit</span></code> — 在 <code class="docutils literal notranslate"><span class="pre">MCAF_MainInit()</span></code> 的开头调用，以尽快初始化某些 SFR 和系统级状态变量。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_SystemStart</span></code> — 在 <code class="docutils literal notranslate"><span class="pre">MCAF_MainInit()</span></code> 的末尾附近调用，用于延迟初始化。这包括启用中断的代码，因此在 <code class="docutils literal notranslate"><span class="pre">MCAF_SystemStart</span></code> 之前执行的主线程代码不会受到与刚刚启用的 <a class="reference internal" href="../appendix/glossary.zh.html#term-ISR"><span class="xref std std-term">ISR</span></a> 冲突而导致的竞态条件的影响。</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">system_state</span></code></td>
+<td class="longcolumn-1"><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">system_state.c</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">system_state.h</span></code></div>
+</div>
+</td>
+<td><p>系统状态变量类型定义</p></td>
+<td><p>定义了主要的 <code class="docutils literal notranslate"><span class="pre">MCAF_MOTOR_DATA</span></code> 和 <code class="docutils literal notranslate"><span class="pre">MCAF_SYSTEM_DATA</span></code> 结构体类型。</p></td>
+</tr>
+</tbody>
+</table>
+<section id="trap-handler-module">
+<span id="main-traps"></span><h4><span class="section-number">4.1.1.4.1. </span>陷阱处理模块<a class="headerlink" href="#trap-handler-module" title="本标题的永久链接">¶</a></h4>
+<p>dsPIC<sup>®</sup> DSC 器件中的硬件陷阱向量包含针对堆栈溢出或地址对齐错误等事件的处理程序。在 MCAF 中，这些位于 <code class="docutils literal notranslate"><span class="pre">traps</span></code> 模块中。正常的处理逻辑是通过调用 <code class="docutils literal notranslate"><span class="pre">halt_on_error()</span></code> 函数来发出不可恢复错误的信号，该函数记录错误代码并进入无限循环，通过 <code class="docutils literal notranslate"><span class="pre">MCAF_UiFlashErrorCodeForever()</span></code> 闪烁 LED 来指示错误代码，如 UI 模块中所述。</p>
+<p>此行为有两个小的偏差：</p>
+<ul class="simple">
+<li><p><strong>DMA 写冲突</strong>：当 CPU 和 DMA 通道写入同一地址时发生（此时 CPU “获胜”，DMA 写入被忽略）。在本应用程序中，此情况不视为错误，仅在使用 DMA 读写 UART 的诊断模块的某个变体中偶尔出现。DMA 陷阱处理程序会递增一个计数器，用于评估 DMA 写冲突的频率。</p></li>
+<li><p><strong>堆栈溢出</strong>：堆栈溢出是一种不可恢复的错误，但略有不同，因为堆栈指针（dsPIC<sup>®</sup> DSC 器件上的 W15）可能无效。在这种情况下，MCAF 会格外小心地使用一个小的“故障安全堆栈”，这是一个为此情况预留的静态内存区域，其大小足以满足 <code class="docutils literal notranslate"><span class="pre">MCAF_UiFlashErrorCodeForever()</span></code> 函数的堆栈需求。</p></li>
+</ul>
+<p>除了硬件陷阱外， <code class="docutils literal notranslate"><span class="pre">traps</span></code> 模块还包含检查复位原因的逻辑，以便在看门狗复位时，可以通过 <code class="docutils literal notranslate"><span class="pre">MCAF_UiFlashErrorCodeForever()</span></code>。</p>
+</section>
+</section>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">4.1. 主应用程序</a><ul>
+<li><a class="reference internal" href="#implementation-notes">4.1.1. 实现说明</a><ul>
+<li><a class="reference internal" href="#mcaf-r1-r5">4.1.1.1. MCAF R1 – R5</a></li>
+<li><a class="reference internal" href="#mcaf-r6">4.1.1.2. MCAF R6</a></li>
+<li><a class="reference internal" href="#mcaf-r7">4.1.1.3. MCAF R7</a><ul>
+<li><a class="reference internal" href="#sample-application">4.1.1.3.1. 示例应用程序</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#modules">4.1.1.4. 模块</a><ul>
+<li><a class="reference internal" href="#trap-handler-module">4.1.1.4.1. 陷阱处理模块</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="index.zh.html" title="上一章"><span class="section-number">4. </span>组件</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="adc.zh.html" title="下一章"><span class="section-number">4.2. </span>ADC 校准与补偿</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="adc.zh.html" title="4.2. ADC Calibration and Compensation">下一页</a> |</li>
+<li class="right">
+<a href="index.zh.html" title="4. Components">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">4. </span>组件</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">4.1. </span>主应用程序</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

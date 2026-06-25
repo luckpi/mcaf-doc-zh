@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>8. 常见问题 (FAQ) — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+<script src="_static/jquery.js"></script>
+<script src="_static/underscore.js"></script>
+<script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="_static/doctools.js"></script>
+<script src="_static/katex/0.16.4/katex.min.js"></script>
+<script src="_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="_static/rendermath.js"></script>
+<script src="_static/svgcrop.js"></script>
+<script src="_static/mcaf-styling.js"></script>
+<link href="genindex.zh.html" rel="index" title="Index"/>
+<link href="search.zh.html" rel="search" title="Search"/>
+<link href="appendix/rev_history.zh.html" rel="prev" title="7.5. Revision History"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="P" href="appendix/rev_history.zh.html" title="7.5. Revision History">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">8. </span>常见问题 (FAQ)</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="frequently-asked-questions-faq">
+<span id="faq"></span><h1><span class="section-number">8. </span>常见问题 (FAQ)<a class="headerlink" href="#frequently-asked-questions-faq" title="本标题的永久链接">¶</a></h1>
+<section id="contacting-microchip">
+<span id="faq-support"></span><h2><span class="section-number">8.1. </span>联系 Microchip<a class="headerlink" href="#contacting-microchip" title="本标题的永久链接">¶</a></h2>
+<p>我们鼓励您联系当地的 Microchip 代表以获取 motorBench<sup>®</sup> Development Suite 或 MCAF 的支持。欢迎反馈和意见！</p>
+<p>有关 Microchip 支持资源的更多信息，请参见 motorBench<sup>®</sup> Development Suite 发行说明的“客户支持”节。</p>
+</section>
+<section id="usb-compatibility">
+<span id="faq-usb"></span><h2><span class="section-number">8.2. </span>USB 兼容性<a class="headerlink" href="#usb-compatibility" title="本标题的永久链接">¶</a></h2>
+<p>Microchip 确实制造了一些包含 USB 外设的电机控制器件（dsPIC33EPXXXMU806/810/814 系列）。应用框架目前不支持 USB，但我们正在考虑在未来支持。</p>
+</section>
+<section id="rtos-compatibility">
+<h2><span class="section-number">8.3. </span>RTOS 兼容性<a class="headerlink" href="#rtos-compatibility" title="本标题的永久链接">¶</a></h2>
+<p>我们计划研究使我们的应用框架既能满足电机控制的严格时序要求，又能与 RTOS 兼容的方法。这是一项未来的工作，目前尚不完整。</p>
+</section>
+<section id="matlabregsup-and-simulinkregsup">
+<h2><span class="section-number">8.4. </span>MATLAB<sup>®</sup> 和 Simulink<sup>®</sup><a class="headerlink" href="#matlabregsup-and-simulinkregsup" title="本标题的永久链接">¶</a></h2>
+<p>我们的长期目标是同时支持使用 C 语言编程 PIC<sup>®</sup> 微控制器和 dsPIC<sup>®</sup> DSC 进行电机控制的客户，以及使用 MATLAB<sup>®</sup> 和 Simulink<sup>®</sup> 进行代码生成的客户。目前，电机控制应用框架面向依赖 MPLAB<sup>®</sup> X 和 XC16 C 编译器的电机控制项目，不支持 Simulink 代码生成。电机控制应用框架软件是手工编写的，具有可读性和高效性；Simulink 生成的 C 代码本质上不是为了阅读或编辑，而是为了快速原型设计和与仿真结果的充分等效而自动生成的，并受 MATLAB 代码生成引擎功能的限制。</p>
+<p>我们正在考虑支持这两类客户的方法；至少在短期内，我们对使用 MATLAB 和 Simulink 的客户的支持可能通过一个单独的应用程序来实现，专门针对使用 Simulink。</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">8. 常见问题 (FAQ)</a><ul>
+<li><a class="reference internal" href="#contacting-microchip">8.1. 联系 Microchip</a></li>
+<li><a class="reference internal" href="#usb-compatibility">8.2. USB 兼容性</a></li>
+<li><a class="reference internal" href="#rtos-compatibility">8.3. RTOS 兼容性</a></li>
+<li><a class="reference internal" href="#matlabregsup-and-simulinkregsup">8.4. MATLAB<sup>®</sup> 和 Simulink<sup>®</sup></a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="appendix/rev_history.zh.html" title="上一章"><span class="section-number">7.5. </span>修订历史</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="appendix/rev_history.zh.html" title="7.5. Revision History">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">8. </span>常见问题 (FAQ)</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="_static/lang-switch.js"></script>
+</body>
+</html>
