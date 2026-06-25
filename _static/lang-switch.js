@@ -6,19 +6,10 @@
   try { pref = localStorage.getItem(STORAGE_KEY) || "en"; } catch (e) { pref = "en"; }
 
   function isZhPage() {
-    return /\.zh\.html(\?|$|#)/.test(location.pathname) ||
-           /\.zh\.html(\?|$|#)/.test(location.href) ||
-           /\/mcaf-doc-zh\/?(\?|$|#)/.test(location.pathname) && location.pathname.indexOf('.html') === -1 && isZhIndexPage();
-  }
-  function isZhIndexPage() {
-    // The homepage (index) has no .html suffix; check if the zh version exists
-    // by looking at the <html lang> attribute
-    return document.documentElement.getAttribute("lang") === "zh";
+    return /\.zh\.html(\?|$|#)/.test(location.pathname) || /\.zh\.html(\?|$|#)/.test(location.href);
   }
   function zhUrlFor(url) {
-    // Handle homepage URL without .html suffix
     if (url.indexOf('.html') === -1) {
-      // URL ends with / or /#fragment or /?query
       return url.replace(/\/(\?|#|$)/, function (m, p1) {
         return "/index.zh.html" + p1;
       });
@@ -31,7 +22,6 @@
     if (url.indexOf('.zh.html') === -1) {
       return url;
     }
-    // If this is the index.zh.html page, go back to the directory URL
     if (/index\.zh\.html/.test(url)) {
       return url.replace(/index\.zh\.html(\?|#|$)/, function (m, p1) {
         return "" + p1 || "/";
@@ -43,7 +33,6 @@
   }
 
   // Auto-redirect to keep the user in their preferred language across navigation.
-  // zh counterparts exist for every content page, so this is safe.
   try {
     if (pref === "zh" && !isZhPage()) {
       var z = zhUrlFor(location.href);
@@ -63,59 +52,29 @@
     }
   }
 
-  function buildLink() {
-    var zh = isZhPage();
-    var a = document.createElement("a");
-    a.id = "mcaf-lang-toggle";
-    a.href = "#";
-    a.textContent = zh ? "English" : "中文";
-    a.title = zh ? "Switch to English" : "切换到中文";
-    a.addEventListener("click", function (e) {
-      e.preventDefault();
-      setLang(zh ? "en" : "zh");
+  function buildButton() {
+    var btn = document.createElement("button");
+    btn.id = "mcaf-lang-toggle";
+    btn.type = "button";
+    btn.textContent = isZhPage() ? "English" : "中文";
+    btn.title = isZhPage() ? "Switch to English" : "切换到中文";
+    btn.addEventListener("click", function () {
+      setLang(isZhPage() ? "en" : "zh");
     });
-
-    // Preferred: insert into the top navigation bar as a right-aligned <li>,
-    // after "index" and before "next", with a "|" separator before it.
-    // Result: index | 中文 next | previous |
-    var topNav = document.querySelector("div.related > ul, div.related ul");
-    if (topNav) {
-      var li = document.createElement("li");
-      li.className = "right";
-      li.appendChild(document.createTextNode("| "));
-      li.appendChild(a);
-      var rightItems = topNav.querySelectorAll("li.right");
-      // Insert after the first right li (index) and before the second (next)
-      if (rightItems.length >= 2) {
-        topNav.insertBefore(li, rightItems[1]);
-      } else if (rightItems.length === 1) {
-        // Only index exists (e.g. homepage), append after it
-        rightItems[0].after(li);
-      } else {
-        topNav.appendChild(li);
-      }
-      return;
-    }
-
-    // Fallback: footer
-    var footer = document.querySelector("div.footer");
-    if (footer) {
-      footer.appendChild(document.createTextNode(" | "));
-      footer.appendChild(a);
-      return;
-    }
-
-    // Last resort: fixed corner
-    a.style.cssText =
-      "position:fixed;top:6px;right:10px;z-index:9999;" +
-      "font-size:12px;color:#fff;text-decoration:none;font-family:inherit;";
-    document.body.appendChild(a);
+    document.body.appendChild(btn);
   }
 
   function addStyle() {
     var css = [
-      "#mcaf-lang-toggle{color:#fff;text-decoration:none;}",
-      "#mcaf-lang-toggle:hover{text-decoration:underline;}"
+      "#mcaf-lang-toggle{",
+      "position:fixed;top:8px;right:10px;z-index:9999;",
+      "background:#1e6f3c;color:#fff;border:1px solid #155a2e;",
+      "padding:5px 12px;font-size:13px;font-weight:600;",
+      "border-radius:4px;cursor:pointer;line-height:1.4;",
+      "box-shadow:0 1px 3px rgba(0,0,0,.25);font-family:inherit;",
+      "}",
+      "#mcaf-lang-toggle:hover{background:#287a47;}",
+      "#mcaf-lang-toggle:active{transform:translateY(1px);}"
     ].join("\n");
     var s = document.createElement("style");
     s.id = "mcaf-lang-toggle-style";
@@ -124,8 +83,8 @@
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", function () { addStyle(); buildLink(); });
+    document.addEventListener("DOMContentLoaded", function () { addStyle(); buildButton(); });
   } else {
-    addStyle(); buildLink();
+    addStyle(); buildButton();
   }
 })();
