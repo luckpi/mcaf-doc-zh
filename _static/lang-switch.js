@@ -6,14 +6,37 @@
   try { pref = localStorage.getItem(STORAGE_KEY) || "en"; } catch (e) { pref = "en"; }
 
   function isZhPage() {
-    return /\.zh\.html(\?|$|#)/.test(location.pathname) || /\.zh\.html(\?|$|#)/.test(location.href);
+    return /\.zh\.html(\?|$|#)/.test(location.pathname) ||
+           /\.zh\.html(\?|$|#)/.test(location.href) ||
+           /\/mcaf-doc-zh\/?(\?|$|#)/.test(location.pathname) && location.pathname.indexOf('.html') === -1 && isZhIndexPage();
+  }
+  function isZhIndexPage() {
+    // The homepage (index) has no .html suffix; check if the zh version exists
+    // by looking at the <html lang> attribute
+    return document.documentElement.getAttribute("lang") === "zh";
   }
   function zhUrlFor(url) {
+    // Handle homepage URL without .html suffix
+    if (url.indexOf('.html') === -1) {
+      // URL ends with / or /#fragment or /?query
+      return url.replace(/\/(\?|#|$)/, function (m, p1) {
+        return "/index.zh.html" + p1;
+      });
+    }
     return url.replace(/\.html(\?|#|$)/, function (m, p1) {
       return ".zh.html" + p1;
     });
   }
   function enUrlFor(url) {
+    if (url.indexOf('.zh.html') === -1) {
+      return url;
+    }
+    // If this is the index.zh.html page, go back to the directory URL
+    if (/index\.zh\.html/.test(url)) {
+      return url.replace(/index\.zh\.html(\?|#|$)/, function (m, p1) {
+        return "" + p1 || "/";
+      }).replace(/\/$/, "/");
+    }
     return url.replace(/\.zh\.html(\?|#|$)/, function (m, p1) {
       return ".html" + p1;
     });
@@ -59,6 +82,7 @@
       var li = document.createElement("li");
       li.className = "right";
       li.appendChild(a);
+      li.appendChild(document.createTextNode(" |"));
       var firstRight = topNav.querySelector("li.right");
       if (firstRight) {
         topNav.insertBefore(li, firstRight);
