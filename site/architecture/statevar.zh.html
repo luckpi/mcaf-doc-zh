@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>3.3. 状态管理 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="codegen.zh.html" rel="next" title="3.4. Code Generation"/>
+<link href="naming.zh.html" rel="prev" title="3.2. Naming Conventions"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="codegen.zh.html" title="3.4. Code Generation">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="naming.zh.html" title="3.2. Naming Conventions">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> » <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">3. </span>架构</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">3.3. </span>状态管理</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<span class="target" id="statevar"></span><section id="state-management">
+<span id="index-0"></span><h1><span class="section-number">3.3. </span>状态管理<a class="headerlink" href="#state-management" title="本标题的永久链接">¶</a></h1>
+<p>电机控制算法需要维护大量状态变量，用于控制环和估计器（积分器和滤波器状态）、状态机（状态机的状态）、调度器（倒计时定时器）、配置参数等。</p>
+<p>电机控制应用框架定义了若干数据结构来管理这些状态数据。两个顶层数据结构是 <code class="docutils literal notranslate"><span class="pre">MCAF_SYSTEM_DATA</span></code> 和 <code class="docutils literal notranslate"><span class="pre">MCAF_MOTOR_DATA</span></code>，分别用于存储系统级和电机级状态变量。</p>
+<p>我们使用了一种包含三个主要方面的方法：</p>
+<ul class="simple" id="index-1">
+<li><p><strong>结构</strong> ——状态变量如何组织？</p>
+<ul>
+<li><p>将数据分组到适当的 C 结构体中</p></li>
+<li><p>遵循 Goldilocks 原则：不要太大也不要太小</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple" id="index-2">
+<li><p><strong>分配</strong> ——状态变量如何分配？</p>
+<ul>
+<li><p>最小化独立全局变量的数量</p></li>
+<li><p>将它们放在易于查找的位置（不需要找彩蛋）</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple" id="index-3">
+<li><p><strong>访问</strong> ——函数如何访问状态变量？</p>
+<ul>
+<li><p>函数（有少数例外，如 <code class="docutils literal notranslate"><span class="pre">main()</span></code>、ISR 和 HAL）不直接访问全局变量</p></li>
+<li><p>基本类型直接作为参数传递</p></li>
+<li><p>结构体通过指针或 <code class="docutils literal notranslate"><span class="pre">const</span></code> 指针传递，并使用最小的适用结构体。</p></li>
+</ul>
+</li>
+</ul>
+<p>我们的目标是在系统状态设计中遵循最小知识原则；顶层模块函数可以访问整个数据结构，而底层函数只能访问适当的部分。</p>
+<p>一个简化的示例可能有助于解释这一点。</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">tagMOTOR</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// 电流环前向路径</span>
+<span class="w">  </span><span class="n">MC_DQ_T</span><span class="w"> </span><span class="n">vdqCmd</span><span class="p">；</span><span class="w"> </span><span class="c1">// 期望的 dq 坐标系电压，电流环的直接输出</span>
+<span class="w">  </span><span class="n">MC_DQ_T</span><span class="w"> </span><span class="n">vdq</span><span class="p">；</span><span class="w"> </span><span class="c1">// 期望的 dq 坐标系电压</span>
+<span class="w">  </span><span class="n">MC_ALPHABETA_T</span><span class="w"> </span><span class="n">valphabeta</span><span class="p">；</span><span class="w"> </span><span class="c1">// 期望的 alphabeta 坐标系电压</span>
+<span class="w">  </span><span class="n">MC_ABC_T</span><span class="w"> </span><span class="n">vabc</span><span class="p">；</span><span class="w"> </span><span class="c1">// 期望的相电压</span>
+<span class="w">  </span><span class="n">MC_DUTYCYCLEOUT_T</span><span class="w"> </span><span class="n">pwmDutycycle</span><span class="p">；</span><span class="w"> </span><span class="c1">// PWM 计数值</span>
+<span class="w">  </span><span class="c1">// 角度和速度，包括估计器</span>
+<span class="w">  </span><span class="kt">int16_t</span><span class="w"> </span><span class="n">thetaElectrical</span><span class="p">；</span><span class="w"> </span><span class="c1">// 电气角度</span>
+<span class="w">  </span><span class="kt">int16_t</span><span class="w"> </span><span class="n">omegaElectrical</span><span class="p">；</span><span class="w"> </span><span class="c1">// 电气频率</span>
+<span class="w">  </span><span class="n">MC_SINCOS_T</span><span class="w"> </span><span class="n">sincos</span><span class="p">；</span><span class="w"> </span><span class="c1">// 电气角度的正弦和余弦</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="p">}</span><span class="w"> </span><span class="n">MCAF_MOTOR_DATA</span><span class="p">；</span>
+</pre></div>
+</div>
+<p>顶层模块函数如下所示。注意，函数 <code class="docutils literal notranslate"><span class="pre">MCAF_FocStepIsr()</span></code> 确实可以访问整个 <code class="docutils literal notranslate"><span class="pre">MCAF_MOTOR_DATA</span></code> 结构体，但它调用的其他函数，如 <code class="docutils literal notranslate"><span class="pre">MC_CalculateSineCosine_Assembly_Ram()</span></code> 和 <code class="docutils literal notranslate"><span class="pre">MC_TransformParkInverse_Assembly()</span></code> 只能访问该结构体内的适当信息。</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">MCAF_FocStepIsr</span><span class="p">（</span><span class="n">MCAF_MOTOR_DATA</span><span class="w"> </span><span class="o">*</span><span class="n">pmotor</span><span class="p">）</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="w">  </span><span class="cm">/* 从 pmotor-&gt;theta_e 计算正弦和余弦 */</span>
+<span class="w">  </span><span class="n">MC_CalculateSineCosine_Assembly_Ram</span><span class="p">（</span><span class="n">pmotor</span><span class="o">-&gt;</span><span class="n">thetaElectrical</span><span class="p">，</span><span class="w"> </span><span class="o">&amp;</span><span class="n">pmotor</span><span class="o">-&gt;</span><span class="n">sincos</span><span class="p">);</span>
+<span class="w">  </span><span class="cm">/* 从正弦、余弦、Vd 和 Vq 计算 vAlpha、Vbeta */</span>
+<span class="w">  </span><span class="n">MC_TransformParkInverse_Assembly</span><span class="p">（</span><span class="o">&amp;</span><span class="n">pmotor</span><span class="o">-&gt;</span><span class="n">vdq</span><span class="p">，</span><span class="w"> </span><span class="o">&amp;</span><span class="n">pmotor</span><span class="o">-&gt;</span><span class="n">sincos</span><span class="p">，</span><span class="w"> </span><span class="o">&amp;</span><span class="n">pmotor</span><span class="o">-&gt;</span><span class="n">valphabeta</span><span class="p">);</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>这使许多模块不必 <code class="docutils literal notranslate"><span class="pre">#include</span></code> 主系统状态，并减少了模块间依赖。整体应用行为的变化通常不会影响单个模块的行为，因此需要重新编译和测试的频率更低。</p>
+<p>请注意，采用此方法的模块函数不“拥有”其数据。它们不分配任何全局变量，不访问任何全局变量，也不维护任何指向外部数据的永久指针。相反，数据作为参数传入。模块函数将对任何传入的数据进行操作。它们不关心操作的是来自一个电机还是另一个电机的数据，也不关心是来自测试程序的模拟数据还是来自 <a class="reference internal" href="../appendix/glossary.zh.html#term-ADC"><span class="xref std std-term">ADC</span></a>。</p>
+<p>因此，模块函数很容易被单元测试覆盖。我们只需创建示例输入，调用相应的函数，然后检查输出。</p>
+<p>主应用负责为整个系统和每个电机分配程序状态变量。</p>
+<p>这种理念的一个后果是，许多电机控制参数不能在应用中硬编码；相反，它们必须是 <a class="reference internal" href="config-params.zh.html"><span class="doc">可配置参数</span></a>。原因是我们希望使用相同的模块函数同时支持控制两个不同的电机，而每个电机可能有不同的软件参数，因此这些参数需要从代码中移除并保存在状态变量中。</p>
+<section id="miscellaneous-guidelines">
+<h2><span class="section-number">3.3.1. </span>杂项指南<a class="headerlink" href="#miscellaneous-guidelines" title="本标题的永久链接">¶</a></h2>
+<ul>
+<li><p>相关的状态变量应该放在一起。如果一组变量总是同时出现和使用，那么将它们声明为结构体的成员可能是最好的选择。</p></li>
+<li><p>层次结构可以帮助并简化命名：如果有 5 个计数器，例如 <code class="docutils literal notranslate"><span class="pre">counterError</span></code>， <code class="docutils literal notranslate"><span class="pre">counterSuccess</span></code>， <code class="docutils literal notranslate"><span class="pre">counterResets</span></code>， <code class="docutils literal notranslate"><span class="pre">counterButtonPresses</span></code>，和 <code class="docutils literal notranslate"><span class="pre">counterOvercurrent</span></code>，这些可以合并到一个 <code class="docutils literal notranslate"><span class="pre">counters</span></code> 结构体中，成员不需要 <code class="docutils literal notranslate"><span class="pre">counter</span></code> 这个词，因为它们现在处于一个暗示它们是计数器的上下文中：</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">tagCOUNTERS</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">error</span><span class="p">；</span>
+<span class="w">  </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">success</span><span class="p">；</span>
+<span class="w">  </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">resets</span><span class="p">；</span>
+<span class="w">  </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">buttonPresses</span><span class="p">；</span>
+<span class="w">  </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">overcurrent</span><span class="p">；</span>
+<span class="p">}</span><span class="w"> </span><span class="n">COUNTER_DATA</span><span class="p">；</span>
+
+<span class="n">COUNTER_DATA</span><span class="w"> </span><span class="n">counters</span><span class="p">；</span>
+<span class="o">++</span><span class="n">counters</span><span class="p">。</span><span class="n">resets</span><span class="p">；</span>
+</pre></div>
+</div>
+</li>
+<li><p>嵌入结构体（包含其他结构体的结构体）表示所有权：被包含的结构体由包含它的结构体所拥有，并且是其固有部分。</p></li>
+<li><p>引用结构体（包含指向其他结构体的指针的结构体）表示关联和非排他性：包含的指针允许访问其他数据。</p></li>
+</ul>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">3.3. 状态管理</a><ul>
+<li><a class="reference internal" href="#miscellaneous-guidelines">3.3.1. 杂项指南</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="naming.zh.html" title="上一章"><span class="section-number">3.2. </span>命名约定</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="codegen.zh.html" title="下一章"><span class="section-number">3.4. </span>代码生成</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="codegen.zh.html" title="3.4. Code Generation">下一页</a> |</li>
+<li class="right">
+<a href="naming.zh.html" title="3.2. Naming Conventions">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> » <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">3. </span>架构</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">3.3. </span>状态管理</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo"> © 版权所有 2017-2026，Microchip Technology, Inc.. </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

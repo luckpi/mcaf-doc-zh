@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.4.2. AN1292 锁相环（PLL） — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="qei.zh.html" rel="next" title="5.4.3. Quadrature encoder support"/>
+<link href="estimator-interface.zh.html" rel="prev" title="5.4.1. Firmware Interface"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="qei.zh.html" title="5.4.3. Quadrature encoder support">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="estimator-interface.zh.html" title="5.4.1. Firmware Interface">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="estimators.zh.html"><span class="section-number">5.4. </span>位置和速度估计</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4.2. </span>AN1292 锁相环（PLL）</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="an1292-phase-locked-loop-pll">
+<span id="algorithm-pll"></span><span id="index-0"></span><h1><span class="section-number">5.4.2. </span>AN1292 锁相环（PLL）<a class="headerlink" href="#an1292-phase-locked-loop-pll" title="本标题的永久链接">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">5.4.2.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
+<p>用于估计位置和速度的无传感器估计器本质上与应用笔记 <a class="reference external" href="https://www.microchip.com/en-us/application-notes/an1292">AN1292</a>。</p>
+<figure class="align-center" id="id1">
+<span id="fig-pll-impl1"></span><img alt="../_images/an1292-pll-blkdiag.png" src="../_images/an1292-pll-blkdiag.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.55 </span><span class="caption-text">AN1292 锁相环方框图</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>静止坐标系电压 <span class="math notranslate nohighlight">\(V_{\alpha\beta}\)</span> 和电流 <span class="math notranslate nohighlight">\(I_{\alpha\beta}\)</span> 用于估计反电动势分量 <span class="math notranslate nohighlight">\(E_{\alpha\beta}\)</span> 使用方程的离散时间近似</p>
+<div class="math notranslate nohighlight" id="equation-eq-pll-backemf">
+<span class="eqno">(5.24)<a class="headerlink" href="#equation-eq-pll-backemf" title="本公式的永久链接">¶</a></span>\[E_{\alpha\beta} = V_{\alpha\beta} - R_sI_{\alpha\beta} - L_s\tfrac{d}{dt}I_{\alpha\beta}\]</div>
+<p>反馈环如 <a class="reference internal" href="#fig-pll-impl1"><span class="std std-numref">图 5.55</span></a> 所示，用于旋转 <span class="math notranslate nohighlight">\(E_{\alpha\beta}\)</span> 到同步（dq）坐标系以产生误差信号并更新电气角度 <span class="math notranslate nohighlight">\(\theta_e\)</span> （而不是 <span class="math notranslate nohighlight">\(\rho_{\mathrm{estim}}\)</span> 图中所示）用于旋转，其中</p>
+<div class="math notranslate nohighlight" id="equation-eq-pll-rotation">
+<span class="eqno">(5.25)<a class="headerlink" href="#equation-eq-pll-rotation" title="本公式的永久链接">¶</a></span>\[\theta_e = \rho_{\mathrm{estim}} + \rho_{\mathrm{ofs}}\]</div>
+<p>和 <span class="math notranslate nohighlight">\(\rho_{\mathrm{ofs}}\)</span> （<code class="docutils literal notranslate"><span class="pre">motor.estimator.pll.rhoOffset</span></code> 在固件中）是一个默认为零的参数，但可以通过 <a class="reference internal" href="../components/diagnostics.zh.html#diag-kernel"><span class="std std-ref">实时诊断工具</span></a>。</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">5.4.2. AN1292 锁相环（PLL）</a><ul>
+<li><a class="reference internal" href="#overview">5.4.2.1. 概述</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="estimator-interface.zh.html" title="上一章"><span class="section-number">5.4.1. </span>固件接口</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="qei.zh.html" title="下一章"><span class="section-number">5.4.3. </span>正交编码器支持</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="qei.zh.html" title="5.4.3. Quadrature encoder support">下一页</a> |</li>
+<li class="right">
+<a href="estimator-interface.zh.html" title="5.4.1. Firmware Interface">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="estimators.zh.html"><span class="section-number">5.4. </span>位置和速度估计</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4.2. </span>AN1292 锁相环（PLL）</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>3.5. 配置参数 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="schedopt.zh.html" rel="next" title="3.6. Scheduling and Optimization"/>
+<link href="codegen.zh.html" rel="prev" title="3.4. Code Generation"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="schedopt.zh.html" title="3.6. Scheduling and Optimization">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="codegen.zh.html" title="3.4. Code Generation">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> » <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">3. </span>架构</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">3.5. </span>配置参数</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="configuration-parameters">
+<span id="config-params"></span><h1><span class="section-number">3.5. </span>配置参数<a class="headerlink" href="#configuration-parameters" title="本标题的永久链接">¶</a></h1>
+<p>MCAF 中有许多可配置参数：</p>
+<ul class="simple">
+<li><p>控制增益</p></li>
+<li><p>时间延迟</p></li>
+<li><p>斜坡速率</p></li>
+<li><p>滤波器时间常数</p></li>
+<li><p>满量程值（电流、电压、占空比等）</p></li>
+<li><p>限值（电流、电压、占空比等）</p></li>
+</ul>
+<p>等等。速度控制环就是一个很好的例子。从代数上看，它如下所示：</p>
+<div class="math notranslate nohighlight" id="equation-architecture-config-params-0">
+<span class="eqno">(3.1)<a class="headerlink" href="#equation-architecture-config-params-0" title="本公式的永久链接">¶</a></span>\[I_q = K_p \omega_{\mathrm{err}} + \int K_i \omega_{\mathrm{err}}\ dt\]</div>
+<p>问题变成了：我们如何管理诸如 <code class="docutils literal notranslate"><span class="pre">K_p</span></code> 和 <code class="docutils literal notranslate"><span class="pre">K_i</span></code> 这样的参数，并利用定点数学？</p>
+<section id="classic-application-notes">
+<h2><span class="section-number">3.5.1. </span>经典应用笔记<a class="headerlink" href="#classic-application-notes" title="本标题的永久链接">¶</a></h2>
+<p>Microchip 的经典应用笔记（如 AN1292 和 AN1078）使用通过 C 预处理器表达的计算。例如：</p>
+<div class="literal-block-wrapper docutils container" id="code-config-0">
+<div class="code-block-caption"><span class="caption-number">代码清单 3.7 </span><span class="caption-text">来自 AN1078 <code class="docutils literal notranslate"><span class="pre">UserParms.h</span></code></span><a class="headerlink" href="#code-config-0" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#define DFCY 70000000 </span><span class="c1">// 指令周期频率（Hz）</span>
+<span class="cp">#define DTCY (1.0/DFCY) </span><span class="c1">// 指令周期（秒）</span>
+<span class="cp">#define DDEADTIME (unsigned int)(DEADTIMESEC*DFCY) </span><span class="c1">// 死区时间（以 dTcy 为单位）</span>
+<span class="cp">#define LOOPTIMEINSEC (1.0/PWMFREQUENCY) </span><span class="c1">// PWM 周期 = 1.0 / PWMFREQUENCY</span>
+<span class="cp">#define IRP_PERCALC (unsigned int)(SPEEDLOOPTIME/LOOPTIMEINSEC) </span><span class="c1">// 每次速度计算对应的 PWM 循环数</span>
+<span class="c1">// 从开环过渡到闭环所需的 PWM 循环</span>
+<span class="cp">#define TRANSITION_STEPS IRP_PERCALC/4</span>
+
+<span class="cp">#define SPEEDLOOPTIME (float)(1.0/SPEEDLOOPFREQ) </span><span class="c1">// 速度控制周期</span>
+<span class="cp">#define LOOPINTCY DFCY/PWMFREQUENCY </span><span class="c1">// 基本循环周期（以 Tcy 为单位）</span>
+<span class="cp">#define LOCKTIME (unsigned int)(LOCKTIMEINSEC*(1.0/LOOPTIMEINSEC))</span>
+<span class="c1">// 从零斜坡到 MINSPEEDINRPM 所需的时间。时间以秒为单位</span>
+<span class="cp">#define DELTA_STARTUP_RAMP (unsigned int)(MINSPEEDINRPM*POLEPAIRS*LOOPTIMEINSEC* \</span>
+<span class="cp"> LOOPTIMEINSEC*65536*65536/(60*OPENLOOPTIMEINSEC))</span>
+<span class="c1">// 在执行按钮例程之前必须执行的控制循环数。</span>
+<span class="cp">#define BUTPOLLOOPCNT (unsigned int)(BUTPOLLOOPTIME/LOOPTIMEINSEC)</span>
+</pre></div>
+</div>
+</div>
+<p>这种方法的优点是用于推导每个值的公式是可见的。</p>
+<p>这种方法的缺点在于 C 预处理器的工作方式。 <code class="docutils literal notranslate"><span class="pre">#define</span></code> 方法纯粹是文本替换，预处理器实际上并不执行任何计算；编译器通过在编译时计算它能完成的任何计算来优化（也称为 <a class="reference external" href="https://en.wikipedia.org/wiki/Constant_folding">常量折叠</a>），但看不到预处理之前的原始代码。具体的缺点包括</p>
+<ul>
+<li><p>由于溢出、类型不匹配或不安全的计算（缺少括号来控制优先级、不检查值是否超出范围），可能导致难以理解或不可见的错误。例如：</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#define FOSC 70e6</span>
+<span class="cp">#define SLOW_BAUDRATE 38400</span>
+<span class="cp">#define FAST_BAUDRATE 3*SLOW_BAUDRATE</span>
+<span class="cp">#define BRG_DIVIDER FOSC/16/FAST_BAUDRATE</span>
+<span class="n">U1BRG</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BRG_DIVIDER</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">；</span>
+</pre></div>
+</div>
+<p>此代码有错误；替换后的代码如下所示</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">U1BRG</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">70e6</span><span class="o">/</span><span class="mi">16</span><span class="o">/</span><span class="mi">3</span><span class="o">*</span><span class="n">SLOW_BAUDRATE</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">；</span>
+</pre></div>
+</div>
+<p>缺少 <code class="docutils literal notranslate"><span class="pre">3*SLOW_BAUDRATE</span></code></p>
+</li>
+<li><p>无法看到中间或最终的计算值</p></li>
+<li><p>无法调试预处理器计算</p></li>
+<li><p>可以覆盖“内置”函数调用（标准数学），但无法处理更复杂的计算（例如需要循环、高级数学函数如 <code class="docutils literal notranslate"><span class="pre">erf</span></code> 或贝塞尔函数，或其他数值分析）</p></li>
+</ul>
+</section>
+<section id="motor-control-application-framework">
+<h2><span class="section-number">3.5.2. </span>电机控制应用框架<a class="headerlink" href="#motor-control-application-framework" title="本标题的永久链接">¶</a></h2>
+<p>MCAF 方法利用了 <a class="reference internal" href="codegen.zh.html#codegen"><span class="std std-ref">代码生成</span></a> 功能，这些功能在 motorBench<sup>®</sup> Development Suite 中。这些功能使用模板引擎；在 MCAF 固件包中，包含带有占位符表达式的参数化代码文件：</p>
+<div class="literal-block-wrapper docutils container" id="code-config-1">
+<div class="code-block-caption"><span class="caption-number">代码清单 3.8 </span><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">pi_gains.h.template</span></code></span><a class="headerlink" href="#code-config-1" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">// 电流环增益</span>
+<span class="cp">#define KII ${INTEGRAL_GAIN_HERE } </span><span class="c1">// 积分增益</span>
+<span class="cp">#define KIP ${PROPORTIONAL_GAIN_HERE} </span><span class="c1">// 比例增益</span>
+</pre></div>
+</div>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">${SOME_EXPRESSION}</span></code> 块中的值将被替换，最终如下所示</p>
+<div class="literal-block-wrapper docutils container" id="code-config-2">
+<div class="code-block-caption"><span class="caption-number">代码清单 3.9 </span><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">pi_gains.h</span></code></span><a class="headerlink" href="#code-config-2" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">// 电流环增益</span>
+<span class="cp">#define KII 3.021 </span><span class="c1">// 积分增益</span>
+<span class="cp">#define KIP 7.413 </span><span class="c1">// 比例增益</span>
+</pre></div>
+</div>
+</div>
+<p>这提供了几个优点：</p>
+<ul class="simple">
+<li><p>可以在代码生成时使用可调试的机制进行计算</p></li>
+<li><p>中间和最终结果可以可视化</p></li>
+<li><p>可以添加浮点/工程等效值的报告</p></li>
+<li><p>几乎可以使用任何可计算的方程</p></li>
+</ul>
+<p>上面的示例代码是浮点参数的示例；由于我们倾向于使用定点计算，固件包模板可能更像</p>
+<div class="literal-block-wrapper docutils container" id="code-config-3">
+<div class="code-block-caption"><span class="caption-number">代码清单 3.10 </span><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">pi_gains.h.template</span></code></span><a class="headerlink" href="#code-config-3" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">// 电流环增益</span>
+<span class="cp">#define KII_Q12 &lt;@describe_constant Q12(INTEGRAL_GAIN) /&gt;</span>
+<span class="cp">#define KIP_Q12 &lt;@describe_constant Q12(PROPORTIONAL_GAIN) /&gt;</span>
+</pre></div>
+</div>
+</div>
+<p>使用模板宏，在注释中同时生成整数值和等效的浮点值：</p>
+<div class="literal-block-wrapper docutils container" id="code-config-4">
+<div class="code-block-caption"><span class="caption-number">代码清单 3.11 </span><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">pi_gains.h</span></code></span><a class="headerlink" href="#code-config-4" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">// 电流环增益</span>
+<span class="cp">#define KII_Q12 12370 </span><span class="c1">// 3.021 Q12</span>
+<span class="cp">#define KIP_Q12 30364 </span><span class="c1">// 7.413 Q12</span>
+</pre></div>
+</div>
+</div>
+<p>然后我们可以在代码中使用定义的常量：</p>
+<div class="literal-block-wrapper docutils container" id="code-config-5">
+<div class="code-block-caption"><span class="caption-number">代码清单 3.12 </span><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">pi_controller.c</span></code></span><a class="headerlink" href="#code-config-5" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">control_motor</span><span class="p">（</span><span class="n">motor</span><span class="w"> </span><span class="o">*</span><span class="n">pmotor</span><span class="p">）</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="p">...</span>
+<span class="w">   </span><span class="kt">int16_t</span><span class="w"> </span><span class="n">current_error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pmotor</span><span class="o">-&gt;</span><span class="n">iCmd</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">pmotor</span><span class="o">-&gt;</span><span class="n">iMeas</span><span class="p">；</span>
+<span class="w">   </span><span class="n">pmotor</span><span class="o">-&gt;</span><span class="n">applied_voltage</span><span class="w"> </span><span class="o">=</span>
+<span class="w">     </span><span class="p">((</span><span class="kt">int32_t</span><span class="p">）</span><span class="n">CURRENT_LOOP_GAIN_Q12</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">current_error</span><span class="p">）</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">12</span><span class="p">；</span>
+<span class="w">   </span><span class="p">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>这种 <em>编译时分离</em> 方法（将可配置参数拆分为模板生成的 C 头文件中的定义，以及在一个或多个 C 源文件中的使用）本质上是 MCAF 中使用的方法。一般来说，它具有一些重要特征：</p>
+<ul class="simple">
+<li><p>有利于优化——编译器能看到常量值，可能能够加速计算。</p></li>
+<li><p>不利于模块化——如果我们有驱动两个不同增益的电机的软件怎么办？那么我们需要 <code class="docutils literal notranslate"><span class="pre">KII_Q12_MOTOR1</span></code> 和 <code class="docutils literal notranslate"><span class="pre">KII_Q12_MOTOR2</span></code> ，并且在 C 代码中我们需要以某种方式确定何时使用哪个。</p></li>
+<li><p>不利于开发——我们无法使用运行时诊断工具来尝试不同的增益。</p></li>
+<li><p>定义和使用点分离——这是模块化设计的必然代价。</p></li>
+</ul>
+<p>我们通过采用稍微不同的方法来解决其中一些问题，使用 <em>运行时分离</em>，将配置参数存储在状态变量中：</p>
+<div class="literal-block-wrapper docutils container" id="code-config-6">
+<div class="code-block-caption"><span class="caption-number">代码清单 3.13 </span><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">pi_controller.c</span></code></span><a class="headerlink" href="#code-config-6" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">control_motor</span><span class="p">（</span><span class="n">motor</span><span class="w"> </span><span class="o">*</span><span class="n">pmotor</span><span class="p">）</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="p">...</span>
+<span class="w">   </span><span class="kt">int16_t</span><span class="w"> </span><span class="n">current_error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pmotor</span><span class="o">-&gt;</span><span class="n">iCmd</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">pmotor</span><span class="o">-&gt;</span><span class="n">iMeas</span><span class="p">；</span>
+<span class="w">   </span><span class="n">pmotor</span><span class="o">-&gt;</span><span class="n">applied_voltage</span><span class="w"> </span><span class="o">=</span>
+<span class="w">     </span><span class="p">((</span><span class="kt">int32_t</span><span class="p">）</span><span class="w"> </span><span class="n">pmotor</span><span class="o">-&gt;</span><span class="n">kp</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">current_error</span><span class="p">）</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">pmotor</span><span class="o">-&gt;</span><span class="n">kp_shift</span><span class="p">；</span>
+<span class="w">   </span><span class="p">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="code-config-7">
+<div class="code-block-caption"><span class="caption-number">代码清单 3.14 </span><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">init_motor.c</span></code> (动态生成)</span><a class="headerlink" href="#code-config-7" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">init_motor_1</span><span class="p">（</span><span class="n">motor</span><span class="w"> </span><span class="o">*</span><span class="n">pmotor</span><span class="p">）</span>
+<span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">pmotor</span><span class="o">-&gt;</span><span class="n">kp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">12370</span><span class="p">；</span><span class="w">    </span><span class="c1">// 3.02 Q12</span>
+<span class="w">    </span><span class="n">pmotor</span><span class="o">-&gt;</span><span class="n">kp_shift</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">12</span><span class="p">；</span>
+<span class="w"> </span><span class="p">}</span>
+<span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">init_motor_2</span><span class="p">（</span><span class="n">motor</span><span class="w"> </span><span class="o">*</span><span class="n">pmotor</span><span class="p">）</span>
+<span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">pmotor</span><span class="o">-&gt;</span><span class="n">kp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">15147</span><span class="p">；</span><span class="w">    </span><span class="c1">// 1.849 Q13</span>
+<span class="w">    </span><span class="n">pmotor</span><span class="o">-&gt;</span><span class="n">kp_shift</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">13</span><span class="p">；</span>
+<span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>这允许一种代码架构，使得</p>
+<ul class="simple">
+<li><p>可以使用多个电机，每个电机有不同的增益</p></li>
+<li><p>可以使用可变的移位计数，以支持为每个电机优化的动态范围。</p></li>
+<li><p>参数可以在开发和测试期间在运行时更改</p></li>
+</ul>
+<p>运行时开销略高于每行 C 代码使用编译时固定常量而非运行时参数的情况，但对 MCAF 来说是更好的方法。</p>
+<p>截至 MCAF 版本 1.0，编译时分离和运行时分离混合使用；我们正在迁移到在将来版本中纯粹使用运行时分离。所有与可配置参数相关的生成代码位于 <code class="docutils literal notranslate"><span class="pre">parameters/xyz_params.h</span></code> 文件中。</p>
+<p>代码生成方法的一个缺点是不太容易做到“透明”；也就是说，不容易展示计算值的来源方程。我们正在努力在未来解决这个问题。</p>
+<p>MCAF 的示例生成参数：</p>
+<div class="literal-block-wrapper docutils container" id="code-config-8">
+<div class="code-block-caption"><span class="caption-number">代码清单 3.15 </span><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">parameters/operating_params.h</span></code></span><a class="headerlink" href="#code-config-8" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="cm">/* --- 换相压摆率参数 --- */</span>
+
+<span class="w"> </span><span class="cm">/*</span>
+<span class="cm"> * slewrate_accel: 7.426 krad/s^2</span>
+<span class="cm"> * 70.909 kRPM/s</span>
+<span class="cm"> * slewrate_decel: 2.335 krad/s^2</span>
+<span class="cm"> * 22.296 kRPM/s</span>
+<span class="cm"> * t_coastdown: 248.983 ms</span>
+<span class="cm"> */</span>
+
+<span class="w"> </span><span class="cp">#define VELOCITY_SLEWRATE_LIMIT1 32000</span>
+<span class="w"> </span><span class="cp">#define VELOCITY_SLEWRATE_LIMIT_ACCEL 387 </span><span class="c1">// Q15( 0.01181) = +7.42063 rad/s = +7.42562 rad/s - 0.0671%</span>
+<span class="w"> </span><span class="cp">#define VELOCITY_SLEWRATE_LIMIT_DECEL 122 </span><span class="c1">// Q15( 0.00372) = +2.33932 rad/s = +2.33479 rad/s + 0.1938%</span>
+<span class="w"> </span><span class="cp">#define VELOCITY_COASTDOWN_TIME 4980 </span><span class="c1">// Q0(4980.00000) = +249.00000 ms = +248.98273 ms + 0.0069%</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="code-config-9">
+<div class="code-block-caption"><span class="caption-number">代码清单 3.16 </span><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">parameters/foc_params.h</span></code></span><a class="headerlink" href="#code-config-9" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">//************** PI Coefficients **************</span>
+<span class="c1">//// Current loop</span>
+<span class="c1">// phase margin = 80 deg</span>
+<span class="c1">// PI phase at crossover = 45.000 deg</span>
+<span class="c1">// crossover frequency = 2.442 k rad/s (388.596 Hz)</span>
+<span class="cp">#define KIP 9151 </span><span class="c1">// Q15( 0.27927) = +436.37336 mV/A = +436.37526 mV/A - 0.0004%</span>
+<span class="cp">#define KIP_Q 15</span>
+<span class="cp">#define KII 1117 </span><span class="c1">// Q15( 0.03409) = +1.06530 kV/A/s = +1.06546 kV/A/s - 0.0152%</span>
+<span class="cp">#define KII_Q 15</span>
+<span class="c1">//// Velocity loop</span>
+<span class="c1">// phase margin = 50 deg</span>
+<span class="c1">// PI phase at crossover = 10.000 deg</span>
+<span class="c1">// crossover frequency = 142.852 rad/s (22.736 Hz)</span>
+<span class="cp">#define KWP 14933 </span><span class="c1">// Q13( 1.82288) = +25.73362 mA/(rad/s) = +25.73375 mA/(rad/s) - 0.0005%</span>
+<span class="cp">#define KWP_Q 13</span>
+<span class="cp">#define KWI 1505 </span><span class="c1">// Q15( 0.04593) = +648.38105 mA/rad = +648.19737 mA/rad + 0.0283%</span>
+<span class="cp">#define KWI_Q 15</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">3.5. 配置参数</a><ul>
+<li><a class="reference internal" href="#classic-application-notes">3.5.1. 经典应用笔记</a></li>
+<li><a class="reference internal" href="#motor-control-application-framework">3.5.2. 电机控制应用框架</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="codegen.zh.html" title="上一章"><span class="section-number">3.4. </span>代码生成</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="schedopt.zh.html" title="下一章"><span class="section-number">3.6. </span>调度与优化</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="schedopt.zh.html" title="3.6. Scheduling and Optimization">下一页</a> |</li>
+<li class="right">
+<a href="codegen.zh.html" title="3.4. Code Generation">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> » <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">3. </span>架构</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">3.5. </span>配置参数</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo"> © 版权所有 2017-2026，Microchip Technology, Inc.. </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>6.3. 参数定制 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="sampling-rate.zh.html" rel="next" title="6.4. Sampling Rate and PWM Frequency Implications"/>
+<link href="codegen.zh.html" rel="prev" title="6.2. Code Generation"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="sampling-rate.zh.html" title="6.4. Sampling Rate and PWM Frequency Implications">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="codegen.zh.html" title="6.2. Code Generation">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.3. </span>参数定制</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="parameter-customization">
+<span id="impl-customization"></span><h1><span class="section-number">6.3. </span>参数定制<a class="headerlink" href="#parameter-customization" title="本标题的永久链接">¶</a></h1>
+<p>自 MCAF R4 起，可通过 motorBench<sup>®</sup> Development Suite 的 Customize 页面进行参数定制，该页面提供对影响代码生成的各种参数的访问。</p>
+<p>本节提供设置这些参数的额外指导。</p>
+<p><strong>请注意：</strong> MCAF 的设计使得可定制参数的默认值适用于大多数电机。如果不确定如何操作，最佳做法是使用每个参数的默认值。</p>
+<section id="summary">
+<h2><span class="section-number">6.3.1. </span>摘要<a class="headerlink" href="#summary" title="本标题的永久链接">¶</a></h2>
+<p>下表简要描述了这些参数。包含详细指导的链接。</p>
+<table class="docutils align-default" id="id6">
+<caption><span class="caption-number">表 6.1 </span><span class="caption-text">可定制参数</span><a class="headerlink" href="#id6" title="本表格的永久链接">¶</a></caption>
+<colgroup>
+<col style="width: 18%"/>
+<col style="width: 22%"/>
+<col style="width: 60%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>节</p></th>
+<th class="head"><p>参数</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>电流测量</p></td>
+<td><p><a class="reference internal" href="#customize-current-measure-method"><span class="std std-ref">电流测量</span></a></p></td>
+<td><p>选择用于测量电机相电流的方法</p></td>
+</tr>
+<tr class="row-odd"><td><p>单通道</p></td>
+<td><p><a class="reference internal" href="#customize-current-measure-single-channel-minimumtime"><span class="std std-ref">最小时间窗口</span></a></p></td>
+<td><p>测量电流所需的最小时间窗口</p></td>
+</tr>
+<tr class="row-even"><td><p>单通道</p></td>
+<td><p><a class="reference internal" href="#customize-current-measure-single-channel-sampledelay"><span class="std std-ref">ADC 触发延迟</span></a></p></td>
+<td><p>逆变器开关状态与 ADC 采样点之间的延迟</p></td>
+</tr>
+<tr class="row-odd"><td><p>估计器</p></td>
+<td><p><a class="reference internal" href="#customize-estimator-type"><span class="std std-ref">主估计器</span></a></p></td>
+<td><p>选择用于换相和速度反馈的估计器</p></td>
+</tr>
+<tr class="row-even"><td><p>估计器</p></td>
+<td><p><a class="reference internal" href="#customize-estimator-active"><span class="std std-ref">活动估计器</span></a></p></td>
+<td><p>除用于换相的主估计器外，选择哪些估计器处于活动状态</p></td>
+</tr>
+<tr class="row-odd"><td><p>运行参数</p></td>
+<td><p><a class="reference internal" href="#customize-operation-min-velocity-ratio"><span class="std std-ref">最小速度</span></a></p></td>
+<td><p>确定最小运行速度</p></td>
+</tr>
+<tr class="row-even"><td><p>运行参数</p></td>
+<td><p><a class="reference internal" href="#customize-operation-startup-velocity-ratio"><span class="std std-ref">启动速度</span></a></p></td>
+<td><p>确定启动速度</p></td>
+</tr>
+<tr class="row-odd"><td><p>运行参数</p></td>
+<td><p><a class="reference internal" href="#customize-operation-max-velocity-ratio"><span class="std std-ref">最大速度</span></a></p></td>
+<td><p>确定最大速度指令，以标称电机速度的比例表示</p></td>
+</tr>
+<tr class="row-even"><td><p>运行参数</p></td>
+<td><p><a class="reference internal" href="#customize-operation-fullscale-base-ratio"><span class="std std-ref">满量程速度</span></a></p></td>
+<td><p>确定满量程速度，以标称电机速度的比例表示</p></td>
+</tr>
+<tr class="row-odd"><td><p>运行参数</p></td>
+<td><p><a class="reference internal" href="#customize-operation-outer-loop-type"><span class="std std-ref">外环控制器</span></a></p></td>
+<td><p>确定外控制环控制的变量</p></td>
+</tr>
+<tr class="row-even"><td><p>运行参数</p></td>
+<td><p><a class="reference internal" href="#customize-saliency-threshold"><span class="std std-ref">凸极性：凸极阈值</span></a></p></td>
+<td><p>确定凸极比阈值，低于此值时忽略电机的凸极性</p></td>
+</tr>
+<tr class="row-odd"><td><p>运行参数</p></td>
+<td><p><a class="reference internal" href="#customize-operation-slewrate-accel"><span class="std std-ref">压摆率：最大加速度</span></a></p></td>
+<td><p>确定电动象限的最大速度压摆率</p></td>
+</tr>
+<tr class="row-even"><td><p>运行参数</p></td>
+<td><p><a class="reference internal" href="#customize-operation-slewrate-decel"><span class="std std-ref">压摆率：最大减速度</span></a></p></td>
+<td><p>确定发电象限的最大速度压摆率</p></td>
+</tr>
+<tr class="row-odd"><td><p>运行参数</p></td>
+<td><p><a class="reference internal" href="#customize-operation-dyn-current-type"><span class="std std-ref">动态电流限制类型</span></a></p></td>
+<td><p>确定使用哪种类型（如有）的动态电流限制算法</p></td>
+</tr>
+<tr class="row-even"><td><p>运行参数</p></td>
+<td><p><a class="reference internal" href="#customize-operation-stopping-type"><span class="std std-ref">闭环停止</span></a></p></td>
+<td><p>确定使用哪种类型（如有）的闭环停止</p></td>
+</tr>
+<tr class="row-odd"><td><p>运行参数</p></td>
+<td><p><a class="reference internal" href="#customize-operation-stopping-closed-loop-parameters-speed"><span class="std std-ref">闭环停止：速度</span></a></p></td>
+<td><p>认为电机已停止的速度</p></td>
+</tr>
+<tr class="row-even"><td><p>运行参数</p></td>
+<td><p><a class="reference internal" href="#customize-operation-stopping-closed-loop-parameters-time"><span class="std std-ref">闭环停止：时间</span></a></p></td>
+<td><p>电机低于停止速度的持续时间，超过此时间后认为电机已停止</p></td>
+</tr>
+<tr class="row-odd"><td><p>运行参数</p></td>
+<td><p><a class="reference internal" href="#customize-operation-coastdown-end-velocity"><span class="std std-ref">惯性减速：速度阈值</span></a></p></td>
+<td><p>确定用于估计电机何时停止的速度阈值</p></td>
+</tr>
+<tr class="row-even"><td><p>运行参数</p></td>
+<td><p><a class="reference internal" href="#customize-operation-coastdown-time"><span class="std std-ref">惯性减速：时间</span></a></p></td>
+<td><p>确定等待电机停止的时间</p></td>
+</tr>
+<tr class="row-odd"><td><p>磁通控制</p></td>
+<td><p><a class="reference internal" href="#customize-flux-control-method"><span class="std std-ref">磁通控制方法</span></a></p></td>
+<td><p>选择磁通控制方法（禁用时选“None”）</p></td>
+</tr>
+<tr class="row-even"><td><p>磁通控制</p></td>
+<td><p><a class="reference internal" href="#customize-flux-control-eqn-based-ilimit-region-type"><span class="std std-ref">电流限制：边界类型</span></a></p></td>
+<td><p>选择用于定义指令 Idq 边界的方法</p></td>
+</tr>
+<tr class="row-odd"><td><p>磁通控制</p></td>
+<td><p><a class="reference internal" href="#customize-flux-control-eqn-based-ilimit-id-limit"><span class="std std-ref">电流限制：Idmax</span></a></p></td>
+<td><p>确定最大负向 d 轴电流</p></td>
+</tr>
+<tr class="row-even"><td><p>磁通控制</p></td>
+<td><p><a class="reference internal" href="#customize-flux-control-eqn-based-ilimit-iq-limit"><span class="std std-ref">电流限制：Iqmax</span></a></p></td>
+<td><p>确定最大 q 轴电流</p></td>
+</tr>
+<tr class="row-odd"><td><p>磁通控制</p></td>
+<td><p><a class="reference internal" href="#customize-flux-control-eqn-based-fluxweak-enable"><span class="std std-ref">弱磁：启用</span></a></p></td>
+<td><p>确定是否启用弱磁</p></td>
+</tr>
+<tr class="row-even"><td><p>磁通控制</p></td>
+<td><p><a class="reference internal" href="#customize-flux-control-eqn-based-fw-vdq-limit"><span class="std std-ref">弱磁：电压限值</span></a></p></td>
+<td><p>确定弱磁 (FW) 中使用的电压幅值限值</p></td>
+</tr>
+<tr class="row-odd"><td><p>磁通控制</p></td>
+<td><p><a class="reference internal" href="#customize-flux-control-eqn-based-mtpa-enable"><span class="std std-ref">MTPA：启用</span></a></p></td>
+<td><p>确定是否启用 MTPA</p></td>
+</tr>
+<tr class="row-even"><td><p>磁通控制</p></td>
+<td><p><a class="reference internal" href="#customize-mtpa-indicators"><span class="std std-ref">MTPA：Idmax-MTPA</span></a></p></td>
+<td><p>显示分配给 MTPA 的最大 d 轴电流，作为 <span class="math notranslate nohighlight">\(L_d - L_q\)</span> 和 <span class="math notranslate nohighlight">\(I_{\max}\)</span> （仅指示）</p></td>
+</tr>
+<tr class="row-odd"><td><p>磁通控制</p></td>
+<td><p><a class="reference internal" href="#customize-mtpa-indicators"><span class="std std-ref">MTPA：gain-MTPA</span></a></p></td>
+<td><p>显示 MTPA 带来的最大转矩增加（仅指示）</p></td>
+</tr>
+<tr class="row-even"><td><p>死区补偿</p></td>
+<td><p><a class="reference internal" href="#customize-deadtimecomp-method"><span class="std std-ref">死区补偿方法</span></a></p></td>
+<td><p>选择死区补偿方法（禁用时选“None”）</p></td>
+</tr>
+<tr class="row-odd"><td><p>死区补偿</p></td>
+<td><p><a class="reference internal" href="#customize-deadtimecomp-perphase-current-sign-band"><span class="std std-ref">电流线性范围</span></a></p></td>
+<td><p>确定用于死区补偿的电流线性范围；较大电流视为 ±1</p></td>
+</tr>
+<tr class="row-even"><td><p>死区补偿</p></td>
+<td><p><a class="reference internal" href="#customize-deadtimecomp-perphase-forward-gain"><span class="std std-ref">前向增益</span></a></p></td>
+<td><p>确定前向通道中死区补偿的增益</p></td>
+</tr>
+<tr class="row-odd"><td><p>死区补偿</p></td>
+<td><p><a class="reference internal" href="#customize-deadtimecomp-perphase-feedback-gain"><span class="std std-ref">反馈增益</span></a></p></td>
+<td><p>确定反馈通道中死区补偿的增益</p></td>
+</tr>
+<tr class="row-even"><td><p>故障检测</p></td>
+<td><p><a class="reference internal" href="#customize-fault-detect-margin-uv"><span class="std std-ref">欠压裕量</span></a></p></td>
+<td><p>确定欠压阈值裕量</p></td>
+</tr>
+<tr class="row-odd"><td><p>故障检测</p></td>
+<td><p><a class="reference internal" href="#customize-fault-detect-margin-ov"><span class="std std-ref">过压裕量</span></a></p></td>
+<td><p>确定过压阈值裕量</p></td>
+</tr>
+<tr class="row-even"><td><p>故障检测</p></td>
+<td><p><a class="reference internal" href="#customize-fault-detect-stall-detect-enable"><span class="std std-ref">堵转检测：启用</span></a></p></td>
+<td><p>确定是否启用堵转检测</p></td>
+</tr>
+<tr class="row-odd"><td><p>启动</p></td>
+<td><p><a class="reference internal" href="#customize-startup-istartup"><span class="std std-ref">启动电流</span></a></p></td>
+<td><p>确定启动期间使用的电流</p></td>
+</tr>
+<tr class="row-even"><td><p>启动</p></td>
+<td><p><a class="reference internal" href="#customize-startup-t-rampup"><span class="std std-ref">斜坡上升时间</span></a></p></td>
+<td><p>确定启动期间的电流斜坡上升时间</p></td>
+</tr>
+<tr class="row-odd"><td><p>启动</p></td>
+<td><p><a class="reference internal" href="#customize-startup-t-align"><span class="std std-ref">对齐时间</span></a></p></td>
+<td><p>确定启动期间停留在对齐状态的时间</p></td>
+</tr>
+<tr class="row-even"><td><p>启动</p></td>
+<td><p><a class="reference internal" href="#customize-startup-min-total-accel-time"><span class="std std-ref">最小加速时间</span></a></p></td>
+<td><p>确定启动期间的最小加速时间</p></td>
+</tr>
+<tr class="row-odd"><td><p>启动</p></td>
+<td><p><a class="reference internal" href="#customize-startup-torque-scale-accel">加速度 <span class="math notranslate nohighlight">\(\alpha_1\)</span></a></p></td>
+<td><p>确定快速加速率</p></td>
+</tr>
+<tr class="row-even"><td><p>启动</p></td>
+<td><p><a class="reference internal" href="#customize-startup-torque-scale-slow-accel">加速度 <span class="math notranslate nohighlight">\(\alpha_0\)</span></a></p></td>
+<td><p>确定慢速加速率</p></td>
+</tr>
+<tr class="row-odd"><td><p>启动</p></td>
+<td><p><a class="reference internal" href="#customize-startup-t-hold"><span class="std std-ref">保持时间</span></a></p></td>
+<td><p>确定启动期间停留在保持状态的时间</p></td>
+</tr>
+<tr class="row-even"><td><p>启动</p></td>
+<td><p><a class="reference internal" href="#customize-startup-omega0">速度阈值 <span class="math notranslate nohighlight">\(\omega_0\)</span></a></p></td>
+<td><p>确定切换到快速加速的速度阈值</p></td>
+</tr>
+<tr class="row-odd"><td><p>启动</p></td>
+<td><p><a class="reference internal" href="#customize-startup-theta-converge-rate"><span class="std std-ref">角度收敛速率</span></a></p></td>
+<td><p>确定经典启动闭环转换期间的角度收敛速率</p></td>
+</tr>
+<tr class="row-even"><td><p>启动</p></td>
+<td><p><a class="reference internal" href="#customize-startup-method"><span class="std std-ref">启动算法</span></a></p></td>
+<td><p>选择启动方法</p></td>
+</tr>
+<tr class="row-odd"><td><p>启动</p></td>
+<td><p><a class="reference internal" href="#customize-startup-damping-imax"><span class="std std-ref">主动阻尼：最大幅值</span></a></p></td>
+<td><p>确定主动阻尼电流的最大幅值</p></td>
+</tr>
+<tr class="row-even"><td><p>启动</p></td>
+<td><p><a class="reference internal" href="#customize-startup-damping-gainmax"><span class="std std-ref">主动阻尼：最大增益</span></a></p></td>
+<td><p>确定主动阻尼的最大增益</p></td>
+</tr>
+<tr class="row-odd"><td><p>启动</p></td>
+<td><p><a class="reference internal" href="#customize-startup-damping-omega-min"><span class="std std-ref">主动阻尼：速度阈值</span></a></p></td>
+<td><p>确定启用主动阻尼的最小速度</p></td>
+</tr>
+<tr class="row-even"><td><p>过调制</p></td>
+<td><p><a class="reference internal" href="#customize-overmodulation-vd-limit"><span class="std std-ref">d 轴限值</span></a></p></td>
+<td><p>确定最大 d 轴电压</p></td>
+</tr>
+<tr class="row-odd"><td><p>过调制</p></td>
+<td><p><a class="reference internal" href="#customize-overmodulation-vq-limit"><span class="std std-ref">q 轴限值</span></a></p></td>
+<td><p>确定最大 q 轴电压</p></td>
+</tr>
+<tr class="row-even"><td><p>过调制</p></td>
+<td><p><a class="reference internal" href="#customize-overmodulation-include-duty-clipping"><span class="std std-ref">带削波的占空比反馈</span></a></p></td>
+<td><p>确定在前向通道中何时获取占空比反馈</p></td>
+</tr>
+<tr class="row-odd"><td><p>AN1292 PLL</p></td>
+<td><p><a class="reference internal" href="#customize-pll-tau"><span class="std std-ref">时间常数</span></a></p></td>
+<td><p>指定速度估计时间常数</p></td>
+</tr>
+<tr class="row-even"><td><p>AN1292 PLL</p></td>
+<td><p><a class="reference internal" href="#customize-pll-omega1"><span class="std std-ref">环路滤波器带宽</span></a></p></td>
+<td><p>指定环路滤波器带宽</p></td>
+</tr>
+<tr class="row-odd"><td><p>AN1292 PLL</p></td>
+<td><p><a class="reference internal" href="#customize-pll-velocity-filter-threshold"><span class="std std-ref">滤波器阈值</span></a></p></td>
+<td><p>确定 PLL 中慢速滤波的最大速度</p></td>
+</tr>
+<tr class="row-even"><td><p>正交编码器</p></td>
+<td><p><a class="reference internal" href="#customize-encoder-lines"><span class="std std-ref">线数</span></a></p></td>
+<td><p>指定编码器的线数</p></td>
+</tr>
+<tr class="row-odd"><td><p>正交编码器</p></td>
+<td><p><a class="reference internal" href="#customize-encoder-index-present"><span class="std std-ref">存在索引脉冲</span></a></p></td>
+<td><p>指定是否存在索引脉冲</p></td>
+</tr>
+<tr class="row-even"><td><p>正交编码器</p></td>
+<td><p><a class="reference internal" href="#customize-encoder-tracking-loop-tau"><span class="std std-ref">跟踪环路时间常数</span></a></p></td>
+<td><p>确定跟踪环路的带宽</p></td>
+</tr>
+<tr class="row-odd"><td><p>正交编码器</p></td>
+<td><p><a class="reference internal" href="#customize-encoder-qei-sync-method"><span class="std std-ref">同步方法</span></a></p></td>
+<td><p>选择编码器与反电动势同步的方法</p></td>
+</tr>
+<tr class="row-even"><td><p>正交编码器</p></td>
+<td><p><a class="reference internal" href="#customize-encoder-qei-sync-align-t-align"><span class="std std-ref">对齐时间</span></a></p></td>
+<td><p>启动对齐阶段的持续时间</p></td>
+</tr>
+<tr class="row-odd"><td><p>正交编码器</p></td>
+<td><p><a class="reference internal" href="#customize-encoder-qei-sync-align-angle-shift"><span class="std std-ref">对齐角度偏移</span></a></p></td>
+<td><p>确定启动的斜坡上升和对齐状态之间的角度偏移</p></td>
+</tr>
+<tr class="row-even"><td><p>正交编码器</p></td>
+<td><p><a class="reference internal" href="#customize-encoder-qei-sync-align-angle-init"><span class="std std-ref">对齐初始角度</span></a></p></td>
+<td><p>确定启动斜坡上升状态中使用的初始角度</p></td>
+</tr>
+<tr class="row-odd"><td><p>正交编码器</p></td>
+<td><p><a class="reference internal" href="#customize-encoder-qei-sync-align-sweep-sweep-rate-pow"><span class="std std-ref">对齐扫描速率</span></a></p></td>
+<td><p>使用对齐扫描方法时，确定启动对齐状态期间的旋转速率</p></td>
+</tr>
+<tr class="row-even"><td><p>正交编码器</p></td>
+<td><p><a class="reference internal" href="#customize-encoder-qei-sync-align-sweep-setup-angle"><span class="std std-ref">对齐扫描设置角度</span></a></p></td>
+<td><p>确定对齐扫描方法的设置角度，以允许在测量前瞬态稳定</p></td>
+</tr>
+<tr class="row-odd"><td><p>正交编码器</p></td>
+<td><p><a class="reference internal" href="#customize-encoder-qei-sync-pullout-pullout-slip"><span class="std std-ref">失步滑差阈值</span></a></p></td>
+<td><p>确定用于检测失步状态的转子滑差阈值</p></td>
+</tr>
+<tr class="row-even"><td><p>动态电流限制</p></td>
+<td><p><a class="reference internal" href="#customize-dyn-current1-peak-factor"><span class="std std-ref">动态电流限制</span></a></p></td>
+<td><p>确定峰值电流</p></td>
+</tr>
+<tr class="row-odd"><td><p>动态电流限制</p></td>
+<td><p><a class="reference internal" href="#customize-dyn-current1-horizon-factor"><span class="std std-ref">动态电流限制</span></a></p></td>
+<td><p>确定基准电流</p></td>
+</tr>
+<tr class="row-even"><td><p>动态电流限制</p></td>
+<td><p><a class="reference internal" href="#customize-dyn-current1-tau"><span class="std std-ref">动态电流限制</span></a></p></td>
+<td><p>确定松弛时间常数</p></td>
+</tr>
+<tr class="row-odd"><td><p>动态电流限制</p></td>
+<td><p><a class="reference internal" href="#customize-dyn-current1-nsamples"><span class="std std-ref">动态电流限制</span></a></p></td>
+<td><p>确定抽取比</p></td>
+</tr>
+<tr class="row-even"><td><p>电压控制</p></td>
+<td><p><a class="reference internal" href="#customize-voltage-outerloop-tau-lpf"><span class="std std-ref">低通滤波器时间常数</span></a></p></td>
+<td><p>确定 q 轴低通滤波器时间常数</p></td>
+</tr>
+<tr class="row-odd"><td><p>电压控制</p></td>
+<td><p><a class="reference internal" href="#customize-voltage-outerloop-kp"><span class="std std-ref">比例增益</span></a></p></td>
+<td><p>确定电压控制器比例增益</p></td>
+</tr>
+<tr class="row-even"><td><p>电压控制</p></td>
+<td><p><a class="reference internal" href="#customize-voltage-outerloop-tau"><span class="std std-ref">时间常数</span></a></p></td>
+<td><p>确定电压控制器时间常数</p></td>
+</tr>
+<tr class="row-odd"><td><p>运动控制 API</p></td>
+<td><p><a class="reference internal" href="#customize-mcapi-issquaredtau"><span class="std std-ref">滤波时间常数 Is</span></a></p></td>
+<td><p>确定用于计算电机电流幅值 (Is) 低通滤波值的时间常数</p></td>
+</tr>
+<tr class="row-even"><td><p>运动控制 API</p></td>
+<td><p><a class="reference internal" href="#customize-mcapi-iqtau"><span class="std std-ref">滤波时间常数 Iq</span></a></p></td>
+<td><p>确定用于计算电机测量 q 轴电流 (Iq) 低通滤波值的时间常数</p></td>
+</tr>
+<tr class="row-odd"><td><p>运动控制 API</p></td>
+<td><p><a class="reference internal" href="#customize-mcapi-adcisruserfunctions-enable"><span class="std std-ref">ADC ISR 用户函数</span></a></p></td>
+<td><p>确定 ADC ISR 用户函数是否在 MCAF ISR 中周期性调用</p></td>
+</tr>
+<tr class="row-even"><td><p>板级服务</p></td>
+<td><p><a class="reference internal" href="#customize-board-service-uiservicetiming"><span class="std std-ref">UI 服务周期</span></a></p></td>
+<td><p>确定板级服务 ISR 任务的执行速率。</p></td>
+</tr>
+<tr class="row-odd"><td><p>板级服务</p></td>
+<td><p><a class="reference internal" href="#customize-board-service-uibuttondebouncetime"><span class="std std-ref">按钮消抖时间</span></a></p></td>
+<td><p>确定将逻辑高电平信号注册为按钮按下所需的时间长度。</p></td>
+</tr>
+<tr class="row-even"><td><p>板级服务</p></td>
+<td><p><a class="reference internal" href="#customize-board-service-uibuttonlongpresstime"><span class="std std-ref">长按按钮时间</span></a></p></td>
+<td><p>确定按钮按下被检测为长按之前的时间量。</p></td>
+</tr>
+<tr class="row-odd"><td><p>可选模拟输入</p></td>
+<td><p><a class="reference internal" href="#customize-adc-vtempbridge"><span class="std std-ref">桥温度</span></a></p></td>
+<td><p>确定是否采样温度桥 ADC 输入</p></td>
+</tr>
+<tr class="row-even"><td><p>可选模拟输入</p></td>
+<td><p><a class="reference internal" href="#customize-adc-temp-bridge-params-threshold"><span class="std std-ref">温度桥：过温阈值</span></a></p></td>
+<td><p>确定触发过温故障的阈值</p></td>
+</tr>
+<tr class="row-odd"><td><p>可选模拟输入</p></td>
+<td><p><a class="reference internal" href="#customize-adc-temp-bridge-params-tau-lpf"><span class="std std-ref">温度桥：时间常数</span></a></p></td>
+<td><p>确定温度低通滤波器时间常数</p></td>
+</tr>
+<tr class="row-even"><td><p>可选模拟输入</p></td>
+<td><p><a class="reference internal" href="#customize-adc-temp-bridge-params-slewrate"><span class="std std-ref">温度桥：压摆率</span></a></p></td>
+<td><p>确定温度压摆率</p></td>
+</tr>
+<tr class="row-odd"><td><p>可选模拟输入</p></td>
+<td><p><a class="reference internal" href="#customize-adc-vabsref"><span class="std std-ref">绝对电压参考</span></a></p></td>
+<td><p>确定是否采样绝对电压参考 ADC 输入</p></td>
+</tr>
+<tr class="row-even"><td><p>可选模拟输入</p></td>
+<td><p><a class="reference internal" href="#customize-adc-vphasea"><span class="std std-ref">相电压：A</span></a></p></td>
+<td><p>确定是否采样 A 相 ADC 输入</p></td>
+</tr>
+<tr class="row-odd"><td><p>可选模拟输入</p></td>
+<td><p><a class="reference internal" href="#customize-adc-vphaseb"><span class="std std-ref">相电压：B</span></a></p></td>
+<td><p>确定是否采样 C 相 ADC 输入</p></td>
+</tr>
+<tr class="row-even"><td><p>可选模拟输入</p></td>
+<td><p><a class="reference internal" href="#customize-adc-vphasec"><span class="std std-ref">相电压：C</span></a></p></td>
+<td><p>确定是否采样 C 相 ADC 输入</p></td>
+</tr>
+<tr class="row-odd"><td><p>实时诊断</p></td>
+<td><p><a class="reference internal" href="#customize-diagnostics-method"><span class="std std-ref">诊断库</span></a></p></td>
+<td><p>选择实时诊断库（禁用时选“None”）</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="detailed-information">
+<h2><span class="section-number">6.3.2. </span>详细信息<a class="headerlink" href="#detailed-information" title="本标题的永久链接">¶</a></h2>
+<section id="current-measurement">
+<span id="customize-current-measure-method"></span><h3><span class="section-number">6.3.2.1. </span>电流测量<a class="headerlink" href="#current-measurement" title="本标题的永久链接">¶</a></h3>
+<p>已实现多种电流测量算法用于获取相电流测量值并将其适配用于磁场定向控制的反馈通道。每种方法有不同的硬件要求，可根据所选板的电流测量能力使用：</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-single-channel"><span class="std std-ref">单通道（“单分流”）</span></a> — 需要 DC 母线电流分流电阻</p></li>
+<li><p><a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-dual-channel"><span class="std std-ref">双通道（“双分流”）</span></a> — 需要两个相电流分流电阻</p></li>
+<li><p><a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-triple-channel"><span class="std std-ref">三通道（“三分流”）</span></a> — 需要三个相电流分流电阻</p></li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+<section id="single-channel">
+<h4><span class="section-number">6.3.2.1.1. </span>单通道<a class="headerlink" href="#single-channel" title="本标题的永久链接">¶</a></h4>
+<p><a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-single-channel"><span class="std std-ref">单通道（“单分流”）</span></a> 在不同逆变器开关状态下采样 DC 母线电流以重建三相电流。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+<section id="minimum-time-window">
+<span id="customize-current-measure-single-channel-minimumtime"></span><h5><span class="section-number">6.3.2.1.1.1. </span>最小时间窗口<a class="headerlink" href="#minimum-time-window" title="本标题的永久链接">¶</a></h5>
+<p>最小时间窗口 <span class="math notranslate nohighlight">\(t_{\mathrm{sample}}\)</span> 使用单通道测量电流信号所需的时间。此时间加到 PWM 死区时间上，使得 <span class="math notranslate nohighlight">\(t_{\mathrm{crit}} = t_{\mathrm{deadtime}} + t_{\mathrm{sample}}\)</span>。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+</section>
+<section id="adc-trigger-delay">
+<span id="customize-current-measure-single-channel-sampledelay"></span><h5><span class="section-number">6.3.2.1.1.2. </span>ADC 触发延迟<a class="headerlink" href="#adc-trigger-delay" title="本标题的永久链接">¶</a></h5>
+<p>逆变器开关状态与 ADC 采样点之间的延迟。此延迟可能是为避免因逆变器开关状态导致的电流信号振铃所必需的，振铃会降低单通道电流测量的精度。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+</section>
+</section>
+</section>
+<section id="estimators">
+<h3><span class="section-number">6.3.2.2. </span>估计器<a class="headerlink" href="#estimators" title="本标题的永久链接">¶</a></h3>
+<section id="primary-estimator">
+<span id="customize-estimator-type"></span><h4><span class="section-number">6.3.2.2.1. </span>主估计器<a class="headerlink" href="#primary-estimator" title="本标题的永久链接">¶</a></h4>
+<p>必须选择一个位置和速度估计器用于换相和速度反馈。</p>
+<p>MCAF R7 起可用的估计器：</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../algorithms/pll.zh.html#algorithm-pll"><span class="std std-ref">AN1292 锁相环 (PLL)</span></a></p></li>
+<li><p><a class="reference internal" href="../algorithms/atpll.zh.html#algorithm-atpll"><span class="std std-ref">角度跟踪锁相环 (ATPLL)</span></a></p></li>
+<li><p><a class="reference internal" href="../algorithms/qei.zh.html#algorithm-qei"><span class="std std-ref">正交编码器</span></a></p></li>
+<li><p><a class="reference internal" href="../algorithms/zsmt.zh.html#algorithm-zsmt"><span class="std std-ref">零速/最大转矩 (ZS/MT)</span></a></p></li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">R5 版本新增。</span></p>
+</div>
+<p>（此前此选择在 motorBench<sup>®</sup> Development Suite 的 Configure 页面中进行。）</p>
+</section>
+<section id="active-estimators">
+<span id="customize-estimator-active"></span><h4><span class="section-number">6.3.2.2.2. </span>活动估计器<a class="headerlink" href="#active-estimators" title="本标题的永久链接">¶</a></h4>
+<p>除主估计器外，还可选择附加估计器。（仅主估计器用于换相和速度反馈。）</p>
+<p>建议在排查或验证时使用多个估计器——尤其是正交编码器，其具有更高的角度和速度精度。请注意，这将增加 CPU 和内存需求。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+</section>
+<section id="operating-parameters">
+<h3><span class="section-number">6.3.2.3. </span>运行参数<a class="headerlink" href="#operating-parameters" title="本标题的永久链接">¶</a></h3>
+<section id="minimum-velocity">
+<span id="customize-operation-min-velocity-ratio"></span><h4><span class="section-number">6.3.2.3.1. </span>最小速度<a class="headerlink" href="#minimum-velocity" title="本标题的永久链接">¶</a></h4>
+<p>最小速度 <span class="math notranslate nohighlight">\(\omega_{\min}\)</span> 在 MCAF R5 中从 Configure 页面移至 Customize 页面。它在 MCAF 中有两种用途：</p>
+<ul class="simple">
+<li><p>确定可调速度范围的下限</p></li>
+<li><p>在自动整定中，确定无传感器估计器模型的动态特性；无传感器估计器在低速时稳定性和性能较差，因此降低最小速度通常会导致速度控制环带宽降低以确保稳定性。</p></li>
+</ul>
+<p>最小速度 <span class="math notranslate nohighlight">\(\omega_{\min}\)</span> 此前用作电机启动时的转换速度。自 MCAF R7 起， <a class="reference internal" href="#customize-operation-startup-velocity-ratio"><span class="std std-ref">启动速度</span></a> 参数确定电机启动时的转换速度。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R5 版本新增。</span></p>
+</div>
+</section>
+<section id="startup-velocity">
+<span id="customize-operation-startup-velocity-ratio"></span><h4><span class="section-number">6.3.2.3.2. </span>启动速度<a class="headerlink" href="#startup-velocity" title="本标题的永久链接">¶</a></h4>
+<p>确定电机启动时的转换速度 <span class="math notranslate nohighlight">\(\omega_1\)</span>，即从开环换相到闭环换相的转换。（MCAF R7 之前，最小速度 <span class="math notranslate nohighlight">\(\omega_{\min}\)</span> 被使用。）此参数受约束，使启动速度 <span class="math notranslate nohighlight">\(\omega_1\)</span> 必须大于或等于最小速度 <span class="math notranslate nohighlight">\(\omega_{\min}\)</span>。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+</section>
+<section id="maximum-velocity">
+<span id="customize-operation-max-velocity-ratio"></span><h4><span class="section-number">6.3.2.3.3. </span>最大速度<a class="headerlink" href="#maximum-velocity" title="本标题的永久链接">¶</a></h4>
+<p>增加或减少最大允许速度指令，以标称电机速度的比例表示。默认值在大多数情况下足够。对于在标称速度以上有较宽弱磁范围的电机，增加此值可能是合适的。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+<section id="full-scale-velocity">
+<span id="customize-operation-fullscale-base-ratio"></span><h4><span class="section-number">6.3.2.3.4. </span>满量程速度<a class="headerlink" href="#full-scale-velocity" title="本标题的永久链接">¶</a></h4>
+<p>满量程速度以标称电机速度的比例确定，控制 <a class="reference internal" href="../architecture/numerics.zh.html#numerics"><span class="std std-ref">数值表示</span></a> 。增加此值可允许更多防止溢出的设计裕量。</p>
+<p>满量程速度， <span class="math notranslate nohighlight">\(\omega_u\)</span>与满量程电气频率成正比， <span class="math notranslate nohighlight">\(\omega_{eu}\)</span>, as expressed in 公式 <a class="reference internal" href="#equation-eq-fs-velocity-polepairs">6.1</a>，其中 <span class="math notranslate nohighlight">\(N_p\)</span> 为极对数。（另见 <a class="reference internal" href="../algorithms/foc/fundamentals.zh.html#foc-torque"><span class="std std-ref">转矩产生与参考坐标系</span></a>）</p>
+<div class="math notranslate nohighlight" id="equation-eq-fs-velocity-polepairs">
+<span class="eqno">(6.1)<a class="headerlink" href="#equation-eq-fs-velocity-polepairs" title="本公式的永久链接">¶</a></span>\[\begin{aligned}
+\omega_{eu} &amp;= N_p \omega_u
+\end{aligned}\]</div>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+<section id="outer-loop-controller">
+<span id="customize-operation-outer-loop-type"></span><h4><span class="section-number">6.3.2.3.5. </span>外环控制器<a class="headerlink" href="#outer-loop-controller" title="本标题的永久链接">¶</a></h4>
+<p>外环控制器控制的变量有两个选择：</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../components/foc.zh.html#velocity-control"><span class="std std-ref">速度</span></a></p></li>
+<li><p><a class="reference internal" href="../algorithms/voltage-control.zh.html#algorithm-voltagecontrol"><span class="std std-ref">电压</span></a></p></li>
+</ul>
+<p>速度控制器参数可在整定页面中配置，而电压控制器 <a class="reference internal" href="#customize-voltage-outerloop"><span class="std std-ref">参数</span></a> 可在 Customize 页面中配置。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+</section>
+<section id="saliency-threshold">
+<span id="customize-saliency-threshold"></span><h4><span class="section-number">6.3.2.3.6. </span>凸极阈值<a class="headerlink" href="#saliency-threshold" title="本标题的永久链接">¶</a></h4>
+<p>凸极比 <span class="math notranslate nohighlight">\(\xi = L_q/L_d\)</span> 帮助确定是否使用全凸极电机模型。这是一个更复杂的电机模型，用于某些算法如 <a class="reference internal" href="../algorithms/atpll.zh.html#algorithm-atpll"><span class="std std-ref">ATPLL</span></a> 估计器、 <a class="reference internal" href="../algorithms/flux_control/mtpa.zh.html#algorithm-mtpa"><span class="std std-ref">MTPA</span></a>和 <a class="reference internal" href="../algorithms/flux_control/mtpa.zh.html#algorithm-mtpa"><span class="std std-ref">弱磁</span></a>。全凸极电机模型考虑两个电感，但需要稍多的计算。由于大多数永磁电机是非凸极的， <span class="math notranslate nohighlight">\(\xi \approx 1\)</span> 且凸极性可以忽略，从而节省 CPU 周期。</p>
+<p>此阈值设置使用全凸极电机模型的最小凸极性。如果不需要额外计算，可增加阈值以忽略凸极性。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+<section id="slew-rate-max-acceleration-deceleration">
+<span id="customize-operation-slewrate-decel"></span><span id="customize-operation-slewrate-accel"></span><h4><span class="section-number">6.3.2.3.7. </span>压摆率（最大加速度/减速度）<a class="headerlink" href="#slew-rate-max-acceleration-deceleration" title="本标题的永久链接">¶</a></h4>
+<p>可调整最大加速度（电动象限）和最大减速度（发电象限）。增加压摆率将增加加速或减速期间所需的电机电流。</p>
+<p>确定再生期间的最大减速度必须谨慎：电机驱动器将机械能转化为电能，这些电能必须有去处，如电池或动态制动电阻。如果没有可行的能量出口，DC 母线电压将上升，直到电机控制器检测到并关断，或者某个电容或晶体管故障并以破坏性方式耗散这些能量。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R5 版本新增。</span></p>
+</div>
+</section>
+<section id="dynamic-current-limit-type">
+<span id="customize-operation-dyn-current-type"></span><h4><span class="section-number">6.3.2.3.8. </span>动态电流限制类型<a class="headerlink" href="#dynamic-current-limit-type" title="本标题的永久链接">¶</a></h4>
+<p>受控的 d 轴和 q 轴电流可以有固定限值，如果需要短时高电流瞬态，限值也可根据电机电流变化。动态电流限制有两个选项：</p>
+<ul class="simple">
+<li><p>None</p></li>
+<li><p><a class="reference internal" href="#customize-dyn-current1"><span class="std std-ref">Simple</span></a></p></li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+</section>
+<section id="closed-loop-stopping">
+<span id="customize-operation-stopping-type"></span><h4><span class="section-number">6.3.2.3.9. </span>闭环停止<a class="headerlink" href="#closed-loop-stopping" title="本标题的永久链接">¶</a></h4>
+<p>MCAF 中有三种停止模式影响 <a class="reference internal" href="../algorithms/stopping.zh.html#algorithm-stopping"><span class="std std-ref">电机停止行为</span></a> 在 <code class="docutils literal notranslate"><span class="pre">STOPPING</span></code> 状态中的。</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../algorithms/stopping.zh.html#algorithm-stopping-min-impact"><span class="std std-ref">最小影响 PWM</span></a> — 相电流迅速降至零。不允许估计器在停止期间运行。</p></li>
+<li><p><a class="reference internal" href="../algorithms/stopping.zh.html#algorithm-stopping-closed-loop-current"><span class="std std-ref">闭环电流</span></a> — 控制 q 轴电流至零。允许估计器在停止期间运行。</p></li>
+<li><p><a class="reference internal" href="../algorithms/stopping.zh.html#algorithm-stopping-closed-loop-velocity"><span class="std std-ref">闭环速度</span></a> — 控制速度至零。允许估计器在停止期间运行。</p></li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+<section id="speed-and-time-thresholds">
+<span id="customize-operation-stopping-closed-loop-parameters-time"></span><span id="customize-operation-stopping-closed-loop-parameters-speed"></span><h5><span class="section-number">6.3.2.3.9.1. </span>速度和时间阈值<a class="headerlink" href="#speed-and-time-thresholds" title="本标题的永久链接">¶</a></h5>
+<p>有两个闭环停止参数用于定义电机被认为停止的条件，在状态机从 <code class="docutils literal notranslate"><span class="pre">STOPPING</span></code> 状态转换到 <code class="docutils literal notranslate"><span class="pre">STOPPED</span></code> 状态中的。</p>
+<ul class="simple">
+<li><p>速度阈值</p></li>
+<li><p>时间阈值</p></li>
+</ul>
+<p>从 <code class="docutils literal notranslate"><span class="pre">STOPPING</span></code> 到 <code class="docutils literal notranslate"><span class="pre">STOPPED</span></code>的转换，电机速度必须下降并保持在速度阈值以下至少持续时间阈值。此实现是为了避免速度阈值以下的短时速度瞬态导致误停止。 <a class="reference internal" href="#fig-customize-closed-loop-stopping-example"><span class="std std-numref">图 6.1</span></a> 显示了一个示例，速度阈值设为 75 RPM，时间阈值设为 1.0 s。状态机仅在时间阈值完全经过且电机速度仍低于速度阈值时才转换为 STOPPED。</p>
+<figure class="align-center" id="id7">
+<span id="fig-customize-closed-loop-stopping-example"></span><img alt="../_images/customize-closed-loop-stopping-example.png" src="../_images/customize-closed-loop-stopping-example.png"/>
+<figcaption>
+<p><span class="caption-number">图 6.1 </span><span class="caption-text">闭环停止激活时从 STOPPING 到 STOPPED 的状态机转换。</span><a class="headerlink" href="#id7" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+</section>
+</section>
+<section id="coastdown-parameters">
+<span id="customize-operation-coastdown-time"></span><span id="customize-operation-coastdown-end-velocity"></span><h4><span class="section-number">6.3.2.3.10. </span>惯性减速参数<a class="headerlink" href="#coastdown-parameters" title="本标题的永久链接">¶</a></h4>
+<p>当 <a class="reference internal" href="../algorithms/stopping.zh.html#algorithm-stopping-min-impact"><span class="std std-ref">停止模式设为最小影响 PWM</span></a>时，有两个相关的惯性减速参数用于估计使电机停止所需的时间，然后才能安全重启：</p>
+<ul class="simple">
+<li><p>速度阈值</p></li>
+<li><p>时间</p></li>
+</ul>
+<p>产生的惯性减速时间用于 <code class="docutils literal notranslate"><span class="pre">STOPPING</span></code> <a class="reference internal" href="../components/statemach.zh.html#component-statemachine-states"><span class="std std-ref">状态</span></a> 在进入 <code class="docutils literal notranslate"><span class="pre">STOPPED</span></code> <a class="reference internal" href="../components/statemach.zh.html#component-statemachine-states"><span class="std std-ref">状态</span></a>。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R5 版本新增。</span></p>
+</div>
+</section>
+</section>
+<section id="flux-control">
+<span id="customize-flux-control"></span><h3><span class="section-number">6.3.2.4. </span>磁通控制<a class="headerlink" href="#flux-control" title="本标题的永久链接">¶</a></h3>
+<p>参见 <a class="reference internal" href="../algorithms/flux_control/index.zh.html#algorithm-flux-control"><span class="std std-ref">磁通控制</span></a> 节以获取更多信息。</p>
+<section id="flux-control-method">
+<span id="customize-flux-control-method"></span><h4><span class="section-number">6.3.2.4.1. </span>磁通控制方法<a class="headerlink" href="#flux-control-method" title="本标题的永久链接">¶</a></h4>
+<p>选择使用哪种 <a class="reference internal" href="../algorithms/flux_control/index.zh.html#algorithm-flux-control"><span class="std std-ref">磁通控制</span></a> 方法，从以下选项中：</p>
+<ul class="simple">
+<li><p>“None”——d 轴参考电流将设为零</p></li>
+<li><p>“基于方程”——从 <a class="reference internal" href="../algorithms/flux_control/flux_weakening.zh.html#algorithm-flux-weakening"><span class="std std-ref">弱磁</span></a> 和 <a class="reference internal" href="../algorithms/flux_control/mtpa.zh.html#algorithm-mtpa"><span class="std std-ref">MTPA</span></a> 算法确定 d 轴参考电流</p></li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+<section id="current-limit-boundary-type">
+<span id="customize-flux-control-eqn-based-ilimit-region-type"></span><h4><span class="section-number">6.3.2.4.2. </span>电流限制：边界类型<a class="headerlink" href="#current-limit-boundary-type" title="本标题的永久链接">¶</a></h4>
+<p>矩形类型独立设置 d 轴和 q 轴电流限值。二次类型基于圆形函数的二次近似设置 q 轴限值。</p>
+<p>另见 <a class="reference internal" href="../algorithms/flux_control/flux_weakening_mtpa_integration.zh.html#algorithm-fluxctrl-iqlim"><span class="std std-ref">q 轴电流限值的计算</span></a> 节以获取更多信息。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+<section id="current-limit-idmax">
+<span id="customize-flux-control-eqn-based-ilimit-id-limit"></span><h4><span class="section-number">6.3.2.4.3. </span>电流限制：Idmax<a class="headerlink" href="#current-limit-idmax" title="本标题的永久链接">¶</a></h4>
+<p>d 轴电流归一化到最大电流 Imax，其中 Imax = 电机和驱动器连续电流额定值的最小值。建议将电流限值设在电机去磁电流以下。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+<section id="current-limit-iqmax">
+<span id="customize-flux-control-eqn-based-ilimit-iq-limit"></span><h4><span class="section-number">6.3.2.4.4. </span>电流限制：Iqmax<a class="headerlink" href="#current-limit-iqmax" title="本标题的永久链接">¶</a></h4>
+<p>q 轴电流限值分配为电流限值 Imax 的一部分，其中 Imax = 电机和驱动器连续电流额定值的最小值。仅在启用矩形边界类型时适用。</p>
+<p>另见 <a class="reference internal" href="../algorithms/flux_control/flux_weakening_mtpa_integration.zh.html#algorithm-fluxctrl-iqlim"><span class="std std-ref">q 轴电流限值的计算</span></a> 节以获取更多信息。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+<section id="flux-weakening-enable">
+<span id="customize-flux-control-eqn-based-fluxweak-enable"></span><h4><span class="section-number">6.3.2.4.5. </span>弱磁：启用<a class="headerlink" href="#flux-weakening-enable" title="本标题的永久链接">¶</a></h4>
+<p>此参数确定是否启用弱磁。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+<section id="flux-weakening-voltage-limit">
+<span id="customize-flux-control-eqn-based-fw-vdq-limit"></span><h4><span class="section-number">6.3.2.4.6. </span>弱磁：电压限值<a class="headerlink" href="#flux-weakening-voltage-limit" title="本标题的永久链接">¶</a></h4>
+<p>中使用的电压幅值限值 <a class="reference internal" href="../algorithms/flux_control/flux_weakening.zh.html#algorithm-flux-weakening"><span class="std std-ref">弱磁</span></a> (FW) 归一化到 DC 母线电压。计算 d 轴电流使稳态电压需求不超过此圆形限值。理想情况下选择限值使电机在进入 <a class="reference internal" href="../algorithms/foc/overmodulation.zh.html#algorithm-overmodulation"><span class="std std-ref">过调制</span></a>之前刚好进入 FW 运行。较高的限值可能阻止电机进入 FW 区域。较低的限值保证 FW 运行，但代价是额外的功率耗散。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+<section id="mtpa-enable">
+<span id="customize-flux-control-eqn-based-mtpa-enable"></span><h4><span class="section-number">6.3.2.4.7. </span>MTPA：启用<a class="headerlink" href="#mtpa-enable" title="本标题的永久链接">¶</a></h4>
+<p>此参数确定是否启用 MTPA。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+<section id="mtpa-display-calculations">
+<span id="customize-mtpa-indicators"></span><h4><span class="section-number">6.3.2.4.8. </span>MTPA 显示计算<a class="headerlink" href="#mtpa-display-calculations" title="本标题的永久链接">¶</a></h4>
+<p><a class="reference internal" href="../algorithms/flux_control/mtpa.zh.html#algorithm-mtpa"><span class="std std-ref">MTPA</span></a> 没有任何用户可配置参数，但包含两个仅用于指示的显示值：</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(I_{\textnormal{dmax\_mtpa}}\)</span> — 显示 MTPA 可能产生的最大 d 轴电流参考</p></li>
+<li><p><span class="math notranslate nohighlight">\(G_{\textnormal{mtpa}}\)</span> — 显示使用 MTPA 可能产生的最大转矩增益，相对于 MTPA 禁用时的最大转矩（<span class="math notranslate nohighlight">\(I_d = 0\)</span>）。</p></li>
+</ul>
+<p>两者通常都很小，除非电机具有显著的转子凸极性和高磁通利用率。凸极磁通利用系数 <span class="math notranslate nohighlight">\(\alpha_{\textrm{mtpa}} = (L_q-L_d)I_{\max}/\psi_m\)</span> 是转子凸极性和磁通利用率的度量，表示气隙磁通相对于永磁体磁通可以发生多少变化。</p>
+<p>最大 d 轴电流和最大转矩增益大致与 <span class="math notranslate nohighlight">\(\alpha_{\textrm{mtpa}}{}^2\)</span>成正比，因此将总电流能力加倍 <span class="math notranslate nohighlight">\(I_{\max}\)</span> 大致使 MTPA 请求的 d 轴电流和 MTPA 对转矩的贡献翻两番。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+</section>
+<section id="dead-time-compensation">
+<span id="customize-deadtimecomp"></span><h3><span class="section-number">6.3.2.5. </span>死区补偿<a class="headerlink" href="#dead-time-compensation" title="本标题的永久链接">¶</a></h3>
+<p>参见 <a class="reference internal" href="../algorithms/dead-time-comp.zh.html#algorithm-deadtimecompensation"><span class="std std-ref">死区补偿</span></a> 节以获取更多信息。</p>
+<section id="dead-time-compensation-method">
+<span id="customize-deadtimecomp-method"></span><h4><span class="section-number">6.3.2.5.1. </span>死区补偿方法<a class="headerlink" href="#dead-time-compensation-method" title="本标题的永久链接">¶</a></h4>
+<p>选择使用哪种 <a class="reference internal" href="../algorithms/dead-time-comp.zh.html#algorithm-deadtimecompensation"><span class="std std-ref">死区补偿</span></a> 方法，从以下选项中：</p>
+<ul class="simple">
+<li><p>“None”——不需要死区补偿</p></li>
+<li><p>“逐相”——使用 <a class="reference internal" href="../algorithms/dead-time-comp.zh.html#algorithm-dtc-perphase"><span class="std std-ref">逐相死区补偿算法</span></a></p></li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+<section id="current-linearity-range">
+<span id="customize-deadtimecomp-perphase-current-sign-band"></span><h4><span class="section-number">6.3.2.5.2. </span>电流线性范围<a class="headerlink" href="#current-linearity-range" title="本标题的永久链接">¶</a></h4>
+<p>确定最大幅值 <span class="math notranslate nohighlight">\(I_\delta\)</span> 用于计算单位扰动信号的电流线性范围 <span class="math notranslate nohighlight">\(\hat{s}_{abc}\)</span> — 见 <a class="reference internal" href="../algorithms/dead-time-comp.zh.html#algorithm-dtc-perphase"><span class="std std-ref">逐相死区补偿</span></a> 和 <a class="reference internal" href="../algorithms/dead-time-comp.zh.html#algorithm-dtc-current-linearity"><span class="std std-ref">电流线性范围</span></a>。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+<section id="forward-gain">
+<span id="customize-deadtimecomp-perphase-forward-gain"></span><h4><span class="section-number">6.3.2.5.3. </span>前向增益<a class="headerlink" href="#forward-gain" title="本标题的永久链接">¶</a></h4>
+<p>确定前向通道中用于减轻高电气频率下死区失真影响的死区补偿增益。除非此类型死区补偿已用特定电机仔细测试，否则建议使用默认值零。见 <a class="reference internal" href="../algorithms/dead-time-comp.zh.html#algorithm-dtc-gain-fwd"><span class="std std-ref">前向通道增益</span></a> 节以获取更多信息。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+<section id="feedback-gain">
+<span id="customize-deadtimecomp-perphase-feedback-gain"></span><h4><span class="section-number">6.3.2.5.4. </span>反馈增益<a class="headerlink" href="#feedback-gain" title="本标题的永久链接">¶</a></h4>
+<p>确定反馈通道中用于减轻低速下死区失真对无传感器估计器影响的死区补偿增益。增加此增益通常会改善低速下无传感器估计器的性能，但过大的增益可能导致电流指令跳变到正限值。见 <a class="reference internal" href="../algorithms/dead-time-comp.zh.html#algorithm-dtc-gain-fb"><span class="std std-ref">反馈通道增益</span></a> 节以获取更多信息。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+</section>
+<section id="fault-detection">
+<span id="customize-fault-detect"></span><h3><span class="section-number">6.3.2.6. </span>故障检测<a class="headerlink" href="#fault-detection" title="本标题的永久链接">¶</a></h3>
+<section id="undervoltage-margin">
+<span id="customize-fault-detect-margin-uv"></span><h4><span class="section-number">6.3.2.6.1. </span>欠压裕量<a class="headerlink" href="#undervoltage-margin" title="本标题的永久链接">¶</a></h4>
+<p>确定电机控制器因可用电压低于最小工作电压而关断的点。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R5 版本新增。</span></p>
+</div>
+</section>
+<section id="overvoltage-margin">
+<span id="customize-fault-detect-margin-ov"></span><h4><span class="section-number">6.3.2.6.2. </span>过压裕量<a class="headerlink" href="#overvoltage-margin" title="本标题的永久链接">¶</a></h4>
+<p>确定电机控制器因电压超过最大工作电压而关断的点。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R5 版本新增。</span></p>
+</div>
+</section>
+<section id="stall-detect-enable">
+<span id="customize-fault-detect-stall-detect-enable"></span><h4><span class="section-number">6.3.2.6.3. </span>堵转检测：启用<a class="headerlink" href="#stall-detect-enable" title="本标题的永久链接">¶</a></h4>
+<p>确定 <a class="reference internal" href="../architecture/statemach.zh.html#architecture-statemachine"><span class="std std-ref">状态机</span></a> 是否因 <a class="reference internal" href="../components/supervisory.zh.html#supervisory-stall-detect"><span class="std std-ref">堵转检测</span></a> 条件而进入 FAULT 状态。禁用堵转检测功能将从项目构建中排除堵转检测算法，降低平均 CPU 使用率和内存需求。MCAF R7 之前，堵转检测默认启用且不可通过 Customize 页面控制。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+</section>
+</section>
+<section id="startup">
+<span id="customize-startup"></span><h3><span class="section-number">6.3.2.7. </span>启动<a class="headerlink" href="#startup" title="本标题的永久链接">¶</a></h3>
+<p>该 <a class="reference internal" href="../algorithms/startup.zh.html#startup-sequence"><span class="std std-ref">启动序列</span></a> 有多个可修改的参数。这些如 <a class="reference internal" href="#fig-customize-startup-sequence"><span class="std std-numref">图 6.2</span></a>。</p>
+<figure class="align-center" id="id8">
+<span id="fig-customize-startup-sequence"></span><img alt="../_images/startup-sequence.png" src="../_images/startup-sequence.png"/>
+<figcaption>
+<p><span class="caption-number">图 6.2 </span><span class="caption-text">启动序列中的电流和电气频率图。（所示为 Weathervane 启动算法。）</span><a class="headerlink" href="#id8" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<section id="startup-current">
+<span id="customize-startup-istartup"></span><h4><span class="section-number">6.3.2.7.1. </span>启动电流<a class="headerlink" href="#startup-current" title="本标题的永久链接">¶</a></h4>
+<p>启动电流幅值 <span class="math notranslate nohighlight">\(I_{q0}\)</span> 代表启动鲁棒性（越高越好）与降低电机功率耗散（越低越好）之间的权衡。将其降至 0.5 以下没有太大意义，0.5 指定最大连续电流的一半。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="rampup-time">
+<span id="customize-startup-t-rampup"></span><h4><span class="section-number">6.3.2.7.2. </span>斜坡上升时间<a class="headerlink" href="#rampup-time" title="本标题的永久链接">¶</a></h4>
+<p>电流斜坡上升时间 <span class="math notranslate nohighlight">\(t_r\)</span> 仅影响启动的初始状态，其中电流从零增加到最大幅值。电流斜坡上升时间应比 <span class="math notranslate nohighlight">\(L/R\)</span>慢，以代表平滑过渡，但比整体启动时间快。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="align-time">
+<span id="customize-startup-t-align"></span><h4><span class="section-number">6.3.2.7.3. </span>对齐时间<a class="headerlink" href="#align-time" title="本标题的永久链接">¶</a></h4>
+<p>某些电机，特别是具有大惯性和齿槽转矩的电机，可能通过对齐时间 <span class="math notranslate nohighlight">\(t_{\mathrm{aln}} &gt; 0\)</span>更可靠地启动。默认值零在大多数情况下足够。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R5 版本新增。</span></p>
+</div>
+</section>
+<section id="min-accel-time">
+<span id="customize-startup-min-total-accel-time"></span><h4><span class="section-number">6.3.2.7.4. </span>最小加速时间<a class="headerlink" href="#min-accel-time" title="本标题的永久链接">¶</a></h4>
+<p>增加最小加速时间 <span class="math notranslate nohighlight">\(t_{\mathrm{acc}}\)</span> 如果需要更慢、更温和的启动。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="customize-startup-torque-scale-accel">
+<span id="id1"></span><h4><span class="section-number">6.3.2.7.5. </span>加速度 <span class="math notranslate nohighlight">\(\alpha_1\)</span><a class="headerlink" href="#customize-startup-torque-scale-accel" title="本标题的永久链接">¶</a></h4>
+<p>增加或减少加速率 <span class="math notranslate nohighlight">\(\alpha_1\)</span> 以控制较快的第二加速阶段。较慢的加速通常不容易发生周期滑移，但耗时更长。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="customize-startup-torque-scale-slow-accel">
+<span id="id2"></span><h4><span class="section-number">6.3.2.7.6. </span>加速度 <span class="math notranslate nohighlight">\(\alpha_0\)</span><a class="headerlink" href="#customize-startup-torque-scale-slow-accel" title="本标题的永久链接">¶</a></h4>
+<p>增加或减少加速率 <span class="math notranslate nohighlight">\(\alpha_0\)</span> 以控制较慢的第一加速阶段。（注：此值归一化到 <span class="math notranslate nohighlight">\(\alpha_1\)</span>。）较慢的加速通常不容易发生周期滑移，但耗时更长。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="hold-time">
+<span id="customize-startup-t-hold"></span><h4><span class="section-number">6.3.2.7.7. </span>保持时间<a class="headerlink" href="#hold-time" title="本标题的永久链接">¶</a></h4>
+<p>保持时间 <span class="math notranslate nohighlight">\(t_h\)</span> 控制启动序列在 <code class="docutils literal notranslate"><span class="pre">HOLD</span></code> 状态中停留的时间，在该状态下电气频率和电流均保持恒定，然后转换到闭环换相。</p>
+<p>在大多数情况下零值即可。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R5 版本新增。</span></p>
+</div>
+</section>
+<section id="customize-startup-omega0">
+<span id="id3"></span><h4><span class="section-number">6.3.2.7.8. </span>速度阈值 <span class="math notranslate nohighlight">\(\omega_0\)</span><a class="headerlink" href="#customize-startup-omega0" title="本标题的永久链接">¶</a></h4>
+<p>降低速度阈值 <span class="math notranslate nohighlight">\(\omega_0\)</span> 将更早切换到较快的第二加速阶段。</p>
+<p>（注意，阈值 <span class="math notranslate nohighlight">\(\omega_{\min}\)</span> 由 <a class="reference internal" href="#customize-operation-min-velocity-ratio"><span class="std std-ref">最小速度设置</span></a> 下的设置确定。）</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="angle-converge-rate">
+<span id="customize-startup-theta-converge-rate"></span><h4><span class="section-number">6.3.2.7.9. </span>角度收敛速率<a class="headerlink" href="#angle-converge-rate" title="本标题的永久链接">¶</a></h4>
+<p>角度收敛速率控制使用 <a class="reference internal" href="../algorithms/startup.zh.html#startup-classic"><span class="std std-ref">Classic</span></a> 启动方法时从开环到闭环换相的过渡速度。</p>
+<p>某些电机可能需要较低的值以确保平滑过渡到闭环换相，通常在 0.1°/ms–1.0°/ms 范围内。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R5 版本新增。</span></p>
+</div>
+</section>
+<section id="startup-algorithm">
+<span id="customize-startup-method"></span><h4><span class="section-number">6.3.2.7.10. </span>启动算法<a class="headerlink" href="#startup-algorithm" title="本标题的永久链接">¶</a></h4>
+<p><a class="reference internal" href="../algorithms/startup.zh.html#startup-classic"><span class="std std-ref">Classic</span></a> 是 MCAF R1–R3 中提供的算法。 <a class="reference internal" href="../algorithms/startup.zh.html#startup-weathervane"><span class="std std-ref">Weathervane</span></a> 比 Classic 算法更快地过渡到闭环，在 R4 中添加。</p>
+<p><a class="reference internal" href="../algorithms/startup.zh.html#startup-zsmt-ipc"><span class="std std-ref">ZS/MT + 初始位置校正</span></a> 在 MCAF R7 中添加，且为 <a class="reference internal" href="../algorithms/zsmt.zh.html#algorithm-zsmt"><span class="std std-ref">ZS/MT 估计器</span></a>。</p>
+<p>见 <a class="reference internal" href="../algorithms/startup.zh.html#startup-which-method"><span class="std std-ref">启动方法的选择</span></a>。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="active-damping-max-amplitude">
+<span id="customize-startup-damping-imax"></span><h4><span class="section-number">6.3.2.7.11. </span>主动阻尼：最大幅值<a class="headerlink" href="#active-damping-max-amplitude" title="本标题的永久链接">¶</a></h4>
+<p>控制主动阻尼的幅值 <span class="math notranslate nohighlight">\(I_\Delta\)</span>。如果启动噪声大或不稳定，请减小此值。设为零以完全消除主动阻尼。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="active-damping-max-gain">
+<span id="customize-startup-damping-gainmax"></span><h4><span class="section-number">6.3.2.7.12. </span>主动阻尼：最大增益<a class="headerlink" href="#active-damping-max-gain" title="本标题的永久链接">¶</a></h4>
+<p>控制主动阻尼的反馈增益。如果启动噪声大或不稳定，请减小此值。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="active-damping-speed-threshold">
+<span id="customize-startup-damping-omega-min"></span><h4><span class="section-number">6.3.2.7.13. </span>主动阻尼：速度阈值<a class="headerlink" href="#active-damping-speed-threshold" title="本标题的永久链接">¶</a></h4>
+<p>确定启用主动阻尼的最小速度。确保选择估计器足够稳定可用于主动阻尼的速度。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+</section>
+<section id="overmodulation">
+<h3><span class="section-number">6.3.2.8. </span>过调制<a class="headerlink" href="#overmodulation" title="本标题的永久链接">¶</a></h3>
+<p>参见 <a class="reference internal" href="../algorithms/foc/overmodulation.zh.html#algorithm-overmodulation"><span class="std std-ref">过调制</span></a> 节以获取更多信息。</p>
+<section id="d-axis-limit">
+<span id="customize-overmodulation-vd-limit"></span><h4><span class="section-number">6.3.2.8.1. </span>d 轴限值<a class="headerlink" href="#d-axis-limit" title="本标题的永久链接">¶</a></h4>
+<p>确定最大 d 轴电压。建议保持 1.0。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="q-axis-limit">
+<span id="customize-overmodulation-vq-limit"></span><h4><span class="section-number">6.3.2.8.2. </span>q 轴限值<a class="headerlink" href="#q-axis-limit" title="本标题的永久链接">¶</a></h4>
+<p>确定最大 q 轴电压。建议值在 1.05 到 1.25 之间。较大的值允许更高的输出电压幅值，但代价是输出电压和电流的失真更高。</p>
+<p>关于 <a class="reference internal" href="../algorithms/foc/overmodulation.zh.html#overmodulation-behavior-dq"><span class="std std-ref">同步坐标系中的过调制行为</span></a> 节有更多关于此主题的信息。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="duty-cycle-feedback-with-clipping">
+<span id="customize-overmodulation-include-duty-clipping"></span><h4><span class="section-number">6.3.2.8.3. </span>带削波的占空比反馈<a class="headerlink" href="#duty-cycle-feedback-with-clipping" title="本标题的永久链接">¶</a></h4>
+<p>确定活动估计器的占空比反馈是在零序调制 (ZSM) 和因 <a class="reference internal" href="../algorithms/foc/overmodulation.zh.html#algorithm-overmodulation"><span class="std std-ref">过调制</span></a>削波之后获取。如果未选中，占空比反馈将在 ZSM 和削波之前获取。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+</section>
+</section>
+<section id="an1292-pll">
+<h3><span class="section-number">6.3.2.9. </span>AN1292 PLL<a class="headerlink" href="#an1292-pll" title="本标题的永久链接">¶</a></h3>
+<p>参见 <a class="reference internal" href="../algorithms/pll.zh.html#algorithm-pll"><span class="std std-ref">AN1292 锁相环 (PLL)</span></a> 节以获取更多信息。</p>
+<section id="time-constant">
+<span id="customize-pll-tau"></span><h4><span class="section-number">6.3.2.9.1. </span>时间常数<a class="headerlink" href="#time-constant" title="本标题的永久链接">¶</a></h4>
+<p>确定时间常数 <span class="math notranslate nohighlight">\(\tau\)</span> 用于速度估计。这不影响估计器稳定性，但影响速度控制环性能。较低的时间常数值允许更多噪声通过，但允许更高带宽的速度环。较高的时间常数值滤除更多噪声，但降低可实现的速度环带宽。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R5 版本新增。</span></p>
+</div>
+</section>
+<section id="loop-filter-bandwidth">
+<span id="customize-pll-omega1"></span><h4><span class="section-number">6.3.2.9.2. </span>环路滤波器带宽<a class="headerlink" href="#loop-filter-bandwidth" title="本标题的永久链接">¶</a></h4>
+<p>确定环路滤波器带宽 <span class="math notranslate nohighlight">\(\omega_1\)</span> 用于 PLL 中的角度估计。（注：此值与启动速度不同，也称为 <span class="math notranslate nohighlight">\(\omega_1\)</span>）</p>
+<p>建议保持默认值。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R5 版本新增。</span></p>
+</div>
+</section>
+<section id="filter-threshold">
+<span id="customize-pll-velocity-filter-threshold"></span><h4><span class="section-number">6.3.2.9.3. </span>滤波器阈值<a class="headerlink" href="#filter-threshold" title="本标题的永久链接">¶</a></h4>
+<p>确定 PLL 估计器中慢速滤波的最大速度。建议保持默认值。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+</section>
+<section id="quadrature-encoder">
+<h3><span class="section-number">6.3.2.10. </span>正交编码器<a class="headerlink" href="#quadrature-encoder" title="本标题的永久链接">¶</a></h3>
+<p>参见 <a class="reference internal" href="../algorithms/qei.zh.html#algorithm-qei"><span class="std std-ref">正交编码器支持</span></a> 节以获取更多信息。</p>
+<section id="lines">
+<span id="customize-encoder-lines"></span><h4><span class="section-number">6.3.2.10.1. </span>线数<a class="headerlink" href="#lines" title="本标题的永久链接">¶</a></h4>
+<p>应与电机或编码器数据手册中列出的线数或每转周期数 (CPR) 匹配。每转计数数为线数的 4 倍。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="index-pulse-present">
+<span id="customize-encoder-index-present"></span><h4><span class="section-number">6.3.2.10.2. </span>存在索引脉冲<a class="headerlink" href="#index-pulse-present" title="本标题的永久链接">¶</a></h4>
+<p>如果存在索引脉冲信号，请选择此选项。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="tracking-loop-time-constant">
+<span id="customize-encoder-tracking-loop-tau"></span><h4><span class="section-number">6.3.2.10.3. </span>跟踪环路时间常数<a class="headerlink" href="#tracking-loop-time-constant" title="本标题的永久链接">¶</a></h4>
+<p>建议值在 1 ms–10 ms 范围内。较小的值将增加估计器带宽，但允许更多编码器量化噪声出现在速度估计中。较大的值将降低估计器带宽和可实现的速度环带宽，但会降低编码器量化噪声的影响。</p>
+<p><strong>注：</strong> 在 MCAF R4 中，对于低速电机和跟踪环路时间常数的某些组合，代码生成会出现超范围错误。这在 <span class="math notranslate nohighlight">\(\omega_{m1} \tau &lt; \theta_L\)</span> 时是预期的，其中 <span class="math notranslate nohighlight">\(\theta_L \approx 0.4\ \text{rad}\)</span>，其中 <span class="math notranslate nohighlight">\(\omega_{m1}\)</span> 为额定电机速度（rad/s）， <span class="math notranslate nohighlight">\(\tau\)</span> 为跟踪环路时间常数。在大多数情况下，可行的解决方法是增加跟踪环路时间常数，但这会降低速度环带宽。</p>
+<p>例如，额定速度为 2000 RPM ≈ 209 rad/s 的电机，如果跟踪环路时间常数小于约 <span class="math notranslate nohighlight">\(0.4 / 209 = 0.0019\)</span> s 或 1.9 ms，则可能出现超范围错误。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="synchronization-method">
+<span id="customize-encoder-qei-sync-method"></span><h4><span class="section-number">6.3.2.10.4. </span>同步方法<a class="headerlink" href="#synchronization-method" title="本标题的永久链接">¶</a></h4>
+<ul class="simple">
+<li><p>对齐——最佳通用同步方法，最快，对大齿槽转矩敏感</p></li>
+<li><p>失步——对齿槽转矩最不敏感，对大惯性敏感</p></li>
+<li><p>对齐扫描——慢，精度最佳</p></li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="customize-encoder-qei-sync-align-t-align">
+<span id="id4"></span><h4><span class="section-number">6.3.2.10.5. </span>对齐时间<a class="headerlink" href="#customize-encoder-qei-sync-align-t-align" title="本标题的永久链接">¶</a></h4>
+<p>确定用于反电动势同步的对齐时间。较大惯性的系统可能需要更长的时间。较短的时间（小于 0.5 s）对于极低惯性系统可能足够。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="align-angle-shift">
+<span id="customize-encoder-qei-sync-align-angle-shift"></span><h4><span class="section-number">6.3.2.10.6. </span>对齐角度偏移<a class="headerlink" href="#align-angle-shift" title="本标题的永久链接">¶</a></h4>
+<p>对于高齿槽转矩的系统，请增加此角度。建议值为 30°–60°。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="align-initial-angle">
+<span id="customize-encoder-qei-sync-align-angle-init"></span><h4><span class="section-number">6.3.2.10.7. </span>对齐初始角度<a class="headerlink" href="#align-initial-angle" title="本标题的永久链接">¶</a></h4>
+<p>控制启动斜坡上升状态期间使用的初始电气角度。某些角度可能略微更鲁棒，但必须针对特定电机通过实验确定。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="align-and-sweep-rate">
+<span id="customize-encoder-qei-sync-align-sweep-sweep-rate-pow"></span><h4><span class="section-number">6.3.2.10.8. </span>对齐扫描速率<a class="headerlink" href="#align-and-sweep-rate" title="本标题的永久链接">¶</a></h4>
+<p>每 ISR 4 计数是最快的，适用于大多数低齿槽转矩的电机。对于高齿槽转矩的电机，请减小此值。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="align-and-sweep-setup-angle">
+<span id="customize-encoder-qei-sync-align-sweep-setup-angle"></span><h4><span class="section-number">6.3.2.10.9. </span>对齐扫描设置角度<a class="headerlink" href="#align-and-sweep-setup-angle" title="本标题的永久链接">¶</a></h4>
+<p>控制进行换相偏移测量之前的设置角度。较小的值可能没有足够时间让瞬态稳定。较大的值会增加瞬态稳定时间。对于高惯性系统，增加此值可能提高精度。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+<section id="pullout-slip-threshold">
+<span id="customize-encoder-qei-sync-pullout-pullout-slip"></span><h4><span class="section-number">6.3.2.10.10. </span>失步滑差阈值<a class="headerlink" href="#pullout-slip-threshold" title="本标题的永久链接">¶</a></h4>
+<p>此参数控制测量失步偏移以确定换相偏移时的滑差。此处滑差定义为静止坐标系电压矢量角度与编码器原始电气位置之间差值的变化率 <span class="math notranslate nohighlight">\(V_{\alpha\beta}\)</span> 。此参数的良好选择取决于电机的机械特性，即惯性 <span class="math notranslate nohighlight">\(J\)</span>、粘性阻尼 <span class="math notranslate nohighlight">\(B\)</span>和摩擦转矩 <span class="math notranslate nohighlight">\(T_{fr}\)</span>。对于低惯性电机，滑差阈值可能需要增加；对于高惯性电机，可能需要减小。滑差阈值的推荐范围约为 0.059 到 0.47 rad/s。（默认值的 0.5 倍到 4 倍）</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R4 版本新增。</span></p>
+</div>
+</section>
+</section>
+<section id="dynamic-current-limit">
+<span id="customize-dyn-current1-nsamples"></span><span id="customize-dyn-current1-tau"></span><span id="customize-dyn-current1-horizon-factor"></span><span id="customize-dyn-current1-peak-factor"></span><span id="customize-dyn-current1"></span><h3><span class="section-number">6.3.2.11. </span>动态电流限制<a class="headerlink" href="#dynamic-current-limit" title="本标题的永久链接">¶</a></h3>
+<p>以下参数控制简单动态电流限制算法的行为。参见 <a class="reference internal" href="../algorithms/dynlimit-simple.zh.html#algorithm-dynlim-simple"><span class="std std-ref">动态电流限制</span></a> 节以获取更多信息。</p>
+<ul class="simple">
+<li><p>峰值电流——确定绝对峰值电流 <span class="math notranslate nohighlight">\(I_{\mathrm{peak}}\)</span>。</p></li>
+<li><p>基准电流——确定基准电流 <span class="math notranslate nohighlight">\(I_{\mathrm{horz}}\)</span> 用于简单动态电流限制算法。电流限制松弛到基准电流。</p></li>
+<li><p>时间常数——松弛时间常数 <span class="math notranslate nohighlight">\(\tau\)</span> 确定电流限制松弛到基准电流的速度。</p></li>
+<li><p>抽取比——确定抽取比 <span class="math notranslate nohighlight">\(N\)</span> 用于每 <span class="math notranslate nohighlight">\(N\)</span> 个电流控制环样本执行一次动态电流限制算法。</p></li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+</section>
+<section id="voltage-control">
+<span id="customize-voltage-outerloop"></span><h3><span class="section-number">6.3.2.12. </span>电压控制<a class="headerlink" href="#voltage-control" title="本标题的永久链接">¶</a></h3>
+<section id="low-pass-filter-time-constant">
+<span id="customize-voltage-outerloop-tau-lpf"></span><h4><span class="section-number">6.3.2.12.1. </span>低通滤波器时间常数<a class="headerlink" href="#low-pass-filter-time-constant" title="本标题的永久链接">¶</a></h4>
+<p>时间常数 <span class="math notranslate nohighlight">\(\tau_{\mathrm{lpf}}\)</span> 用于衰减电流控制器输出噪声的一阶低通滤波器 <span class="math notranslate nohighlight">\(V_q\)</span>。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+</section>
+<section id="proportional-gain">
+<span id="customize-voltage-outerloop-kp"></span><h4><span class="section-number">6.3.2.12.2. </span>比例增益<a class="headerlink" href="#proportional-gain" title="本标题的永久链接">¶</a></h4>
+<p>比例增益 <span class="math notranslate nohighlight">\(K_p\)</span> 在外环控制器中当电压为受控变量时使用。此参数必须手动整定；参见 <a class="reference internal" href="../algorithms/voltage-control.zh.html#algorithm-voltagecontrol"><span class="std std-ref">电压控制</span></a> 节以获取指导。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+</section>
+<section id="customize-voltage-outerloop-tau">
+<span id="id5"></span><h4><span class="section-number">6.3.2.12.3. </span>时间常数<a class="headerlink" href="#customize-voltage-outerloop-tau" title="本标题的永久链接">¶</a></h4>
+<p>时间常数 <span class="math notranslate nohighlight">\(\tau\)</span> 在外环控制器中当电压为受控变量时使用。此参数设置 <span class="math notranslate nohighlight">\(K_i\)</span> 电压控制器的增益，使用 <span class="math notranslate nohighlight">\(\tau = K_p/K_i\)</span>。此参数必须手动整定；参见 <a class="reference internal" href="../algorithms/voltage-control.zh.html#algorithm-voltagecontrol"><span class="std std-ref">电压控制</span></a> 节以获取指导。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+</section>
+</section>
+<section id="motion-control-api">
+<span id="customize-mcapi-section"></span><h3><span class="section-number">6.3.2.13. </span>运动控制 API<a class="headerlink" href="#motion-control-api" title="本标题的永久链接">¶</a></h3>
+<p>参见 <a class="reference internal" href="../components/mcapi.zh.html#mcapi"><span class="std std-ref">运动控制 API</span></a> 节以获取更多信息。</p>
+<section id="filter-time-constant-is">
+<span id="customize-mcapi-issquaredtau"></span><h4><span class="section-number">6.3.2.13.1. </span>滤波时间常数 Is<a class="headerlink" href="#filter-time-constant-is" title="本标题的永久链接">¶</a></h4>
+<p>建议值在 0.1ms–10ms 量级。较高的时间常数值减少通过 <a class="reference internal" href="../appendix/glossary.zh.html#term-MCAPI"><span class="xref std std-term">MCAPI</span></a> 可用的 Is 信号中的噪声，但与 MCAF 中 Is 的采样值相比会增加一些相位延迟。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+<section id="filter-time-constant-iq">
+<span id="customize-mcapi-iqtau"></span><h4><span class="section-number">6.3.2.13.2. </span>滤波时间常数 Iq<a class="headerlink" href="#filter-time-constant-iq" title="本标题的永久链接">¶</a></h4>
+<p>建议值在 0.1ms–10ms 量级。较高的时间常数值减少通过 <a class="reference internal" href="../appendix/glossary.zh.html#term-MCAPI"><span class="xref std std-term">MCAPI</span></a> 可用的 Iq 信号中的噪声，但与 MCAF 中 Iq 的采样值相比会增加一些相位延迟。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+<section id="adc-isr-user-functions">
+<span id="customize-mcapi-adcisruserfunctions-enable"></span><h4><span class="section-number">6.3.2.13.3. </span>ADC ISR 用户函数<a class="headerlink" href="#adc-isr-user-functions" title="本标题的永久链接">¶</a></h4>
+<p>确定用户定义函数 <code class="docutils literal notranslate"><span class="pre">MCAPI_AdcIsrProlog()</span></code> 和 <code class="docutils literal notranslate"><span class="pre">MCAPI_AdcIsrEpilog()</span></code> 是否分别在每次 MCAF ISR 的开始和结束时调用。这些函数定义在 <code class="docutils literal notranslate"><span class="pre">mcapi.c</span></code> 中，带有“weak”属性，可由用户编写的代码重新定义，用于功能安全等目的。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+</section>
+</section>
+<section id="board-service">
+<h3><span class="section-number">6.3.2.14. </span>板级服务<a class="headerlink" href="#board-service" title="本标题的永久链接">¶</a></h3>
+<section id="ui-service-period">
+<span id="customize-board-service-uiservicetiming"></span><h4><span class="section-number">6.3.2.14.1. </span>UI 服务周期<a class="headerlink" href="#ui-service-period" title="本标题的永久链接">¶</a></h4>
+<p>确定板级服务 ISR 任务的执行速率。有关板级服务模块的更多信息，请参阅 <a class="reference internal" href="../components/hal.zh.html#board-service-module"><span class="std std-ref">板级服务模块</span></a>。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+<section id="button-debounce-time">
+<span id="customize-board-service-uibuttondebouncetime"></span><h4><span class="section-number">6.3.2.14.2. </span>按钮消抖时间<a class="headerlink" href="#button-debounce-time" title="本标题的永久链接">¶</a></h4>
+<p>此参数确定逻辑高电平信号需要保持高电平多长时间才能被注册为按钮按下。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+<section id="long-button-press-time">
+<span id="customize-board-service-uibuttonlongpresstime"></span><h4><span class="section-number">6.3.2.14.3. </span>长按按钮时间<a class="headerlink" href="#long-button-press-time" title="本标题的永久链接">¶</a></h4>
+<p>按钮按下被注册为长按所需的时间。增加此值会增加按钮被识别为长按之前的时间长度。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R6 版本新增。</span></p>
+</div>
+</section>
+</section>
+<section id="optional-analog-inputs">
+<h3><span class="section-number">6.3.2.15. </span>可选模拟输入<a class="headerlink" href="#optional-analog-inputs" title="本标题的永久链接">¶</a></h3>
+<p>可选模拟输入（如相电压和绝对参考电压等信号）在某些板上可用于采样。Customize 页面中的可选模拟输入选择受所选板的限制。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+<section id="bridge-temperature">
+<span id="customize-adc-temp-bridge-params-slewrate"></span><span id="customize-adc-temp-bridge-params-tau-lpf"></span><span id="customize-adc-temp-bridge-params-threshold"></span><span id="customize-adc-vtempbridge"></span><h4><span class="section-number">6.3.2.15.1. </span>桥温度<a class="headerlink" href="#bridge-temperature" title="本标题的永久链接">¶</a></h4>
+<p>用于采样温度传感器电压输出的模拟输入（如有）。从此输入采样的温度用于触发过温故障。此模拟输入有三个相关参数：</p>
+<ul class="simple">
+<li><p>过温阈值——确定过温故障发生的温度</p></li>
+<li><p>时间常数——用于衰减温度信号的低通滤波器时间常数</p></li>
+<li><p>压摆率——温度信号的最大压摆率，用于电压尖峰抑制</p></li>
+</ul>
+<p>参见 <a class="reference internal" href="../algorithms/temperature-measure.zh.html#algorithm-temperature"><span class="std std-ref">温度测量</span></a> 节以获取更多信息。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+</section>
+<section id="absolute-voltage-reference">
+<span id="customize-adc-vabsref"></span><h4><span class="section-number">6.3.2.15.2. </span>绝对电压参考<a class="headerlink" href="#absolute-voltage-reference" title="本标题的永久链接">¶</a></h4>
+<p>用于采样板级绝对电压参考的模拟输入（如有）。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+</section>
+<section id="phase-voltages">
+<span id="customize-adc-vphasec"></span><span id="customize-adc-vphaseb"></span><span id="customize-adc-vphasea"></span><h4><span class="section-number">6.3.2.15.3. </span>相电压<a class="headerlink" href="#phase-voltages" title="本标题的永久链接">¶</a></h4>
+<p>用于采样 A、B、C 相电压的模拟输入（如有）。</p>
+<div class="versionadded">
+<p><span class="versionmodified added">R7 版本新增。</span></p>
+</div>
+</section>
+</section>
+<section id="diagnostics-library">
+<span id="customize-diagnostics-method"></span><h3><span class="section-number">6.3.2.16. </span>诊断库<a class="headerlink" href="#diagnostics-library" title="本标题的永久链接">¶</a></h3>
+<p>选择使用哪种 <a class="reference internal" href="../components/diagnostics.zh.html#diag-kernel"><span class="std std-ref">诊断内核</span></a> 库，从以下选项中：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://x2cscope.github.io/">X2Cscope</a></p></li>
+<li><p>None——禁用实时诊断</p></li>
+</ul>
+<div class="versionadded">
+<p><span class="versionmodified added">R8 版本新增。</span></p>
+</div>
+</section>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">6.3. 参数定制</a><ul>
+<li><a class="reference internal" href="#summary">6.3.1. 摘要</a></li>
+<li><a class="reference internal" href="#detailed-information">6.3.2. 详细信息</a><ul>
+<li><a class="reference internal" href="#current-measurement">6.3.2.1. 电流测量</a><ul>
+<li><a class="reference internal" href="#single-channel">6.3.2.1.1. 单通道</a><ul>
+<li><a class="reference internal" href="#minimum-time-window">6.3.2.1.1.1. 最小时间窗口</a></li>
+<li><a class="reference internal" href="#adc-trigger-delay">6.3.2.1.1.2. ADC 触发延迟</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#estimators">6.3.2.2. 估计器</a><ul>
+<li><a class="reference internal" href="#primary-estimator">6.3.2.2.1. 主估计器</a></li>
+<li><a class="reference internal" href="#active-estimators">6.3.2.2.2. 活动估计器</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#operating-parameters">6.3.2.3. 运行参数</a><ul>
+<li><a class="reference internal" href="#minimum-velocity">6.3.2.3.1. 最小速度</a></li>
+<li><a class="reference internal" href="#startup-velocity">6.3.2.3.2. 启动速度</a></li>
+<li><a class="reference internal" href="#maximum-velocity">6.3.2.3.3. 最大速度</a></li>
+<li><a class="reference internal" href="#full-scale-velocity">6.3.2.3.4. 满量程速度</a></li>
+<li><a class="reference internal" href="#outer-loop-controller">6.3.2.3.5. 外环控制器</a></li>
+<li><a class="reference internal" href="#saliency-threshold">6.3.2.3.6. 凸极阈值</a></li>
+<li><a class="reference internal" href="#slew-rate-max-acceleration-deceleration">6.3.2.3.7. 压摆率（最大加速度/减速度）</a></li>
+<li><a class="reference internal" href="#dynamic-current-limit-type">6.3.2.3.8. 动态电流限制类型</a></li>
+<li><a class="reference internal" href="#closed-loop-stopping">6.3.2.3.9. 闭环停止</a><ul>
+<li><a class="reference internal" href="#speed-and-time-thresholds">6.3.2.3.9.1. 速度和时间阈值</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#coastdown-parameters">6.3.2.3.10. 惯性减速参数</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flux-control">6.3.2.4. 磁通控制</a><ul>
+<li><a class="reference internal" href="#flux-control-method">6.3.2.4.1. 磁通控制方法</a></li>
+<li><a class="reference internal" href="#current-limit-boundary-type">6.3.2.4.2. 电流限制：边界类型</a></li>
+<li><a class="reference internal" href="#current-limit-idmax">6.3.2.4.3. 电流限制：Idmax</a></li>
+<li><a class="reference internal" href="#current-limit-iqmax">6.3.2.4.4. 电流限制：Iqmax</a></li>
+<li><a class="reference internal" href="#flux-weakening-enable">6.3.2.4.5. 弱磁：启用</a></li>
+<li><a class="reference internal" href="#flux-weakening-voltage-limit">6.3.2.4.6. 弱磁：电压限值</a></li>
+<li><a class="reference internal" href="#mtpa-enable">6.3.2.4.7. MTPA：启用</a></li>
+<li><a class="reference internal" href="#mtpa-display-calculations">6.3.2.4.8. MTPA 显示计算</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dead-time-compensation">6.3.2.5. 死区补偿</a><ul>
+<li><a class="reference internal" href="#dead-time-compensation-method">6.3.2.5.1. 死区补偿方法</a></li>
+<li><a class="reference internal" href="#current-linearity-range">6.3.2.5.2. 电流线性范围</a></li>
+<li><a class="reference internal" href="#forward-gain">6.3.2.5.3. 前向增益</a></li>
+<li><a class="reference internal" href="#feedback-gain">6.3.2.5.4. 反馈增益</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fault-detection">6.3.2.6. 故障检测</a><ul>
+<li><a class="reference internal" href="#undervoltage-margin">6.3.2.6.1. 欠压裕量</a></li>
+<li><a class="reference internal" href="#overvoltage-margin">6.3.2.6.2. 过压裕量</a></li>
+<li><a class="reference internal" href="#stall-detect-enable">6.3.2.6.3. 堵转检测：启用</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#startup">6.3.2.7. 启动</a><ul>
+<li><a class="reference internal" href="#startup-current">6.3.2.7.1. 启动电流</a></li>
+<li><a class="reference internal" href="#rampup-time">6.3.2.7.2. 斜坡上升时间</a></li>
+<li><a class="reference internal" href="#align-time">6.3.2.7.3. 对齐时间</a></li>
+<li><a class="reference internal" href="#min-accel-time">6.3.2.7.4. 最小加速时间</a></li>
+<li><a class="reference internal" href="#customize-startup-torque-scale-accel">6.3.2.7.5. 加速度 <span class="math notranslate nohighlight">\(\alpha_1\)</span></a></li>
+<li><a class="reference internal" href="#customize-startup-torque-scale-slow-accel">6.3.2.7.6. 加速度 <span class="math notranslate nohighlight">\(\alpha_0\)</span></a></li>
+<li><a class="reference internal" href="#hold-time">6.3.2.7.7. 保持时间</a></li>
+<li><a class="reference internal" href="#customize-startup-omega0">6.3.2.7.8. 速度阈值 <span class="math notranslate nohighlight">\(\omega_0\)</span></a></li>
+<li><a class="reference internal" href="#angle-converge-rate">6.3.2.7.9. 角度收敛速率</a></li>
+<li><a class="reference internal" href="#startup-algorithm">6.3.2.7.10. 启动算法</a></li>
+<li><a class="reference internal" href="#active-damping-max-amplitude">6.3.2.7.11. 主动阻尼：最大幅值</a></li>
+<li><a class="reference internal" href="#active-damping-max-gain">6.3.2.7.12. 主动阻尼：最大增益</a></li>
+<li><a class="reference internal" href="#active-damping-speed-threshold">6.3.2.7.13. 主动阻尼：速度阈值</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#overmodulation">6.3.2.8. 过调制</a><ul>
+<li><a class="reference internal" href="#d-axis-limit">6.3.2.8.1. d 轴限值</a></li>
+<li><a class="reference internal" href="#q-axis-limit">6.3.2.8.2. q 轴限值</a></li>
+<li><a class="reference internal" href="#duty-cycle-feedback-with-clipping">6.3.2.8.3. 带削波的占空比反馈</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#an1292-pll">6.3.2.9. AN1292 PLL</a><ul>
+<li><a class="reference internal" href="#time-constant">6.3.2.9.1. 时间常数</a></li>
+<li><a class="reference internal" href="#loop-filter-bandwidth">6.3.2.9.2. 环路滤波器带宽</a></li>
+<li><a class="reference internal" href="#filter-threshold">6.3.2.9.3. 滤波器阈值</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#quadrature-encoder">6.3.2.10. 正交编码器</a><ul>
+<li><a class="reference internal" href="#lines">6.3.2.10.1. 线数</a></li>
+<li><a class="reference internal" href="#index-pulse-present">6.3.2.10.2. 存在索引脉冲</a></li>
+<li><a class="reference internal" href="#tracking-loop-time-constant">6.3.2.10.3. 跟踪环路时间常数</a></li>
+<li><a class="reference internal" href="#synchronization-method">6.3.2.10.4. 同步方法</a></li>
+<li><a class="reference internal" href="#customize-encoder-qei-sync-align-t-align">6.3.2.10.5. 对齐时间</a></li>
+<li><a class="reference internal" href="#align-angle-shift">6.3.2.10.6. 对齐角度偏移</a></li>
+<li><a class="reference internal" href="#align-initial-angle">6.3.2.10.7. 对齐初始角度</a></li>
+<li><a class="reference internal" href="#align-and-sweep-rate">6.3.2.10.8. 对齐扫描速率</a></li>
+<li><a class="reference internal" href="#align-and-sweep-setup-angle">6.3.2.10.9. 对齐扫描设置角度</a></li>
+<li><a class="reference internal" href="#pullout-slip-threshold">6.3.2.10.10. 失步滑差阈值</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dynamic-current-limit">6.3.2.11. 动态电流限制</a></li>
+<li><a class="reference internal" href="#voltage-control">6.3.2.12. 电压控制</a><ul>
+<li><a class="reference internal" href="#low-pass-filter-time-constant">6.3.2.12.1. 低通滤波器时间常数</a></li>
+<li><a class="reference internal" href="#proportional-gain">6.3.2.12.2. 比例增益</a></li>
+<li><a class="reference internal" href="#customize-voltage-outerloop-tau">6.3.2.12.3. 时间常数</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#motion-control-api">6.3.2.13. 运动控制 API</a><ul>
+<li><a class="reference internal" href="#filter-time-constant-is">6.3.2.13.1. 滤波时间常数 Is</a></li>
+<li><a class="reference internal" href="#filter-time-constant-iq">6.3.2.13.2. 滤波时间常数 Iq</a></li>
+<li><a class="reference internal" href="#adc-isr-user-functions">6.3.2.13.3. ADC ISR 用户函数</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#board-service">6.3.2.14. 板级服务</a><ul>
+<li><a class="reference internal" href="#ui-service-period">6.3.2.14.1. UI 服务周期</a></li>
+<li><a class="reference internal" href="#button-debounce-time">6.3.2.14.2. 按钮消抖时间</a></li>
+<li><a class="reference internal" href="#long-button-press-time">6.3.2.14.3. 长按按钮时间</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#optional-analog-inputs">6.3.2.15. 可选模拟输入</a><ul>
+<li><a class="reference internal" href="#bridge-temperature">6.3.2.15.1. 桥温度</a></li>
+<li><a class="reference internal" href="#absolute-voltage-reference">6.3.2.15.2. 绝对电压参考</a></li>
+<li><a class="reference internal" href="#phase-voltages">6.3.2.15.3. 相电压</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#diagnostics-library">6.3.2.16. 诊断库</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="codegen.zh.html" title="上一章"><span class="section-number">6.2. </span>代码生成</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="sampling-rate.zh.html" title="下一章"><span class="section-number">6.4. </span>采样率与 PWM 频率的影响</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="sampling-rate.zh.html" title="6.4. Sampling Rate and PWM Frequency Implications">下一页</a> |</li>
+<li class="right">
+<a href="codegen.zh.html" title="6.2. Code Generation">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.3. </span>参数定制</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.1.7. FOC 与六步控制的比较 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../../_static/rendermath.js"></script>
+<script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/svgcrop.js"></script>
+<script src="../../_static/mcaf-styling.js"></script>
+<link href="../../genindex.zh.html" rel="index" title="Index"/>
+<link href="../../search.zh.html" rel="search" title="Search"/>
+<link href="../startup.zh.html" rel="next" title="5.2. Startup"/>
+<link href="tuning.zh.html" rel="prev" title="5.1.6. Current loop tuning"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="../startup.zh.html" title="5.2. Startup">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="tuning.zh.html" title="5.1.6. Current loop tuning">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.zh.html"><span class="section-number">5.1. </span>磁场定向电流控制</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.1.7. </span>FOC 与六步控制的比较</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="comparison-between-foc-and-six-step-control">
+<span id="foc-compare-6step"></span><h1><span class="section-number">5.1.7. </span>FOC 与六步控制的比较<a class="headerlink" href="#comparison-between-foc-and-six-step-control" title="本标题的永久链接">¶</a></h1>
+<p>永磁同步电机的 FOC 与六步控制之间存在若干折中。如 <a class="reference internal" href="overview.zh.html#foc-overview"><span class="std std-ref">概述一节</span></a>所述，FOC 在性能上带来若干改进，缺点较小，但代价是设计和实现复杂度的增加：</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>性能收益</dt><dd><ul>
+<li><p><a class="reference internal" href="#foc-6step-angle-error"><span class="std std-ref">与角度无关的满转矩</span></a></p></li>
+<li><p><a class="reference internal" href="#foc-6step-commutation-transient"><span class="std std-ref">不受换相动态影响的满转矩</span></a></p></li>
+<li><p><a class="reference internal" href="#foc-6step-torque-ripple"><span class="std std-ref">更低的转矩脉动</span></a></p></li>
+<li><p><a class="reference internal" href="#foc-6step-efficiency"><span class="std std-ref">更高的效率、更低的功耗</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>代价</dt><dd><ul>
+<li><p><a class="reference internal" href="#foc-6step-switching-loss"><span class="std std-ref">更高的开关损耗</span></a></p></li>
+<li><p><a class="reference internal" href="#foc-6step-current-range"><span class="std std-ref">所需相电流范围更大</span></a> （可能）</p></li>
+<li><p><a class="reference internal" href="#foc-6step-current-sensing"><span class="std std-ref">电流检测要求</span></a></p></li>
+<li><p><a class="reference internal" href="#foc-6step-control"><span class="std std-ref">更复杂的控制</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<section id="torque-capability">
+<h2><span class="section-number">5.1.7.1. </span>转矩能力<a class="headerlink" href="#torque-capability" title="本标题的永久链接">¶</a></h2>
+<section id="torque-degradation-from-angle-error">
+<span id="foc-6step-angle-error"></span><h3><span class="section-number">5.1.7.1.1. </span>由角度误差引起的转矩下降<a class="headerlink" href="#torque-degradation-from-angle-error" title="本标题的永久链接">¶</a></h3>
+<p>理想的 FOC 使定子磁场与转子磁通保持垂直。 <a class="footnote-reference brackets" href="#fn-foc6-angle-fine-print" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> 需要估计转子角度（对于感应电机，还包括转子磁通）。FOC 中的转矩正比于 <span class="math notranslate nohighlight">\(I_q \cos\tilde{\theta}\)</span>，其中 <span class="math notranslate nohighlight">\(\tilde{\theta}\)</span> 为相对于理想垂直的角度误差。</p>
+<ul class="simple">
+<li><p>在 FOC 中， <span class="math notranslate nohighlight">\(\cos\tilde{\theta}\)</span> 项通常非常接近 1。</p></li>
+<li><p>在六步控制中， <span class="math notranslate nohighlight">\(\tilde{\theta}\)</span> 无法保证优于 30°。这是因为六步控制中的电流矢量固定在每个 60° 扇区的中心，如 <a class="reference internal" href="#fig-foc6-six-step"><span class="std std-numref">图 5.36</span></a> 和 <a class="reference internal" href="#fig-foc6-torque-angle-error-simple"><span class="std std-numref">图 5.37</span></a>所示，且每个扇区至少有一条边界处的角度误差为 30° 或更大。</p></li>
+</ul>
+<figure class="align-center" id="id2">
+<span id="fig-foc6-six-step"></span><img alt="../../_images/foc6-six-step.svg" src="../../_images/foc6-six-step.svg"/><figcaption>
+<p><span class="caption-number">图 5.36 </span><span class="caption-text">六步控制的扇区</span><a class="headerlink" href="#id2" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id3">
+<span id="fig-foc6-torque-angle-error-simple"></span><img alt="../../_images/foc6-torque-angle-error-simple.png" src="../../_images/foc6-torque-angle-error-simple.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.37 </span><span class="caption-text">在精确获知扇区边界时六步控制中转矩随角度误差的变化</span><a class="headerlink" href="#id3" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>六步扇区边缘附近的这种转矩下降是显著的。在高速下，惯性会平滑转矩的高频分量，只有 <span class="math notranslate nohighlight">\(\cos\tilde{\theta}\)</span> 的平均值影响系统：在扇区完全对齐时，对于相同的电流限幅，六步控制的平均转矩为理想 FOC 转矩的 95.5%：六步转矩约低 4.5%。</p>
+<p>在低速下，这种平均效应不存在，六步控制的最佳情形是扇区边缘处的转矩为相同电流限幅下 FOC 转矩的 86.6%。角度检测的误差（例如霍尔传感器未对齐）会进一步降低该值，且转矩随角度误差增大而迅速下降。当负载转矩较高时，这可能使电机“卡”在扇区边缘，无法克服负载转矩。</p>
+<p>FOC 也会出现角度误差，但误差的影响不那么显著。需要约 17.3° 的角度误差才能使 FOC 转矩下降相同的 4.5%。 <a class="reference internal" href="#fig-foc6-torque-angle-error"><span class="std std-numref">图 5.38</span></a> 展示了两种情况下 4° 电角度误差的影响：</p>
+<ul class="simple">
+<li><p>FOC 损失约 0.24% 的转矩</p></li>
+<li><p>六步平均损失约 0.24% 的转矩（在扇区完全对齐时 4.5% 损失之外），但在扇区一端还会再多损失几个百分点。</p></li>
+</ul>
+<figure class="align-center" id="id4">
+<span id="fig-foc6-torque-angle-error"></span><img alt="../../_images/foc6-torque-angle-error.png" src="../../_images/foc6-torque-angle-error.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.38 </span><span class="caption-text">在未精确获知扇区边界时六步控制中转矩随角度误差的变化</span><a class="headerlink" href="#id4" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p class="rubric">注</p>
+<aside class="footnote brackets" id="fn-foc6-angle-fine-print" role="note">
+<span class="label"><span class="fn-bracket">[</span><a href="#id1" role="doc-backlink">1</a><span class="fn-bracket">]</span></span>
+<p>细则：为了控制转子磁通，定子磁场的某个分量可能与转子磁通平行。</p>
+</aside>
+</section>
+<section id="torque-degradation-from-dynamics-of-commutation">
+<span id="foc-6step-commutation-transient"></span><h3><span class="section-number">5.1.7.1.2. </span>由换相动态引起的转矩下降<a class="headerlink" href="#torque-degradation-from-dynamics-of-commutation" title="本标题的永久链接">¶</a></h3>
+<p>随着换相角变化，FOC 提供的电压随电角度连续变化，并自动补偿定子电感造成的相位滞后。（在稳态下，需要一定的电压分量来改变定子绕组中的电流；参见 <a class="reference internal" href="fundamentals.zh.html#foc-phasor-analysis"><span class="std std-ref">相量分析</span></a> 以获取更多信息）</p>
+<p>六步换相的缺点是必须以离散跳变的方式移动电流矢量，每次在换相扇区之间切换时跳变 60°。在低速下，这会在每次扇区切换时产生一个非常短暂的转矩暂态，通常伴随轻微的“滴答”声。</p>
+<p>在更高转速下，六步换相有两个主要缺点：</p>
+<ul class="simple">
+<li><p>换相时刻出现得更频繁（电频率更高）</p></li>
+<li><p>可用于换相的电压减少（反电动势消耗了更多电压）</p></li>
+</ul>
+<p>换相暂态不再可忽略；每个扇区有相当一部分时间用于使电流矢量移动。由于电机在更高的电频率下运行，每个扇区的总时间减少。峰值电流需求略有增加，以补偿每个扇区开始时损失的转矩，这会增大转矩脉动。随着反电动势需求增加，可用电压裕量减小，意味着电流暂态耗时更长。到某一时刻，整个换相扇区都用于提升电流，六步控制便限制了可用电流。</p>
+<p><a class="reference internal" href="#fig-foc6-sim-200rpm"><span class="std std-numref">图 5.39</span></a>， <a class="reference internal" href="#fig-foc6-sim-1000rpm"><span class="std std-numref">图 5.40</span></a>， <a class="reference internal" href="#fig-foc6-sim-2500rpm"><span class="std std-numref">图 5.41</span></a>，以及 <a class="reference internal" href="#fig-foc6-sim-3100rpm"><span class="std std-numref">图 5.42</span></a> 通过一个 <a class="reference external" href="https://www.microchip.com/DevelopmentTools/ProductDetails/AC300022">Nidec Hurst DMA0204024B101</a> 在换相频率递增时的仿真展示了这一趋势。</p>
+<figure class="align-center" id="id5">
+<span id="fig-foc6-sim-200rpm"></span><img alt="../../_images/3062-0.png" src="../../_images/3062-0.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.39 </span><span class="caption-text">200 RPM 时的仿真——换相暂态非常短</span><a class="headerlink" href="#id5" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id6">
+<span id="fig-foc6-sim-1000rpm"></span><img alt="../../_images/3062-2.png" src="../../_images/3062-2.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.40 </span><span class="caption-text">1000 RPM 时的仿真——换相暂态较短但可见</span><a class="headerlink" href="#id6" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id7">
+<span id="fig-foc6-sim-2500rpm"></span><img alt="../../_images/3062-4.png" src="../../_images/3062-4.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.41 </span><span class="caption-text">2500 RPM 时的仿真——换相暂态占整个扇区时间的三分之一以上，稳态电流必须略高以补偿 PI 控制的暂态</span><a class="headerlink" href="#id7" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id8">
+<span id="fig-foc6-sim-3100rpm"></span><img alt="../../_images/3062-6.png" src="../../_images/3062-6.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.42 </span><span class="caption-text">3100 RPM 时的仿真——由于电压限制，整个换相扇区都用于提升电机电流，且始终无法完全达到指令电流</span><a class="headerlink" href="#id8" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p><a class="reference internal" href="#fig-foc6-motor-100rpm"><span class="std std-numref">图 5.43</span></a>， <a class="reference internal" href="#fig-foc6-motor-1000rpm"><span class="std std-numref">图 5.44</span></a>，以及 <a class="reference internal" href="#fig-foc6-motor-2500rpm"><span class="std std-numref">图 5.45</span></a> 展示了由 <a class="reference external" href="https://www.microchip.com/en-us/development-tool/DM330031">dsPIC33CK 低压电机控制（LVMC）开发板</a> 驱动、以六步方式运行的 Nidec Hurst DMA0204024B101 的实测电流波形。该 <a class="reference external" href="https://github.com/microchip-pic-avr-solutions/matlab-lvmc-dspic33ck256mp508-sixstep-hallsensor">Microchip AN957 的代码</a>是一款不使用电流环的六步电机控制器，而是在估计速度外围绕一个较慢的 PI 环，因此其换相切换比上文仿真中的对应过程耗时更长。在这些测试中，电机的机械负载近似恒定，因此在更高转速下需要更大的电流来克服六步暂态效应并输出相同的机械转矩。</p>
+<figure class="align-center" id="id9">
+<span id="fig-foc6-motor-100rpm"></span><img alt="../../_images/4295_100_32.png" src="../../_images/4295_100_32.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.43 </span><span class="caption-text">约 100 RPM 时的实测电流——六步电流保持得相当平稳</span><a class="headerlink" href="#id9" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id10">
+<span id="fig-foc6-motor-1000rpm"></span><img alt="../../_images/4295_1000_32.png" src="../../_images/4295_1000_32.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.44 </span><span class="caption-text">约 1000 RPM 时的实测电流——需要相当一部分扇区时间才能使电流达到稳态值</span><a class="headerlink" href="#id10" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id11">
+<span id="fig-foc6-motor-2500rpm"></span><img alt="../../_images/4295_2500_32.png" src="../../_images/4295_2500_32.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.45 </span><span class="caption-text">约 2500 RPM 时的实测电流——指令电流上升，控制环路用尽所有可用电压，但在每个扇区结束时仍无法达到稳态值。</span><a class="headerlink" href="#id11" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>FOC 的连续换相能在高速下实现更高的电流，更好地利用可用电压，并将转矩脉动降至最低。</p>
+</section>
+</section>
+<section id="torque-ripple">
+<span id="foc-6step-torque-ripple"></span><h2><span class="section-number">5.1.7.2. </span>转矩脉动<a class="headerlink" href="#torque-ripple" title="本标题的永久链接">¶</a></h2>
+<p>在 FOC 稳态下（恒定转速和负载转矩），只要电流控制器能维持恒定的电流矢量 I<sub>dq</sub>，电机转矩脉动即为零。</p>
+<p>六步转矩脉动受两个因素影响：</p>
+<ul class="simple">
+<li><p>即 <span class="math notranslate nohighlight">\(\cos \theta\)</span> 恒定电流下的转矩依赖关系</p></li>
+<li><p>使转矩脉动随转速升高而恶化的换相暂态</p></li>
+</ul>
+</section>
+<section id="efficiency">
+<span id="foc-6step-efficiency"></span><h2><span class="section-number">5.1.7.3. </span>效率<a class="headerlink" href="#efficiency" title="本标题的永久链接">¶</a></h2>
+<p>六步的角度误差会在电机绕组中造成额外的 I²R 损耗。在一个电周期内平均——并忽略会使功耗进一步增加的换相暂态动态——对于相同的负载转矩，六步绕组中的 I²R 功耗比 FOC 高约 10%：</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\left(\frac{\pi}{3}\right)^2 \approx 1.0966\)</span> 在恒定电流假设下——如果电机转速或惯性足够高，或速度控制足够慢，使得指令电流在每个换相扇区内变化不大，则六步的 I²R 损耗比 FOC 高 9.7%。这种情况下的电流如 <a class="reference internal" href="#fig-foc6-equiv-avg-torque"><span class="std std-numref">图 5.46</span></a>。</p></li>
+<li><p><span class="math notranslate nohighlight">\(\frac{2\sqrt{3}}{\pi} \approx 1.1027\)</span> 在恒定转矩假设下——如果电机转速或惯性足够低，或速度控制足够快，使得指令电流在每个换相扇区内变化以保持转矩恒定。（<span class="math notranslate nohighlight">\(I \propto T/\cos\tilde\theta\)</span> 其中角度误差 <span class="math notranslate nohighlight">\(\tilde\theta\)</span> 在 -30° 到 +30° 之间变化）这种情况下的电流如 <a class="reference internal" href="#fig-foc6-equiv-inst-torque"><span class="std std-numref">图 5.47</span></a>。</p></li>
+</ul>
+<figure class="align-center" id="id12">
+<span id="fig-foc6-equiv-avg-torque"></span><img alt="../../_images/foc6-equiv-avg-torque.png" src="../../_images/foc6-equiv-avg-torque.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.46 </span><span class="caption-text">在等效平均转矩下 FOC 与六步电流的比较</span><a class="headerlink" href="#id12" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id13">
+<span id="fig-foc6-equiv-inst-torque"></span><img alt="../../_images/foc6-equiv-inst-torque.png" src="../../_images/foc6-equiv-inst-torque.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.47 </span><span class="caption-text">在等效瞬时转矩下 FOC 与六步电流的比较</span><a class="headerlink" href="#id13" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>注：这并 <em>不</em> 意味着六步效率低 10%；效率的确切下降取决于电机结构以及效率损耗中阻性（即与 I² 成正比）损耗所占的比例。一台在 FOC 下某种负载工况运行的过大电机，若机械输出功率为 98 W、绕组损耗为 2 W、其他损耗可忽略，则效率为 98%；在相同工况下以六步运行，绕组损耗约增加 10% 至 2.2 W，效率变为 97.8%。</p>
+</section>
+<section id="switching-loss">
+<span id="foc-6step-switching-loss"></span><h2><span class="section-number">5.1.7.4. </span>开关损耗<a class="headerlink" href="#switching-loss" title="本标题的永久链接">¶</a></h2>
+<p>与 FOC 相比，六步在 PWM 工作下可通过减少有源切换的晶体管数量来降低开关损耗。</p>
+<p>根据所用开关模式的不同，六步需要 1、2 或 4 个晶体管进行有源切换，如 <a class="reference internal" href="#fig-foc6-6step-switching-patterns"><span class="std std-numref">图 5.48</span></a>所示。每个扇区中有一相未使用，使两个晶体管完全关断。</p>
+<figure class="align-center" id="id14">
+<span id="fig-foc6-6step-switching-patterns"></span><img alt="../../_images/3phasebridge_BLDC_switching_styles.png" src="../../_images/3phasebridge_BLDC_switching_styles.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.48 </span><span class="caption-text">六步开关模式（假设在某换相扇区内 C 相开路）。</span><a class="headerlink" href="#id14" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<ul>
+<li><p>1 或 2 个有源切换晶体管：取电压最低的电机端子，以 100% 占空比导通该相的下桥臂晶体管。（见 <a class="reference internal" href="#fig-foc6-6step-switching-patterns"><span class="std std-numref">图 5.48</span></a>顶行。）</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>1 个晶体管：取电压最高的电机端子，对上桥臂晶体管进行有源切换。（依靠下桥臂晶体管的二极管承载续流电流）</p></li>
+<li><p>2 个晶体管：对电压最高电机端子的两个晶体管都进行有源切换。</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>2 或 4 个有源切换晶体管：为两个有源相的上桥臂开关选择互补的 PWM 占空比，例如 A 相 15% 占空比、B 相 85% 占空比。若依靠二极管承载续流电流，两个晶体管即足够。（见 <a class="reference internal" href="#fig-foc6-6step-switching-patterns"><span class="std std-numref">图 5.48</span></a>顶行。）</p></li>
+</ul>
+<p>FOC 的对应情形为 2、3、4 或 6 个有源切换晶体管，如 <a class="reference internal" href="#fig-foc6-foc-switching-patterns"><span class="std std-numref">图 5.49</span></a>所示。（通过选取电压最低的电机相并导通其下桥臂晶体管，可使两个晶体管不参与有源切换；剩余有源切换晶体管的数量取决于特定半桥是否使用同步整流。）</p>
+<figure class="align-center" id="id15">
+<span id="fig-foc6-foc-switching-patterns"></span><img alt="../../_images/3phasebridge_FOC_switching_styles.png" src="../../_images/3phasebridge_FOC_switching_styles.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.49 </span><span class="caption-text">FOC 开关模式</span><a class="headerlink" href="#id15" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>这里存在折中：减少有源切换晶体管数量通常会增加电机在开关频率处的纹波电流，或导致功率级二极管导通损耗增大。</p>
+<p>在功率级使用 MOSFET 的低压电机驱动中，开关损耗通常远小于导通损耗，没有理由去刻意降低开关损耗。</p>
+<p>在使用 IGBT 进行更高电压运行（由交流市电或电动汽车电池供电）的电机驱动中，开关损耗更大，而二极管导通损耗则相对次要。</p>
+<p>开关损耗的优化是一项系统级任务：电机控制工程师应与电路设计人员讨论以找到最佳方案。</p>
+</section>
+<section id="current-management">
+<span id="foc-6step-current-management"></span><h2><span class="section-number">5.1.7.5. </span>电流管理<a class="headerlink" href="#current-management" title="本标题的永久链接">¶</a></h2>
+<p>除从一个扇区到下一个扇区的换相暂态外，六步可用单个电流来概括：</p>
+<ul class="simple">
+<li><p>电压最高的电机端子 H 有电流 I 流入电机端子</p></li>
+<li><p>电压最低的电机端子 L 有相同的电流 I 流出电机端子</p></li>
+<li><p>剩余的电机端子 M 开路，流过零电流</p></li>
+</ul>
+<p>FOC 需要知道电流矢量，它有两个自由度（三个相电流之和为零，因此知道其中任意两个即可确定第三个）</p>
+<section id="current-sensing">
+<span id="foc-6step-current-sensing"></span><h3><span class="section-number">5.1.7.5.1. </span>电流检测<a class="headerlink" href="#current-sensing" title="本标题的永久链接">¶</a></h3>
+<p>由于六步控制只需检测一个电流，因此可使用单个直流电流传感器。</p>
+<p>FOC 需要一个、两个或三个电流传感器，取决于所用方法：</p>
+<ul class="simple">
+<li><p>三个电流传感器精度最高、噪声最小</p></li>
+<li><p>两个电流传感器可获知全部三相电流，噪声和增益/偏置精度比三个传感器差，但除此之外无信息损失</p></li>
+<li><p>可使用单个直流电流传感器（<a class="reference internal" href="current_measure.zh.html#algorithm-current-single-channel"><span class="std std-ref">单通道电流测量</span></a>），但对信号调理和 PWM 占空比有一定约束，且复杂度增加，需在 PWM 周期内的多个时刻采样电流</p></li>
+</ul>
+<p>成本约束严格的系统可能需要使用单个直流电流传感器。（<strong>注：</strong> 请参见关于 <a class="reference internal" href="#foc-6step-cost-optimization"><span class="std std-ref">成本优化</span></a>）</p>
+</section>
+<section id="current-range">
+<span id="foc-6step-current-range"></span><h3><span class="section-number">5.1.7.5.2. </span>电流范围<a class="headerlink" href="#current-range" title="本标题的永久链接">¶</a></h3>
+<p>对于相同的瞬时转矩，六步和 FOC 所需的电流范围相同。（见 <a class="reference internal" href="#fig-foc6-equiv-inst-torque"><span class="std std-numref">图 5.47</span></a>顶行。）</p>
+<p>如果不需要等效瞬时转矩，而是想知道在相同平均转矩下电流范围如何比较，则情况发生变化。（见 <a class="reference internal" href="#fig-foc6-equiv-avg-torque"><span class="std std-numref">图 5.46</span></a>。）对于相同的平均转矩，可为六步和 FOC 写出等效的电流幅值。在六步中，电流 I<sub>6</sub> 流入电机的一个端子并从另一个端子流出。如果 FOC 电流幅值为 I<sub>q</sub> ，则：</p>
+<div class="math notranslate nohighlight" id="equation-algorithms-foc-comparison-6step-0">
+<span class="eqno">(5.21)<a class="headerlink" href="#equation-algorithms-foc-comparison-6step-0" title="本公式的永久链接">¶</a></span>\[\begin{aligned}
+I_6 &amp;= \frac{\pi}{2\sqrt{3}}I_q \cr
+    &amp;\approx 0.907 I_q \cr
+I_q &amp;\approx 1.103 I_6
+\end{aligned}\]</div>
+<p>对于同一电机，FOC 所需的峰值电流检测范围比六步高约 10.3%。即便六步效率较低也是如此：电流 I<sub>6</sub> 流入一个端子并从另一个端子流出，其等效的三相电流矢量幅值为 <span class="math notranslate nohighlight">\(\frac{2}{\sqrt{3}}I_6 \approx 1.1547 I_6\)</span>，因此六步电流检测能以更低的峰值电流要求蒙混过关。</p>
+<p>在 FOC 中，电流幅值 I 对应的最坏换相角<sub>q</sub> 是 I<sub>q</sub> 流入（或流出）一个电机端子，而该电流的一半从另外两个端子流出（或流入）的情况。该电流幅值对应的最佳换相角是 <span class="math notranslate nohighlight">\(\frac{\sqrt{3}}{2}I_q\)</span> 流入一个电机端子并从另一个端子流出、第三个端子电流为零的情况。然而电流传感器必须覆盖 ±I 的完整范围<sub>q</sub>, however.</p>
+<p>参见 <a class="reference internal" href="#fig-foc6-equiv-avg-torque"><span class="std std-numref">图 5.46</span></a> 的图形描述；在 30/90/150/210/270/330 度的点处，FOC 电流幅值比等效平均转矩下的六步电流低 4.5%（系数为 <span class="math notranslate nohighlight">\(3/\pi\)</span>），但 FOC 波形在正弦波峰值处需要更高的电流范围。</p>
+<p>在实际中，这意味着电流检测电路、过流电路以及（在较小程度上）栅极驱动都需要设计成能覆盖完整的瞬时相电流，因此如果决定因素是平均转矩而非瞬时转矩，六步的要求略低。</p>
+<p>由于热原因其额定值更取决于方均根电流的系统部件（如连接器、导线、功率级和电机本身），在六步下比在 FOC 下需要更高的额定值。（见 <a class="reference internal" href="#foc-6step-efficiency"><span class="std std-ref">效率</span></a>）</p>
+</section>
+</section>
+<section id="cost-optimization">
+<span id="foc-6step-cost-optimization"></span><h2><span class="section-number">5.1.7.6. </span>成本优化<a class="headerlink" href="#cost-optimization" title="本标题的永久链接">¶</a></h2>
+<p>成本优化是一项系统级任务。提升电流检测性能可以提高电机和功率级的利用率，从而真正降低系统总成本。</p>
+<p>例如，设想一个数字控制系统，包含一个 50 美元的电机、5 美元的功率电子器件（能承受 10A 连续电流），以及 2 美元、精度在 ±2% 以内的电流检测元件，这要求在最坏情况下将电机降额至仅使用其 9.6A 的能力。（固件中将数字控制限制为 9.8A，这样即使传感器低估电流 2%，也能保证实际电机电流不超过 10A——但如果传感器高估电流 2%，则可能只用到 9.6A。）</p>
+<p>如果使用更好的电流检测元件，成本 2.50 美元但精度在 ±0.5% 以内，则可使用一个略小、能承受 9.7A 连续电流的电机，以确保最坏情况下的能力至少为 9.6A。（固件中将数字控制限制为 9.65A，对应实际电流在 9.6A 到 9.7A 之间。）如果最大电流和转矩这 3% 的降低能在电机和功率级成本上节省超过 0.50 美元，那么选择更贵的电流检测元件就是值得的。</p>
+<p>那些因为在标称工况下允许使用更便宜的电流检测（更高容差、更少传感器数量）而“省钱”的技术，实际上可能花费更多，因为系统整体设计会看到电机和功率电子器件最坏情况利用率降低，从而需要将其选得更大。</p>
+</section>
+<section id="control-complexity">
+<span id="foc-6step-control"></span><h2><span class="section-number">5.1.7.7. </span>控制复杂度<a class="headerlink" href="#control-complexity" title="本标题的永久链接">¶</a></h2>
+<p>六步控制器可以比 FOC 更简单，只需以下组成部分：</p>
+<ul class="simple">
+<li><p>扇区判定</p></li>
+<li><p>一个标量电流环，或不使用电流控制环</p></li>
+<li><p>扇区应用（决定如何将电流环输出施加到不同 PWM 相）</p></li>
+</ul>
+<p>FOC 需要矢量电流环和坐标变换——其计算量大约是上述六步各组件总和的 2–3 倍。六步较低的 CPU 占用可使系统设计者对某些类型电机采用更高的 PWM 开关频率和电频率。（更高的开关频率可降低低电感电机的电流纹波；电频率与电机速度成正比，因此高速电机需要更高的电频率。）</p>
+<p>此外，如果需要无传感器位置/速度估计器，FOC 的复杂度高于无传感器六步估计器。</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">5.1.7. FOC 与六步控制的比较</a><ul>
+<li><a class="reference internal" href="#torque-capability">5.1.7.1. 转矩能力</a><ul>
+<li><a class="reference internal" href="#torque-degradation-from-angle-error">5.1.7.1.1. 由角度误差引起的转矩下降</a></li>
+<li><a class="reference internal" href="#torque-degradation-from-dynamics-of-commutation">5.1.7.1.2. 由换相动态引起的转矩下降</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#torque-ripple">5.1.7.2. 转矩脉动</a></li>
+<li><a class="reference internal" href="#efficiency">5.1.7.3. 效率</a></li>
+<li><a class="reference internal" href="#switching-loss">5.1.7.4. 开关损耗</a></li>
+<li><a class="reference internal" href="#current-management">5.1.7.5. 电流管理</a><ul>
+<li><a class="reference internal" href="#current-sensing">5.1.7.5.1. 电流检测</a></li>
+<li><a class="reference internal" href="#current-range">5.1.7.5.2. 电流范围</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cost-optimization">5.1.7.6. 成本优化</a></li>
+<li><a class="reference internal" href="#control-complexity">5.1.7.7. 控制复杂度</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="tuning.zh.html" title="上一章"><span class="section-number">5.1.6. </span>电流环整定</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="../startup.zh.html" title="下一章"><span class="section-number">5.2. </span>启动</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="../startup.zh.html" title="5.2. Startup">下一页</a> |</li>
+<li class="right">
+<a href="tuning.zh.html" title="5.1.6. Current loop tuning">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.zh.html"><span class="section-number">5.1. </span>磁场定向电流控制</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.1.7. </span>FOC 与六步控制的比较</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../../_static/lang-switch.js"></script>
+</body>
+</html>

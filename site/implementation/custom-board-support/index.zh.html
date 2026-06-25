@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>6.6. 定制板卡支持 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../../_static/rendermath.js"></script>
+<script src="../../_static/svgcrop.js"></script>
+<script src="../../_static/mcaf-styling.js"></script>
+<link href="../../genindex.zh.html" rel="index" title="Index"/>
+<link href="../../search.zh.html" rel="search" title="Search"/>
+<link href="overview.zh.html" rel="next" title="6.6.1. Overview of board support in motorBench® Development Suite"/>
+<link href="../integration.zh.html" rel="prev" title="6.5. Integration with Custom Code"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="overview.zh.html" title="6.6.1. Overview of board support in motorBench® Development Suite">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="../integration.zh.html" title="6.5. Integration with Custom Code">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="../index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.6. </span>定制板卡支持</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="custom-board-support">
+<span id="custom-board"></span><h1><span class="section-number">6.6. </span>定制板卡支持<a class="headerlink" href="#custom-board-support" title="本标题的永久链接">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.zh.html">6.6.1. motorBench 中的板卡支持概述<sup>®</sup> Development Suite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.zh.html#scope-of-hardware-support">6.6.2. 硬件支持范围</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="overview.zh.html#board-configuration-features">6.6.2.1. 板卡配置功能</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.zh.html#assumptions">6.6.2.2. 假设</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="overview.zh.html#board-definition-file-structure">6.6.3. 板卡定义文件结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.zh.html#system-parameters">6.6.4. 系统参数</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.zh.html">6.6.5. 创建定制板卡配置</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration.zh.html#starter-board-file">6.6.5.1. 起始板卡文件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.zh.html#modifying-the-starter-board-definition">6.6.5.2. 修改起始板卡定义</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.zh.html#adding-parameters-to-the-board-definition">6.6.5.3. 向板卡定义添加参数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.zh.html#adding-a-non-mcaf-uart">6.6.5.4. 添加非 MCAF UART</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.zh.html#custom-boards-without-pushbuttons-or-potentiometer">6.6.5.5. 不带按钮或电位器的定制板卡</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.zh.html#board-definition-file-validation">6.6.6. 板卡定义文件验证</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.zh.html#support-for-mcp802x-gate-drivers-including-mcp8021-based-sip-system-in-package-devices">6.6.7. 对 MCP802X 栅极驱动器的支持，包括基于 MCP8021 的 SiP（系统级封装）器件</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration.zh.html#overview">6.6.7.1. 概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.zh.html#integration-with-mcaf">6.6.7.2. 与 MCAF 的集成</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.zh.html#configuration">6.6.7.3. 配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.zh.html#system-level-behavior">6.6.7.4. 系统级行为</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="verification.zh.html">6.6.8. 验证与板卡调试</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="verification.zh.html#overview">6.6.8.1. 概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="verification.zh.html#general-firmware-execution">6.6.8.2. 通用固件执行</a></li>
+<li class="toctree-l2"><a class="reference internal" href="verification.zh.html#open-loop-voltage-operation">6.6.8.3. 开环电压运行</a></li>
+<li class="toctree-l2"><a class="reference internal" href="verification.zh.html#closed-loop-current-control">6.6.8.4. 闭环电流控制</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="custom_board_definitions.zh.html">6.6.9. 定制板卡定义格式</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="custom_board_definitions.zh.html#working-with-serialized-data-models">6.6.9.1. 使用序列化数据模型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_board_definitions.zh.html#custom-board-schema">6.6.9.2. 定制板卡架构</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="../integration.zh.html" title="上一章"><span class="section-number">6.5. </span>与自定义代码的集成</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="overview.zh.html" title="下一章"><span class="section-number">6.6.1. </span>motorBench 中的板卡支持概述<sup>®</sup> Development Suite</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="overview.zh.html" title="6.6.1. Overview of board support in motorBench® Development Suite">下一页</a> |</li>
+<li class="right">
+<a href="../integration.zh.html" title="6.5. Integration with Custom Code">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.6. </span>定制板卡支持</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../../_static/lang-switch.js"></script>
+</body>
+</html>

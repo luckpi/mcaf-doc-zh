@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>7.4. 相关文档 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="rev_history.zh.html" rel="next" title="7.5. Revision History"/>
+<link href="mclv2.zh.html" rel="prev" title="7.3. MCLV-2 Sense Resistors"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="rev_history.zh.html" title="7.5. Revision History">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="mclv2.zh.html" title="7.3. MCLV-2 Sense Resistors">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">7. </span>附录</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">7.4. </span>相关文档</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="related-documents">
+<span id="appendix-otherdocs"></span><h1><span class="section-number">7.4. </span>相关文档<a class="headerlink" href="#related-documents" title="本标题的永久链接">¶</a></h1>
+<p>更多信息可从这些其他文档中获取，可向 Microchip MCU16 Applications 索取。</p>
+<ul class="simple" id="otherdocs-hal">
+<li><p><strong>硬件抽象层</strong> — 本文档详细描述了硬件抽象层（HAL）的架构、组件和使用模型。HAL 使硬件相关固件与电机控制应用框架的其余部分解耦，并最小化支持额外硬件设计所需的工作量。</p></li>
+</ul>
+<ul class="simple" id="otherdocs-mcc">
+<li><p><strong>MCC 外设设置</strong> — 要使用 MCAF，请设置 MCC 或使用提供的示例项目。本文档提供了如何设置 MCC 以与 motorBench<sup>®</sup> Development Suite 配合使用的详细说明。还详细说明了 MCC 的要求以及用户可配置的内容。</p></li>
+</ul>
+<ul id="otherdocs-monitoring">
+<li><p><strong>监控模块设计</strong> （故障检测）——实现磁场定向 <a class="reference internal" href="glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a> 电机控制系统所需的复杂度要求故障监控具有类似的复杂度，以可靠地检测故障并确定根本原因。</p>
+<p>机械系统扰动是最不可预测的，因为它们完全暴露在环境中，可能对周围人员或财产造成安全隐患。因此，机械故障检测和处理越准确、越快速，系统就越能可靠地保持在安全状态。此外，电机驱动系统的电子和机械组件通常昂贵，因此故障监控最终具有经济优势。</p>
+<p>本文档描述了电机控制系统中故障监控的最新实现，能够区分与 <a class="reference internal" href="glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a>。</p>
+</li>
+</ul>
+<ul id="otherdocs-saturation">
+<li><p><strong>饱和处理模块设计</strong> （饱和与抗积分饱和）——良好的电机控制系统设计需要预测和管理控制线性边界，以实现性能目标。控制输出饱和可能导致低效、次优或不稳定的运行，必须仔细管理以避免这些问题。</p>
+<p>本文档涵盖的饱和处理描述了用于检测控制器输出（如电流、电压或速度）饱和的方法，以及控制器必须如何修改或功能增强以抵消不良影响。</p>
+</li>
+</ul>
+<ul id="otherdocs-recovery">
+<li><p><strong>恢复模块设计</strong> — 电机控制系统中的故障管理需要假设故障最终会发生来设计。当故障发生时，一个重要的决定是如何处理它们。</p>
+<p>遗憾的是，故障经常影响机电系统，在某些情况下最佳响应是使电机停止。幸运的是，有些系统故障是可以预测的，有时可以根据严重程度以及是否有足够的输入信号进行处理。</p>
+<p>恢复系统与监控系统之间有密切关系。监控系统向恢复系统提供检测到的故障信息。恢复系统旨在电机堵转或故障时使电机恢复到之前的运行状态。</p>
+</li>
+</ul>
+<ul class="simple" id="otherdocs-an1292-comparison">
+<li><p><strong>AN1292 与 MC 应用框架的比较</strong> — 本文档分析了 AN1292 软件与 motorBench<sup>®</sup> Development Suite 提供的电机控制应用框架之间的差异。目的是回顾性地审查新应用框架源代码相对于 AN1292 参考应用笔记软件的改进和局限性。</p></li>
+</ul>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="mclv2.zh.html" title="上一章"><span class="section-number">7.3. </span>MCLV-2 采样电阻</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="rev_history.zh.html" title="下一章"><span class="section-number">7.5. </span>修订历史</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="rev_history.zh.html" title="7.5. Revision History">下一页</a> |</li>
+<li class="right">
+<a href="mclv2.zh.html" title="7.3. MCLV-2 Sense Resistors">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">7. </span>附录</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">7.4. </span>相关文档</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

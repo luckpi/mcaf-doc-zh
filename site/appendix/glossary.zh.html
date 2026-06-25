@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>7.1. 术语表 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="error_codes.zh.html" rel="next" title="7.2. Error code list"/>
+<link href="index.zh.html" rel="prev" title="7. Appendix"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="error_codes.zh.html" title="7.2. Error code list">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="index.zh.html" title="7. Appendix">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">7. </span>附录</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">7.1. </span>术语表</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="glossary">
+<span id="appendix-glossary"></span><h1><span class="section-number">7.1. </span>术语表<a class="headerlink" href="#glossary" title="本标题的永久链接">¶</a></h1>
+<dl class="glossary">
+<dt id="term-ADC">ADC<a class="headerlink" href="#term-ADC" title="Permalink to this term">¶</a></dt><dd><p>模数转换器</p>
+</dd>
+<dt id="term-API">API<a class="headerlink" href="#term-API" title="Permalink to this term">¶</a></dt><dd><p><a class="reference external" href="https://en.wikipedia.org/wiki/Application_programming_interface">应用编程接口</a></p>
+</dd>
+<dt id="term-BLDC">BLDC<a class="headerlink" href="#term-BLDC" title="Permalink to this term">¶</a></dt><dd><p>无刷直流电机——通常用于六步控制。也称为 <a class="reference internal" href="#term-PMSM"><span class="xref std std-term">PMSM</span></a></p>
+</dd>
+<dt id="term-data-model">数据模型<a class="headerlink" href="#term-data-model" title="Permalink to this term">¶</a></dt><dd><p>层次化或结构化的数据集合。参见 <a class="reference internal" href="../implementation/custom-board-support/custom_board_definitions.zh.html#custom-board-data-models"><span class="std std-ref">使用序列化数据模型</span></a> 以获取更多信息。</p>
+</dd>
+<dt id="term-dead-time">死区时间<a class="headerlink" href="#term-dead-time" title="Permalink to this term">¶</a></dt><dd><p>半桥中高侧和低侧 PWM 信号同时关闭的短暂时间，防止 DC 母线短路。参见 <a class="reference internal" href="../algorithms/dead-time-comp.zh.html#dtc-definition"><span class="std std-ref">死区时间的定义与来源</span></a>。</p>
+</dd>
+<dt id="term-feedback-path">反馈通道<a class="headerlink" href="#term-feedback-path" title="Permalink to this term">¶</a></dt><dd><p>指 <a class="reference internal" href="../components/foc.zh.html#foc"><span class="std std-ref">电流控制环</span></a> 中 ADC 输入与电流控制器之间的部分，包括 Park 和 Clarke 变换。另见 <a class="reference internal" href="../algorithms/foc/fundamentals.zh.html#foc-blkdiag"><span class="std std-ref">FOC 框图</span></a>。</p>
+</dd>
+<dt id="term-FOC">FOC<a class="headerlink" href="#term-FOC" title="Permalink to this term">¶</a></dt><dd><p><a class="reference internal" href="../components/foc.zh.html#foc"><span class="std std-ref">磁场定向控制</span></a> — 一种用于永磁同步电机或感应电机的控制方案，其中定子磁场相对于转子磁场进行控制。与六步控制相比，它通常产生更平滑的转矩、略高的效率和更高的转矩-速度曲线，但需要测量或估计转子位置，且计算量更大。</p>
+</dd>
+<dt id="term-forward-path">前向通道<a class="headerlink" href="#term-forward-path" title="Permalink to this term">¶</a></dt><dd><p>指 <a class="reference internal" href="../components/foc.zh.html#foc"><span class="std std-ref">电流控制环</span></a> 中电流控制器输出与晶体管栅极驱动之间的部分，包括逆 Park 和 Clarke 变换、 <a class="reference internal" href="../algorithms/foc/dclink-comp.zh.html#algorithm-dclinkcompensation"><span class="std std-ref">DC 母线补偿</span></a>， <a class="reference internal" href="../components/foc.zh.html#foc-zsm"><span class="std std-ref">零序调制</span></a>和 <a class="reference internal" href="../algorithms/foc/overmodulation.zh.html#algorithm-overmodulation"><span class="std std-ref">过调制</span></a>。另见 <a class="reference internal" href="../algorithms/foc/fundamentals.zh.html#foc-blkdiag"><span class="std std-ref">FOC 框图</span></a>。</p>
+</dd>
+<dt id="term-HAL">HAL<a class="headerlink" href="#term-HAL" title="Permalink to this term">¶</a></dt><dd><p><a class="reference internal" href="../components/hal.zh.html#hal"><span class="std std-ref">硬件抽象层</span></a></p>
+</dd>
+<dt id="term-IPM">IPM<a class="headerlink" href="#term-IPM" title="Permalink to this term">¶</a></dt><dd><p>内置式永磁电机（见 <a class="reference internal" href="#term-rotor-saliency"><span class="xref std std-term">转子凸极性</span></a>）</p>
+</dd>
+<dt id="term-IPMSM">IPMSM<a class="headerlink" href="#term-IPMSM" title="Permalink to this term">¶</a></dt><dd><p>内置式永磁同步电机（见 <a class="reference internal" href="#term-rotor-saliency"><span class="xref std std-term">转子凸极性</span></a>）</p>
+</dd>
+<dt id="term-ISR">ISR<a class="headerlink" href="#term-ISR" title="Permalink to this term">¶</a></dt><dd><p>中断服务例程</p>
+</dd>
+<dt id="term-MCAF">MCAF<a class="headerlink" href="#term-MCAF" title="Permalink to this term">¶</a></dt><dd><p>电机控制应用框架</p>
+</dd>
+<dt id="term-MIMO">MIMO<a class="headerlink" href="#term-MIMO" title="Permalink to this term">¶</a></dt><dd><p>多输入多输出系统，通常用状态空间方程描述和分析。另见 <a class="reference internal" href="#term-SISO"><span class="xref std std-term">SISO</span></a>。</p>
+</dd>
+<dt id="term-MCAPI">MCAPI<a class="headerlink" href="#term-MCAPI" title="Permalink to this term">¶</a></dt><dd><p><a class="reference internal" href="../components/mcapi.zh.html#mcapi"><span class="std std-ref">Motion Control API</span></a></p>
+</dd>
+<dt id="term-MTPA">MTPA<a class="headerlink" href="#term-MTPA" title="Permalink to this term">¶</a></dt><dd><p><a class="reference internal" href="../algorithms/flux_control/mtpa.zh.html#algorithm-mtpa"><span class="std std-ref">最大转矩/电流比</span></a></p>
+</dd>
+<dt id="term-PIM">PIM<a class="headerlink" href="#term-PIM" title="Permalink to this term">¶</a></dt><dd><p><a class="reference external" href="http://www.microchip.com/pim">插件模块</a> — 一块包含处理器和若干无源器件（如旁路电容）的小型电路板，用于插入 Microchip 的开发板。</p>
+</dd>
+<dt id="term-PLL">PLL<a class="headerlink" href="#term-PLL" title="Permalink to this term">¶</a></dt><dd><p>锁相环——见 <a class="reference external" href="http://www.microchip.com/wwwAppNotes/AppNotes.aspx?appnote=en544825">AN1292</a> 了解涵盖 PLL 式无传感器估计器的 Microchip 应用笔记。</p>
+</dd>
+<dt id="term-PMSM">PMSM<a class="headerlink" href="#term-PMSM" title="Permalink to this term">¶</a></dt><dd><p>永磁同步电机——通常用于 <a class="reference internal" href="#term-FOC"><span class="xref std std-term">FOC</span></a>。也称为 <a class="reference internal" href="#term-BLDC"><span class="xref std std-term">BLDC</span></a>。</p>
+</dd>
+<dt id="term-PWM">PWM<a class="headerlink" href="#term-PWM" title="Permalink to this term">¶</a></dt><dd><p><a class="reference external" href="https://en.wikipedia.org/wiki/Pulse-width_modulation">脉宽调制</a></p>
+</dd>
+<dt id="term-QEI">QEI<a class="headerlink" href="#term-QEI" title="Permalink to this term">¶</a></dt><dd><p>正交编码器接口——某些 Microchip 器件中硬件编码器计数外设的名称。</p>
+</dd>
+<dt id="term-rotor-saliency">转子凸极性<a class="headerlink" href="#term-rotor-saliency" title="Permalink to this term">¶</a></dt><dd><p>永磁同步电机可分为两种类型：磁铁位于转子内部的内置式永磁同步电机（IPM 或 IPMSM），以及磁铁均匀放置在转子表面的表贴式永磁同步电机（SPM 或 SPMSM）。</p>
+<p>它们可通过同步电感的比值定量区分 <span class="math notranslate nohighlight">\(\xi = L_q/L_d\)</span>，称为凸极比。</p>
+<p>SPMSM 的定子电感与转子位置无关，两个同步电感之间没有显著差异，因此 <span class="math notranslate nohighlight">\(\xi = L_q/L_d \approx 1\)</span>。</p>
+<p>IPMSM 的定子电感与转子位置相关，两个同步电感之间有显著差异，通常凸极比为 <span class="math notranslate nohighlight">\(\xi = L_q/L_d &gt; 1\)</span>。</p>
+</dd>
+<dt id="term-SISO">SISO<a class="headerlink" href="#term-SISO" title="Permalink to this term">¶</a></dt><dd><p>单输入单输出系统，通常用状态空间方程描述和分析。另见 <a class="reference internal" href="#term-MIMO"><span class="xref std std-term">MIMO</span></a>。</p>
+</dd>
+<dt id="term-SMO">SMO<a class="headerlink" href="#term-SMO" title="Permalink to this term">¶</a></dt><dd><p>滑模观测器——见 <a class="reference external" href="http://www.microchip.com/wwwAppNotes/AppNotes.aspx?appnote=en536986">AN1078</a> 了解涵盖 SMO 式无传感器估计器的 Microchip 应用笔记。</p>
+</dd>
+<dt id="term-SPM">SPM<a class="headerlink" href="#term-SPM" title="Permalink to this term">¶</a></dt><dd><p>表贴式永磁电机（见 <a class="reference internal" href="#term-rotor-saliency"><span class="xref std std-term">转子凸极性</span></a>）</p>
+</dd>
+<dt id="term-SPMSM">SPMSM<a class="headerlink" href="#term-SPMSM" title="Permalink to this term">¶</a></dt><dd><p>表贴式永磁同步电机（见 <a class="reference internal" href="#term-rotor-saliency"><span class="xref std std-term">转子凸极性</span></a>）</p>
+</dd>
+<dt id="term-ZS-MT">ZS/MT<a class="headerlink" href="#term-ZS-MT" title="Permalink to this term">¶</a></dt><dd><p><a class="reference internal" href="../algorithms/zsmt.zh.html#algorithm-zsmt"><span class="std std-ref">零速/最大转矩</span></a> 估计器</p>
+</dd>
+</dl>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="index.zh.html" title="上一章"><span class="section-number">7. </span>附录</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="error_codes.zh.html" title="下一章"><span class="section-number">7.2. </span>错误代码列表</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="error_codes.zh.html" title="7.2. Error code list">下一页</a> |</li>
+<li class="right">
+<a href="index.zh.html" title="7. Appendix">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">7. </span>附录</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">7.1. </span>术语表</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

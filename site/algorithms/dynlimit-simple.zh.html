@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.6.5.1. 简单动态电流限制 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="dead-time-comp.zh.html" rel="next" title="5.7. Dead-time Compensation"/>
+<link href="current-limit.zh.html" rel="prev" title="5.6. Current limit"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="dead-time-comp.zh.html" title="5.7. Dead-time Compensation">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="current-limit.zh.html" title="5.6. Current limit">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="current-limit.zh.html"><span class="section-number">5.6. </span>电流限制</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.6.5.1. </span>简单动态电流限制</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="simple-dynamic-current-limit">
+<span id="algorithm-dynlim-simple"></span><span id="index-0"></span><h1><span class="section-number">5.6.5.1. </span>简单动态电流限制<a class="headerlink" href="#simple-dynamic-current-limit" title="本标题的永久链接">¶</a></h1>
+<p>此算法近似一个关于电流 <span class="math notranslate nohighlight">\(I_x\)</span>的微分方程，并确定电流限制 <span class="math notranslate nohighlight">\(I_{\lim}\)</span> 为 <span class="math notranslate nohighlight">\(I_x\)</span> 和预定的固定峰值电流 <span class="math notranslate nohighlight">\(I_{\rm peak}\)</span>的最小值。此方程如下：</p>
+<div class="math notranslate nohighlight" id="equation-algorithms-dynlimit-simple-0">
+<span class="eqno">(5.56)<a class="headerlink" href="#equation-algorithms-dynlimit-simple-0" title="本公式的永久链接">¶</a></span>\[\begin{split}\begin{aligned}
+\frac{dI_x}{dt} &amp;= \frac{1}{\tau}\left(I_{\rm horz}-I_x-K_{21}(I_d{}^2+I_q{}^2)\right) \\
+I_{\lim} &amp;= \min(I_x, I_{\rm peak}) \\
+K_{21} &amp;= \frac{I_{\rm horz} - I_{\rm cont}}{I_{\rm cont}{}^2}
+\end{aligned}\end{split}\]</div>
+<p>电流渐近地放松到“地平线”电流 <span class="math notranslate nohighlight">\(I_{\rm horz}\)</span>。示例如 <a class="reference internal" href="#fig-dynlim1-sim"><span class="std std-numref">图 5.92</span></a>所示，其中 <span class="math notranslate nohighlight">\(I_{\rm horz} =\)</span> 60 A, <span class="math notranslate nohighlight">\(I_{\rm peak} =\)</span> 30 A, <span class="math notranslate nohighlight">\(I_{\rm cont} =\)</span> 10 A, <span class="math notranslate nohighlight">\(\tau =\)</span> 6 seconds.</p>
+<p>地平线电流还决定了电流从连续电流电平上升时的旋转率；具体来说，如果电流命令从 <span class="math notranslate nohighlight">\(I_{\rm cont}\)</span> 阶跃变化到零，电流限制的旋转率为 <span class="math notranslate nohighlight">\((I_{\rm horz}-I_{\rm cont})/\tau\)</span>。在 <a class="reference internal" href="#fig-dynlim1-sim"><span class="std std-numref">图 5.92</span></a>中，这发生在 <span class="math notranslate nohighlight">\(t=\)</span> 3 seconds.</p>
+<figure class="align-center" id="id1">
+<span id="fig-dynlim1-sim"></span><img alt="../_images/3551-current-limit-simulation.png" src="../_images/3551-current-limit-simulation.png"/>
+<figcaption>
+<p><span class="caption-number">图 5.92 </span><span class="caption-text">简单动态电流限制的仿真。仅显示 q 轴电流 <span class="math notranslate nohighlight">\(I_q\)</span> ；d 轴电流 <span class="math notranslate nohighlight">\(I_d\)</span> 假定被控制为零或接近零。</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>在此情况下，如果电机电流在足够长的时间内足够低，使电流 <span class="math notranslate nohighlight">\(I_x\)</span> 几乎放松回地平线电流，驱动器可以提供 20 A 电流约 1.3 秒，约 3 秒后降到 10 A 的连续限制。在 30 A 的完整峰值电流下运行会更快用尽暂态容量，持续约 0.4 秒，约 2 秒后降到 10A 的连续限制。</p>
+<p>电机转矩可以相当大，仍允许电流限制回到接近最大值，因为受热限制的组件的发热与电流的平方成正比。即使是连续电流限制的 50%，也只产生连续电流温升的 25%，这允许电机和晶体管冷却。这如 <a class="reference internal" href="#fig-dynlim1-sim"><span class="std std-numref">图 5.92</span></a> 所示，在 <span class="math notranslate nohighlight">\(t=\)</span> 8 秒。（反之，两倍的连续电流限制会产生四倍的功率损耗。）</p>
+<p>注意，由于 <span class="math notranslate nohighlight">\(I_d{}^2 + I_q{}^2\)</span> 累积以减小电流限制，电流方向和旋转方向都不重要； <span class="math notranslate nohighlight">\(I_q\)</span> 的正负值对电流限制的影响相同。</p>
+<section id="choice-of-parameters">
+<h2><span class="section-number">5.6.5.1.1. </span>参数选择<a class="headerlink" href="#choice-of-parameters" title="本标题的永久链接">¶</a></h2>
+<p>此处的参数选择对于每个板会有所不同，应进行验证以确保电机和晶体管保持在其安全工作区。</p>
+<p>除了峰值和连续限制（在 <a class="reference internal" href="current-limit.zh.html#algorithm-dynlimit-limits"><span class="std std-ref">动态电流算法主节</span></a>中说明）外，另外两个参数应根据经验选择：</p>
+<ul class="simple">
+<li><p>时间常数 <span class="math notranslate nohighlight">\(\tau\)</span> 应与实际系统的热动态有某种相似性。选择过小的值会过早降低电流限制，因此如果电机和晶体管未受热很多，则应使用更大的时间常数。同样，如果电机或晶体管在电流限制降低之前已加热到不安全的水平，则时间常数可能过大。</p></li>
+<li><p>地平线电流 <span class="math notranslate nohighlight">\(I_{\rm horz}\)</span> 影响热容余量：更大的值允许电流限制在更长时间内保持较高，并允许电流限制在电机电流降回小值后更快增加。</p></li>
+</ul>
+</section>
+<section id="implementation-notes">
+<h2><span class="section-number">5.6.5.1.2. </span>实现说明<a class="headerlink" href="#implementation-notes" title="本标题的永久链接">¶</a></h2>
+<p>由于热动态相当慢（十分之一秒到几十秒），此算法被分区，其中大部分以相对于电流控制采样率抽取的速率执行。</p>
+<ul class="simple">
+<li><p>在完整采样率（采样时间 <span class="math notranslate nohighlight">\(T_s\)</span>）下，电流的平方幅值 <span class="math notranslate nohighlight">\(I_d{}^2 + I_q{}^2\)</span> 被累加。</p></li>
+<li><p>动态电流限制算法的其余部分以抽取率（周期 = <span class="math notranslate nohighlight">\(nT_s\)</span> ，其中 <span class="math notranslate nohighlight">\(n=128\)</span> 为默认值）运行，更新电流 <span class="math notranslate nohighlight">\(I_x\)</span> 基于累加的平方电流。</p></li>
+</ul>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">5.6.5.1. 简单动态电流限制</a><ul>
+<li><a class="reference internal" href="#choice-of-parameters">5.6.5.1.1. 参数选择</a></li>
+<li><a class="reference internal" href="#implementation-notes">5.6.5.1.2. 实现说明</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="current-limit.zh.html" title="上一章"><span class="section-number">5.6. </span>电流限制</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="dead-time-comp.zh.html" title="下一章"><span class="section-number">5.7. </span>死区补偿</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="dead-time-comp.zh.html" title="5.7. Dead-time Compensation">下一页</a> |</li>
+<li class="right">
+<a href="current-limit.zh.html" title="5.6. Current limit">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="current-limit.zh.html"><span class="section-number">5.6. </span>电流限制</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.6.5.1. </span>简单动态电流限制</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.4.3.3.1. 所有方法共有的实现问题 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../../_static/rendermath.js"></script>
+<script src="../../_static/svgcrop.js"></script>
+<script src="../../_static/mcaf-styling.js"></script>
+<link href="../../genindex.zh.html" rel="index" title="Index"/>
+<link href="../../search.zh.html" rel="search" title="Search"/>
+<link href="align.zh.html" rel="next" title="5.4.3.3.2. Align method"/>
+<link href="../qei.zh.html" rel="prev" title="5.4.3. Quadrature encoder support"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="align.zh.html" title="5.4.3.3.2. Align method">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="../qei.zh.html" title="5.4.3. Quadrature encoder support">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="../estimators.zh.html"><span class="section-number">5.4. </span>位置和速度估计</a> »</li>
+<li class="nav-item nav-item-3"><a accesskey="U" href="../qei.zh.html"><span class="section-number">5.4.3. </span>正交编码器支持</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4.3.3.1. </span>所有方法共有的实现问题</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<span class="target" id="qei-sync-common"></span><section id="implementation-issues-common-to-all-methods">
+<span id="index-0"></span><h1><span class="section-number">5.4.3.3.1. </span>所有方法共有的实现问题<a class="headerlink" href="#implementation-issues-common-to-all-methods" title="本标题的永久链接">¶</a></h1>
+<section id="api-of-qei-sync">
+<h2><span class="section-number">5.4.3.3.1.1. </span>API <code class="docutils literal notranslate"><span class="pre">qei_sync</span></code><a class="headerlink" href="#api-of-qei-sync" title="本标题的永久链接">¶</a></h2>
+<p>每种反电动势同步方法都被设计为满足以下 <a class="reference internal" href="../../appendix/glossary.zh.html#term-API"><span class="xref std std-term">API</span></a> （适用于所有方法）：</p>
+<ul>
+<li><p>生成的代码位于 <code class="docutils literal notranslate"><span class="pre">qei_sync</span></code> 模块</p></li>
+<li><p>依赖关系： <code class="docutils literal notranslate"><span class="pre">qei_sync</span></code> 模块</p>
+<ul class="simple">
+<li><p>它可能依赖于 <code class="docutils literal notranslate"><span class="pre">startup</span></code> 和 <code class="docutils literal notranslate"><span class="pre">qei</span></code> 模块</p></li>
+<li><p>不依赖于 <code class="docutils literal notranslate"><span class="pre">system_state</span></code> 或 <code class="docutils literal notranslate"><span class="pre">commutation</span></code> 模块</p></li>
+<li><p>它不直接访问任何 HAL 函数</p></li>
+</ul>
+</li>
+<li><p>状态数据位于 <code class="docutils literal notranslate"><span class="pre">qei_sync</span></code> 模块</p>
+<ul class="simple">
+<li><p>中 <code class="docutils literal notranslate"><span class="pre">motor.estimator.qei.sync</span></code></p></li>
+<li><p>类型为 <code class="docutils literal notranslate"><span class="pre">MCAF_QEI_SYNC_T</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">motor.estimator.qei.sync.complete</span></code> 是一个标志，表示反电动势同步是否完成。要重新运行同步，将此标志设置为 <code class="docutils literal notranslate"><span class="pre">false</span></code> （使用实时诊断软件）。</p></li>
+</ul>
+</li>
+<li><p>方法</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorQeiSyncInit()</span></code> — 初始化函数，运行一次</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorQeiSyncStep()</span></code> — 更新函数，在控制 ISR 中运行，返回动作标志以在某些状态中影响启动行为。这些动作标志仅在 <a class="reference internal" href="../startup.zh.html#startup-status-codes"><span class="std std-ref">启动状态中且状态码为</span></a> 时有效 <code class="docutils literal notranslate"><span class="pre">MSST_ALIGN</span></code> 或 <code class="docutils literal notranslate"><span class="pre">MSST_SPIN</span></code>。返回值可以包含以下任何位标志：</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MESACT_DELAY</span></code> — 启动状态机将被延迟，并保持在当前状态</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MESACT_SET_CURRENT</span> <span class="pre">``</span> <span class="pre">---</span> <span class="pre">``MCAF_EstimatorQeiSyncOverrideCurrent()</span></code> 将被调用</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MESACT_SET_ANGLE</span></code> — <code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorQeiSyncOverrideAngle()</span></code> 将被调用</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MESACT_SET_FREQUENCY</span></code> — <code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorQeiSyncOverrideFrequency()</span></code> 将被调用</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorQeiSyncIsComplete()</span></code> — 返回同步是否完成</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorQeiSyncGetCommutationOffset()</span></code> — 返回由 <code class="docutils literal notranslate"><span class="pre">qei_sync</span></code> 模块计算的换相偏移。此结果仅在同步完成时需要有效（否则此函数的返回值应被视为无效）</p></li>
+</ul>
+</li>
+<li><p>覆写处理函数</p>
+<p>下面列出的处理函数是在 <a class="reference internal" href="../startup.zh.html#startup-sequence"><span class="std std-ref">启动序列</span></a>的适当阶段被调用的特殊方法。调用者提供指向特定数据的指针。这通过消除 <code class="docutils literal notranslate"><span class="pre">startup</span></code> 和 <code class="docutils literal notranslate"><span class="pre">qei_sync</span></code> 模块之间的耦合来促进模块化；模块间通信在 <code class="docutils literal notranslate"><span class="pre">commutation</span></code> 模块中进行。</p>
+<p>每个处理函数可以选择是否更改数据，通常声明为 <code class="docutils literal notranslate"><span class="pre">inline</span> <span class="pre">static</span></code> 以便空的处理函数会被优化掉。</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p>方法</p></td>
+<td><p>适用状态</p></td>
+<td><p>行为</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorQeiSyncOverrideCurrent()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MSST_SPIN</span></code></p></td>
+<td><p>可设置电流</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorQeiSyncOverrideAngle()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MSST_ALIGN</span></code></p></td>
+<td><p>可设置施加的电气角度</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorQeiSyncOverrideFrequency()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MSST_ALIGN</span></code></p></td>
+<td><p>可设置施加的电气频率</p></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</section>
+<section id="important-data-elements">
+<h2><span class="section-number">5.4.3.3.1.2. </span>重要数据元素<a class="headerlink" href="#important-data-elements" title="本标题的永久链接">¶</a></h2>
+<p>无论使用哪种 <code class="docutils literal notranslate"><span class="pre">qei_sync</span></code> 方法，以下数据成员均可用：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">motor.estimator.qei.position.commutationOffset</span></code> — 控制换相偏移，即在编码器的原始电气角度用于换相之前加上的角度。可以使用实时诊断工具在电机运行时修改换相偏移。任何此类更改应缓慢进行：建议的最大步进为 11 电角度（2000 脈冲）。大于此的步进变化可能导致 FOC 中的控制环失去同步。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">motor.estimator.qei.position.commutationOffsetFromIndex</span></code> — 这是在反电动势同步结束时提供的一个便捷计算，它测量在一个电气周期内相对于索引位置的换相偏移。当使用带有索引脉冲编码器的电机时， <code class="docutils literal notranslate"><span class="pre">commutationOffsetFromIndex</span></code> 的值将相当一致，与 <a class="reference internal" href="../../appendix/glossary.zh.html#term-QEI"><span class="xref std std-term">QEI</span></a> 外设启用时电机的起始位置无关。</p></li>
+</ul>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">5.4.3.3.1. 所有方法共有的实现问题</a><ul>
+<li><a class="reference internal" href="#api-of-qei-sync">5.4.3.3.1.1. API <code class="docutils literal notranslate"><span class="pre">qei_sync</span></code></a></li>
+<li><a class="reference internal" href="#important-data-elements">5.4.3.3.1.2. 重要数据元素</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="../qei.zh.html" title="上一章"><span class="section-number">5.4.3. </span>正交编码器支持</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="align.zh.html" title="下一章"><span class="section-number">5.4.3.3.2. </span>对齐方法</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="align.zh.html" title="5.4.3.3.2. Align method">下一页</a> |</li>
+<li class="right">
+<a href="../qei.zh.html" title="5.4.3. Quadrature encoder support">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="../estimators.zh.html"><span class="section-number">5.4. </span>位置和速度估计</a> »</li>
+<li class="nav-item nav-item-3"><a href="../qei.zh.html"><span class="section-number">5.4.3. </span>正交编码器支持</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4.3.3.1. </span>所有方法共有的实现问题</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../../_static/lang-switch.js"></script>
+</body>
+</html>

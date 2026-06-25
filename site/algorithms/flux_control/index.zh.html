@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.5. 磁通控制 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../../_static/rendermath.js"></script>
+<script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/svgcrop.js"></script>
+<script src="../../_static/mcaf-styling.js"></script>
+<link href="../../genindex.zh.html" rel="index" title="Index"/>
+<link href="../../search.zh.html" rel="search" title="Search"/>
+<link href="flux_weakening.zh.html" rel="next" title="5.5.1. Flux weakening"/>
+<link href="../smo.zh.html" rel="prev" title="5.4.6. Sliding Mode Observer (SMO)"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="flux_weakening.zh.html" title="5.5.1. Flux weakening">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="../smo.zh.html" title="5.4.6. Sliding Mode Observer (SMO)">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.5. </span>磁通控制</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="flux-control">
+<span id="algorithm-flux-control"></span><span id="index-0"></span><h1><span class="section-number">5.5. </span>磁通控制<a class="headerlink" href="#flux-control" title="本标题的永久链接">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="flux_weakening.zh.html">5.5.1. 弱磁</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="flux_weakening.zh.html#motivation">5.5.1.1. 动机</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flux_weakening.zh.html#effect-on-torque-capability">5.5.1.2. 对转矩能力的影响</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flux_weakening.zh.html#flux-weakening-algorithms">5.5.1.3. 弱磁算法</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mtpa.zh.html">5.5.2. 最大转矩/电流比（MTPA）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mtpa.zh.html#overview">5.5.2.1. 概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mtpa.zh.html#flow-chart-and-description">5.5.2.2. 流程图与说明</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mtpa.zh.html#implementation-notes">5.5.2.3. 实现说明</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="flux_weakening_mtpa_integration.zh.html">5.5.3. d 轴电流参考生成</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="flux_weakening_mtpa_integration.zh.html#overview">5.5.3.1. 概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flux_weakening_mtpa_integration.zh.html#flow-chart-and-description">5.5.3.2. 流程图与说明</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flux_weakening_mtpa_integration.zh.html#calculation-of-q-axis-current-limit">5.5.3.3. q 轴电流限值计算</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="overview">
+<h2><span class="section-number">5.5.4. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
+<p>MCAF 中的磁通控制模块负责为 <a class="reference internal" href="../../appendix/glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a> 的 d 轴定子电流生成合适的参考值，该参考值随后作为 d 轴电流控制器的输入。在同步 d 轴注入电流分量的需求可能来自以下所述的多种要求。</p>
+<ul class="simple">
+<li><p>在 <a class="reference internal" href="../../appendix/glossary.zh.html#term-PMSM"><span class="xref std std-term">PMSM</span></a>中，定子电压需要随转子速度增加而增大。然而逆变器的母线电压对定子电压构成了限制。不支持提高母线电压的其他重要考量包括用户安全和电机的安全工作区。许多应用要求电机在高于其额定值的速度下运行。为实现这一点同时限制定子电压，通过向电机注入负的 d 轴定子电流来削弱电机的气隙磁通。这种操作称为弱磁（FW）。无论凸极还是非凸极转子电机都需要弱磁。磁通控制中的 FW 模块在特定速度和负载下计算弱磁运行所需的合适 d 轴电流参考（<span class="math notranslate nohighlight">\(I_{d\_fw}\)</span>）。</p></li>
+<li><p>磁通控制模块的第二个需求专门源于凸极转子电机。对于凸极电机，通过向电机注入负的 d 轴电流，可以使磁阻转矩（由电机的凸极性产生）协助永磁转矩。这确保电机以最大效率运行，即产生最大转矩/电流比（MTPA）。MTPA 算法为特定工作点计算 MTPA 运行所需的合适参考（<span class="math notranslate nohighlight">\(I_{d\_mtpa}\)</span>）。</p></li>
+</ul>
+</section>
+<section id="flow-chart-and-details">
+<h2><span class="section-number">5.5.5. </span>流程图与细节<a class="headerlink" href="#flow-chart-and-details" title="本标题的永久链接">¶</a></h2>
+<p>磁通控制模块包含弱磁和 MTPA 的实现。根据需求，两种算法可以独立启用或禁用。弱磁模块计算并返回 d 轴电流参考 <span class="math notranslate nohighlight">\(I_{d\_fw}\)</span>，而 MTPA 模块计算并返回 d 轴电流参考 <span class="math notranslate nohighlight">\(I_{d\_mtpa}\)</span>。当禁用时，两种算法各自返回的 d 轴电流参考值均为零。 <span class="math notranslate nohighlight">\(I_{d\_ref}\)</span> 生成模块随后在 <span class="math notranslate nohighlight">\(I_{d\_fw}\)</span> 和 <span class="math notranslate nohighlight">\(I_{d\_mtpa}\)</span> 之间选择合适的值，并生成 d 轴电流参考 <span class="math notranslate nohighlight">\(I_{d\_ref}\)</span> 作为电流控制器的输入。 <a class="reference internal" href="#fig-fw-mtpa-integration"><span class="std std-numref">图 5.90</span></a> 展示了整体磁通控制计算的流程图。</p>
+<figure class="align-center" id="id1">
+<span id="fig-fw-mtpa-integration"></span><a class="reference internal image-reference" href="../../_images/fw_mtpa_integration.png"><img alt="../../_images/fw_mtpa_integration.png" src="../../_images/fw_mtpa_integration.png" style="width: 500px;"/></a>
+<figcaption>
+<p><span class="caption-number">图 5.90 </span><span class="caption-text">磁通控制算法概述</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<ul class="simple">
+<li><p>根据需求，可通过将磁通控制设置为基于方程（Equation-based）来启用。如果将磁通控制设置为 None（无）来禁用，则 <span class="math notranslate nohighlight">\(I_{d\_ref}\)</span> 被置为零。启用后，MTPA 和 FW 算法中的任意一个或两个都可以被启用。</p></li>
+<li><p>弱磁和 MTPA 模块分别计算 <span class="math notranslate nohighlight">\(I_{d\_fw}\)</span> 和 <span class="math notranslate nohighlight">\(I_{d\_mtpa}\)</span> 。如果这些模块被禁用，相应的计算值被置为零。</p></li>
+<li><p>如果应用要求凸极电机在额定速度以上运行，则应同时启用 MTPA 和 FW。此时，根据运行区域，在两个模块计算出的 d 轴电流参考之间做出正确选择，并将该参考作为 d 轴电流控制器的输入。详见 <a class="reference internal" href="flux_weakening_mtpa_integration.zh.html#algorithm-fw-and-mtpa-integration"><span class="std std-ref">d 轴电流参考生成</span></a> 以获取更多细节。</p></li>
+</ul>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">5.5. 磁通控制</a><ul>
+<li><a class="reference internal" href="#overview">5.5.4. 概述</a></li>
+<li><a class="reference internal" href="#flow-chart-and-details">5.5.5. 流程图与细节</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="../smo.zh.html" title="上一章"><span class="section-number">5.4.6. </span>滑模观测器（SMO）</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="flux_weakening.zh.html" title="下一章"><span class="section-number">5.5.1. </span>弱磁</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="flux_weakening.zh.html" title="5.5.1. Flux weakening">下一页</a> |</li>
+<li class="right">
+<a href="../smo.zh.html" title="5.4.6. Sliding Mode Observer (SMO)">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.5. </span>磁通控制</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../../_static/lang-switch.js"></script>
+</body>
+</html>

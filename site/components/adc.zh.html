@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>4.2. ADC 校准与补偿 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="statemach.zh.html" rel="next" title="4.3. State Machine"/>
+<link href="main.zh.html" rel="prev" title="4.1. Main Application"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="statemach.zh.html" title="4.3. State Machine">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="main.zh.html" title="4.1. Main Application">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">4. </span>组件</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">4.2. </span>ADC 校准与补偿</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="adc-calibration-and-compensation">
+<span id="component-adc-calibration"></span><span id="component-adc"></span><h1><span class="section-number">4.2. </span>ADC 校准与补偿<a class="headerlink" href="#adc-calibration-and-compensation" title="本标题的永久链接">¶</a></h1>
+<p>模拟测量（如相电流）中的增益和偏移误差会导致多种不良影响，特别是转矩脉动、静态功耗增加以及功率半导体能力的降额。因此，MCAF 支持对以下值进行 ADC 校准和补偿。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>补偿目标</p></th>
+<th class="head"><p>校准类型</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>相电流偏移</p></td>
+<td><p>运行时，启动时</p></td>
+<td><p>启动时会测量并滤波相电流，此时 <a class="reference internal" href="../appendix/glossary.zh.html#term-PWM"><span class="xref std std-term">PWM</span></a> 输出处于安全状态，且电流已知为零。</p></td>
+</tr>
+<tr class="row-odd"><td><p>相电流增益</p></td>
+<td><p>目前未校准，预留给 motorBench<sup>®</sup> 开发套件中的自整定功能或其他运行时方法使用</p></td>
+<td><p>包括对相间耦合的补偿。</p></td>
+</tr>
+<tr class="row-even"><td><p>ADC 增益误差（仅限 dsPIC33AK）</p></td>
+<td><p>运行时，在 PWM 禁用时的 RESET 状态下</p></td>
+<td><p>MCAF 测量每个 ADC 核上的电阻分压器电压，并计算增益校正因子。</p></td>
+</tr>
+</tbody>
+</table>
+<section id="phase-current-offset-compensation">
+<span id="component-adc-phase-current-calibration"></span><h2><span class="section-number">4.2.1. </span>相电流偏移补偿<a class="headerlink" href="#phase-current-offset-compensation" title="本标题的永久链接">¶</a></h2>
+<p> <code class="docutils literal notranslate"><span class="pre">currentCalibration</span></code> 字段属于 <code class="docutils literal notranslate"><span class="pre">MCAF_MOTOR_DATA</span></code> ，包含六个增益项：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Kaa</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Kab</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Kba</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Kbb</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Kcc</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Kidc</span></code></p></li>
+</ul>
+<p> <code class="docutils literal notranslate"><span class="pre">Kaa</span></code>， <code class="docutils literal notranslate"><span class="pre">Kab</span></code>， <code class="docutils literal notranslate"><span class="pre">Kba</span></code> 和 <code class="docutils literal notranslate"><span class="pre">Kbb</span></code> 项表示一个 2x2 增益矩阵：</p>
+<div class="math notranslate nohighlight" id="equation-components-adc-0">
+<span class="eqno">(4.1)<a class="headerlink" href="#equation-components-adc-0" title="本公式的永久链接">¶</a></span>\[\begin{bmatrix}
+  I_a \cr
+  I_b
+\end{bmatrix}
+ =
+\begin{bmatrix}
+  K_{aa} &amp; K_{ab} \cr
+  K_{ba} &amp; K_{bb}
+\end{bmatrix}
+\begin{bmatrix}
+  I_{a0} - I_{a,\text{ofs}} \cr
+  I_{b0} - I_{b,\text{ofs}}
+\end{bmatrix}\]</div>
+<p>或（更简洁地）</p>
+<div class="math notranslate nohighlight" id="equation-components-adc-1">
+<span class="eqno">(4.2)<a class="headerlink" href="#equation-components-adc-1" title="本公式的永久链接">¶</a></span>\[\mathbf{I}_{ab} \,=\, \mathbf{K}_\text{comp}(\mathbf{I}_{ab0} \,-\, \mathbf{I}_{ab,\text{ofs}})\]</div>
+<p>这些增益和偏移用于补偿器件间的差异，并纠正任何电路板布局问题，例如 <a class="reference internal" href="../appendix/mclv2.zh.html#appendix-mclv2"><span class="std std-ref">MCLV-2 采样电阻</span></a>。</p>
+<p>如果 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-triple-channel"><span class="std std-ref">三通道电流测量</span></a> 被使用，则 2x2 增益矩阵将增加 <code class="docutils literal notranslate"><span class="pre">Kcc</span></code> 项，扩展为 3x3 增益矩阵。3x3 方程变为</p>
+<div class="math notranslate nohighlight" id="equation-components-adc-2">
+<span class="eqno">(4.3)<a class="headerlink" href="#equation-components-adc-2" title="本公式的永久链接">¶</a></span>\[\begin{bmatrix}
+  I_a \cr
+  I_b \cr
+  I_c
+\end{bmatrix}
+ =
+\begin{bmatrix}
+  K_{aa} &amp; K_{ab} &amp; 0 \cr
+  K_{ba} &amp; K_{bb} &amp; 0 \cr
+  0 &amp; 0 &amp; K_{cc}
+\end{bmatrix}
+\begin{bmatrix}
+  I_{a0} - I_{a,\text{ofs}} \cr
+  I_{b0} - I_{b,\text{ofs}} \cr
+  I_{c0} - I_{c,\text{ofs}}
+\end{bmatrix}\]</div>
+<p>或（更简洁地）</p>
+<div class="math notranslate nohighlight" id="equation-components-adc-3">
+<span class="eqno">(4.4)<a class="headerlink" href="#equation-components-adc-3" title="本公式的永久链接">¶</a></span>\[\mathbf{I}_{abc} \,=\, \mathbf{K}_\text{comp}(\mathbf{I}_{abc0} \,-\, \mathbf{I}_{abc,\text{ofs}})\]</div>
+<p>如果 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-single-channel"><span class="std std-ref">单通道电流测量</span></a> 被使用，则以下方程用于直流母线电流测量补偿：</p>
+<div class="math notranslate nohighlight" id="equation-components-adc-4">
+<span class="eqno">(4.5)<a class="headerlink" href="#equation-components-adc-4" title="本公式的永久链接">¶</a></span>\[I_{\text{dc}} = K_{\text{idc}}(I_{\text{dc}0} - I_{\text{dc,ofs}})\]</div>
+</section>
+<section id="adc-gain-error-compensation">
+<span id="component-adc-gain-error-compensation"></span><h2><span class="section-number">4.2.2. </span>ADC 增益误差补偿<a class="headerlink" href="#adc-gain-error-compensation" title="本标题的永久链接">¶</a></h2>
+<p>高速 <a class="reference internal" href="../appendix/glossary.zh.html#term-ADC"><span class="xref std std-term">ADC</span></a> 在 dsPIC33A 器件上需要手动增益校准以获得最佳性能。（更多信息请参见 <a class="reference external" href="https://www.microchip.com/en-us/application-notes/AN5971">AN5971: Enhancing ADC Performance on dsPIC33AK Devices</a>）对于 dsPIC33AK 器件的 ADC 增益误差校准， <span class="math notranslate nohighlight">\(V_{\text{nominal}}\)</span>（定义如下）是内部 <span class="math notranslate nohighlight">\(\frac{15}{16}V_\text{dd}\)</span> 电压基准。这是一个电阻分压器，用于测量接近供电轨但在 ADC 输入范围内的比例电压。</p>
+<p>ADC 增益误差（应用于 MCAF 使用的每个 ADC 核）被假定为线性误差，可通过施加增益 <span class="math notranslate nohighlight">\(G\)</span> 到原始 ADC 电压读数 <span class="math notranslate nohighlight">\(V_{\text{adc}}\)</span>，以获得真实的校正值 <span class="math notranslate nohighlight">\(V_{\text{true}}\)</span>，从而得到方程</p>
+<div class="math notranslate nohighlight" id="equation-components-adc-5">
+<span class="eqno">(4.6)<a class="headerlink" href="#equation-components-adc-5" title="本公式的永久链接">¶</a></span>\[V_{\text{true}} = G \cdot V_{\text{adc}}\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(G\)</span> 通过评估已知电压 <span class="math notranslate nohighlight">\(V_{\text{nominal}}\)</span>并获取该已知值的相应 ADC 读数 <span class="math notranslate nohighlight">\(V_{\text{adc}}\)</span>来确定，使得</p>
+<div class="math notranslate nohighlight" id="equation-components-adc-6">
+<span class="eqno">(4.7)<a class="headerlink" href="#equation-components-adc-6" title="本公式的永久链接">¶</a></span>\[G = \frac{V_{\text{nominal}}}{V_{\text{adc}}}\]</div>
+<p>MCAF 配置中使用的每个 ADC 核在 RESTART 电机状态期间独立测量，该状态在 RESTART 状态期间发生，如 <a class="reference internal" href="statemach.zh.html#component-statemachine-states"><span class="std std-ref">状态机</span></a>中所述。这些 ADC 核增益因子 <span class="math notranslate nohighlight">\(G_{\text{channel,core}}\)</span>随后被分配给增益因子，用于缩放电流补偿中使用的增益项—— <span class="math notranslate nohighlight">\(K_{\text{aa}}\)</span>， <span class="math notranslate nohighlight">\(K_{\text{bb}}\)</span>， <span class="math notranslate nohighlight">\(K_{\text{cc}}\)</span>， <span class="math notranslate nohighlight">\(K_{\text{idc}}\)</span> ——具体取决于 MCAF 中配置了哪些通道用于电流测量，以及每个通道使用哪个 ADC 核</p>
+<div class="math notranslate nohighlight" id="equation-components-adc-7">
+<span class="eqno">(4.8)<a class="headerlink" href="#equation-components-adc-7" title="本公式的永久链接">¶</a></span>\[K'_x = K_x G_{\text{x,core}}\]</div>
+<p>这些 <span class="math notranslate nohighlight">\(K'_{\text{aa}}\)</span>， <span class="math notranslate nohighlight">\(K'_{\text{bb}}\)</span>， <span class="math notranslate nohighlight">\(K'_{\text{cc}}\)</span> 和 <span class="math notranslate nohighlight">\(K'_{\text{idc}}\)</span> 项用于替代现有的 <a class="reference internal" href="#component-adc-phase-current-calibration"><span class="std std-ref">相电流补偿项</span></a>  — <span class="math notranslate nohighlight">\(K_{\text{aa}}\)</span>， <span class="math notranslate nohighlight">\(K_{\text{bb}}\)</span>， <span class="math notranslate nohighlight">\(K_{\text{cc}}\)</span> 和 <span class="math notranslate nohighlight">\(K_{\text{idc}}\)</span>。</p>
+</section>
+<section id="implementation-notes">
+<h2><span class="section-number">4.2.3. </span>实现说明<a class="headerlink" href="#implementation-notes" title="本标题的永久链接">¶</a></h2>
+<section id="mcaf-r1-r6">
+<h3><span class="section-number">4.2.3.1. </span>MCAF R1 – R6<a class="headerlink" href="#mcaf-r1-r6" title="本标题的永久链接">¶</a></h3>
+<p>在 MCAF R1 和 R2 中，校准和补偿功能的某些部分位于 <code class="docutils literal notranslate"><span class="pre">meas_curr</span></code> 模块，其他部分位于 <code class="docutils literal notranslate"><span class="pre">foc</span></code> 模块。在 MCAF R3 – R6 中，所有 <a class="reference internal" href="../appendix/glossary.zh.html#term-ADC"><span class="xref std std-term">ADC</span></a> 校准和补偿功能位于 <code class="docutils literal notranslate"><span class="pre">adc_compensation</span></code> 模块。</p>
+</section>
+<section id="mcaf-r7">
+<h3><span class="section-number">4.2.3.2. </span>MCAF R7<a class="headerlink" href="#mcaf-r7" title="本标题的永久链接">¶</a></h3>
+<p>从 MCAF R7 开始，校准和补偿功能位于 <code class="docutils literal notranslate"><span class="pre">adc_compensation</span></code> 和 <code class="docutils literal notranslate"><span class="pre">current_measure</span></code> 模块。</p>
+</section>
+<section id="mcaf-r9">
+<h3><span class="section-number">4.2.3.3. </span>MCAF R9<a class="headerlink" href="#mcaf-r9" title="本标题的永久链接">¶</a></h3>
+<p>在 MCAF R9 中， <a class="reference internal" href="../appendix/glossary.zh.html#term-ADC"><span class="xref std std-term">ADC</span></a> 增益误差补偿功能已添加到 <code class="docutils literal notranslate"><span class="pre">adc_compensation</span></code> 和 <code class="docutils literal notranslate"><span class="pre">current_measure</span></code> 模块。</p>
+</section>
+<section id="modules">
+<h3><span class="section-number">4.2.3.4. </span>模块<a class="headerlink" href="#modules" title="本标题的永久链接">¶</a></h3>
+<span id="index-0"></span><table class="components-table docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>模块</p></th>
+<th class="head"><p>文件</p></th>
+<th class="head"><p>描述</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="longcolumn-1"><code class="docutils literal notranslate"><span class="pre">adc_compensation</span></code></td>
+<td class="longcolumn-3"><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">adc_compensation.c</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">adc_compensation.h</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">adc_compensation_types.h</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">parameters/adc_params.h</span></code></div>
+</div>
+</td>
+<td><p>ADC 补偿</p></td>
+<td><p>在 R7 之前，包含电流偏移校准，该功能已移至 <code class="docutils literal notranslate"><span class="pre">current_measure</span></code> 模块。</p></td>
+</tr>
+<tr class="row-odd"><td class="longcolumn-1"><code class="docutils literal notranslate"><span class="pre">current_measure</span></code></td>
+<td class="longcolumn-3"><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">current_measure.c</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">current_measure.h</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">current_measure_types.h</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">parameters/current_measure_params.h</span></code></div>
+</div>
+</td>
+<td><p><a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-measure"><span class="std std-ref">电流测量</span></a></p></td>
+<td><p>在 R7 中引入。包含处理 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-single-channel"><span class="std std-ref">单通道</span></a> （单分流电阻）、 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-dual-channel"><span class="std std-ref">双通道</span></a> 和 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-triple-channel"><span class="std std-ref">三通道</span></a> 电流测量的逻辑，视情况而定。</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">4.2. ADC 校准与补偿</a><ul>
+<li><a class="reference internal" href="#phase-current-offset-compensation">4.2.1. 相电流偏移补偿</a></li>
+<li><a class="reference internal" href="#adc-gain-error-compensation">4.2.2. ADC 增益误差补偿</a></li>
+<li><a class="reference internal" href="#implementation-notes">4.2.3. 实现说明</a><ul>
+<li><a class="reference internal" href="#mcaf-r1-r6">4.2.3.1. MCAF R1 – R6</a></li>
+<li><a class="reference internal" href="#mcaf-r7">4.2.3.2. MCAF R7</a></li>
+<li><a class="reference internal" href="#mcaf-r9">4.2.3.3. MCAF R9</a></li>
+<li><a class="reference internal" href="#modules">4.2.3.4. 模块</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="main.zh.html" title="上一章"><span class="section-number">4.1. </span>主应用程序</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="statemach.zh.html" title="下一章"><span class="section-number">4.3. </span>状态机</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="statemach.zh.html" title="4.3. State Machine">下一页</a> |</li>
+<li class="right">
+<a href="main.zh.html" title="4.1. Main Application">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">4. </span>组件</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">4.2. </span>ADC 校准与补偿</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

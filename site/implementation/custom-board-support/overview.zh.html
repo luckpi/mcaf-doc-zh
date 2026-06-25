@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>6.6.1. motorBench Development Suite 中的板卡支持概述 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../../_static/rendermath.js"></script>
+<script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/svgcrop.js"></script>
+<script src="../../_static/mcaf-styling.js"></script>
+<link href="../../genindex.zh.html" rel="index" title="Index"/>
+<link href="../../search.zh.html" rel="search" title="Search"/>
+<link href="configuration.zh.html" rel="next" title="6.6.5. Creating a custom board configuration"/>
+<link href="index.zh.html" rel="prev" title="6.6. Custom Board Support"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="configuration.zh.html" title="6.6.5. Creating a custom board configuration">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="index.zh.html" title="6.6. Custom Board Support">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.zh.html"><span class="section-number">6.6. </span>定制板卡支持</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.6.1. </span>motorBench 中的板卡支持概述<sup>®</sup> Development Suite</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="overview-of-board-support-in-mb">
+<span id="custom-board-overview"></span><h1><span class="section-number">6.6.1. </span>motorBench 中的板卡支持概述<sup>®</sup> Development Suite<a class="headerlink" href="#overview-of-board-support-in-mb" title="本标题的永久链接">¶</a></h1>
+<p>MCAF 自 MCAF R8 起支持定制板卡。用户现在可以配置 motorBench<sup>®</sup> Development Suite，以适配具有各种功能的广泛电机控制板卡。要配置定制板卡，用户可以以板卡定义文件的形式定义板卡配置。然后，motorBench 可以自动配置 MCC 外设，并根据板卡配置和 motorBench 的 Configure（配置）、Tuning（整定）和 Customize（定制）页面中设置的其他参数生成代码。</p>
+<p>详见 <a class="reference external" href="https://github.com/microchip-pic-avr-solutions/motorbench-release-collateral">motorBench 用户指南</a> 以获取更多信息。</p>
+</section>
+<section id="scope-of-hardware-support">
+<span id="index-0"></span><h1><span class="section-number">6.6.2. </span>硬件支持范围<a class="headerlink" href="#scope-of-hardware-support" title="本标题的永久链接">¶</a></h1>
+<p><a class="reference internal" href="#fig-hardware-support-scope"><span class="std std-numref">图 6.7</span></a> 展示了电机驱动硬件设计中属于 MCAF 板卡支持功能范围的典型组件。</p>
+<figure class="align-center" id="id5">
+<span id="fig-hardware-support-scope"></span><a class="reference internal image-reference" href="../../_images/hw-blockdiag.svg"><img alt="../../_images/hw-blockdiag.svg" src="../../_images/hw-blockdiag.svg" width="1000px"/></a>
+<figcaption>
+<p><span class="caption-number">图 6.7 </span><span class="caption-text">MCAF 支持的硬件组件</span><a class="headerlink" href="#id5" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>上图中的电机端子以 A、B、C 表示。MCAF 固件反映了这一命名选择。某些驱动设计或电机可能使用 U、V、W 命名端子；在这种情况下，请分别用 A、B、C 替代 U、V、W。</p>
+</div>
+<section id="board-configuration-features">
+<span id="custom-board-configuration-features"></span><h2><span class="section-number">6.6.2.1. </span>板卡配置功能<a class="headerlink" href="#board-configuration-features" title="本标题的永久链接">¶</a></h2>
+<p>下表详列了可为定制板卡配置的功能。</p>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>请注意， <a class="reference internal" href="../../algorithms/foc/current_measure.zh.html#algorithm-current-measure-channels"><span class="std std-ref">三种电流测量方法</span></a> （单通道、双通道或三通道）中至少需要一种，板卡才能与 motorBench 兼容。</p>
+</div>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>类别</p></th>
+<th class="head"><p>支持的板卡功能</p></th>
+<th class="head"><p>是否必需</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td rowspan="2"><p>器件</p></td>
+<td><p>dsPIC<sup>®</sup> 数字信号控制器</p></td>
+<td class="centered vcentered"><p><img alt="yes" class="no-scaled-link" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></p></td>
+<td><p>支持以下器件系列：</p>
+<ul class="simple">
+<li><p>dsPIC33CK</p></li>
+<li><p>dsPIC33CDV、dsPIC33CDVC 和 dsPIC33CDVL</p></li>
+<li><p>dsPIC33E（不支持定制板卡功能，外设必须在 MCC 中手动配置）</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>MCP802x 栅极驱动器</p></td>
+<td></td>
+<td><p>MCC 库支持的 MCP8021/MCP8022/MCP8027</p></td>
+</tr>
+<tr class="row-even"><td rowspan="10"><p>模拟</p></td>
+<td><p>母线电压测量</p></td>
+<td class="centered vcentered"><p><img alt="yes" class="no-scaled-link" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></p></td>
+<td><p>MCAF 母线电压补偿所需</p></td>
+</tr>
+<tr class="row-odd"><td><p>相电流——两相</p></td>
+<td></td>
+<td rowspan="3"><p>双通道和三通道测量需要 A 相和 B 相（三通道还需要 C 相）。</p>
+<p>单通道测量需要母线电流测量。</p>
+</td>
+</tr>
+<tr class="row-even"><td><p>相电流——三相</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>母线电流</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>相电压——三相</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>用于电流测量的运放</p></td>
+<td></td>
+<td><p>dsPIC 内部运放，或外部/分立器件</p></td>
+</tr>
+<tr class="row-even"><td><p>电位器</p></td>
+<td></td>
+<td><p>MCAF 示例应用用于控制电机速度</p></td>
+</tr>
+<tr class="row-odd"><td><p>逆变桥温度传感器</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>绝对电压基准</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>定制模拟通道</p></td>
+<td></td>
+<td><p>这些通道将在每个 MCAF ADC 中断周期中排队进行顺序采样。</p></td>
+</tr>
+<tr class="row-even"><td rowspan="10"><p>数字</p></td>
+<td><p>PWM 故障</p></td>
+<td></td>
+<td><p>例如过流故障。可设置为 <code class="docutils literal notranslate"><span class="pre">none</span></code> （若无）。</p></td>
+</tr>
+<tr class="row-odd"><td><p>UART</p></td>
+<td></td>
+<td><p>实时诊断内核支持所需。建议使用高波特率 UART 支持电路（至少 115.2K 波特，推荐 921.6K 或更高）。</p></td>
+</tr>
+<tr class="row-even"><td><p>编程器/调试器</p></td>
+<td class="centered vcentered"><p><img alt="yes" class="no-scaled-link" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></p></td>
+<td><p>需指定编程引脚对（PGD/PGCx）</p></td>
+</tr>
+<tr class="row-odd"><td><p>振荡器</p></td>
+<td class="centered vcentered"><p><img alt="yes" class="no-scaled-link" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></p></td>
+<td><p>内部 FRC/外部时钟/晶振</p></td>
+</tr>
+<tr class="row-even"><td><p>内部比较器</p></td>
+<td></td>
+<td><p>本版 motorBench 仅支持一个实例</p></td>
+</tr>
+<tr class="row-odd"><td><p>按钮</p></td>
+<td></td>
+<td><p>MCAF 最多支持两个按钮。应用可使用定制 GPIO 定义额外按钮。GPIO 名称 <code class="docutils literal notranslate"><span class="pre">MCAF_BUTTON1</span></code> 和 <code class="docutils literal notranslate"><span class="pre">MCAF_BUTTON2</span></code> 为 MCAF 按钮保留。</p></td>
+</tr>
+<tr class="row-even"><td><p>LED</p></td>
+<td></td>
+<td><p>MCAF 最多支持两个 LED。应用可使用定制 GPIO 定义额外 LED。GPIO 名称 <code class="docutils literal notranslate"><span class="pre">MCAF_LED1</span></code> 和 <code class="docutils literal notranslate"><span class="pre">MCAF_LED2</span></code> 为 MCAF LED 保留。</p></td>
+</tr>
+<tr class="row-odd"><td><p>测试点</p></td>
+<td></td>
+<td><p>MCAF 支持一个测试点。探测该测试点会显示一个 PWM 开关频率的脉冲，表示 MCAF ADC ISR 正在执行的时间间隔。GPIO 名称 <code class="docutils literal notranslate"><span class="pre">MCAF_TESTPOINT1</span></code> 为 MCAF 测试点保留。</p></td>
+</tr>
+<tr class="row-even"><td><p>QEI</p></td>
+<td></td>
+<td><p>本版 motorBench 用于 MCAF 时仅支持一个实例。</p></td>
+</tr>
+<tr class="row-odd"><td><p>定制 GPIO</p></td>
+<td></td>
+<td><p>应用特定的数字输入和输出</p></td>
+</tr>
+</tbody>
+</table>
+<p>关于向定制板卡添加 MCAF 功能的指导见 <a class="reference internal" href="configuration.zh.html#custom-board-modifying"><span class="std std-ref">修改起始板卡定义</span></a>。完整的可添加到定制板卡的功能分解见 <a class="reference internal" href="custom_board_definitions.zh.html#custom-board-schema"><span class="std std-ref">定制板卡架构</span></a> 。</p>
+</section>
+<section id="assumptions">
+<h2><span class="section-number">6.6.2.2. </span>假设<a class="headerlink" href="#assumptions" title="本标题的永久链接">¶</a></h2>
+<section id="current-measurement">
+<h3><span class="section-number">6.6.2.2.1. </span>电流测量<a class="headerlink" href="#current-measurement" title="本标题的永久链接">¶</a></h3>
+<p>MCAF 要求相电流和母线电流测量电路向 ADC 提供具有 <span class="math notranslate nohighlight">\(AV_\text{dd}/2\)</span> 直流偏置的模拟输入，以便能测量从负满量程（<span class="math notranslate nohighlight">\(-I_\text{fs}\)</span>）到正满量程（<span class="math notranslate nohighlight">\(I_\text{fs}\)</span>）范围内的电流，如 <a class="reference internal" href="#fig-custom-board-current"><span class="std std-numref">图 6.8</span></a>。</p>
+<figure class="align-center" id="id6">
+<span id="fig-custom-board-current"></span><a class="reference internal image-reference" href="../../_images/custom-board-current-spec.svg"><img alt="../../_images/custom-board-current-spec.svg" src="../../_images/custom-board-current-spec.svg" width="360px"/></a>
+<figcaption>
+<p><span class="caption-number">图 6.8 </span><span class="caption-text">ADC 输入与被测相/母线电流的规格关系</span><a class="headerlink" href="#id6" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>根据电路设计的不同，某些电流通道的符号可能需要反转。（参见 <a class="reference internal" href="../../algorithms/foc/current_measure.zh.html#foc-current-sense-polarity"><span class="std std-ref">电流极性约定</span></a> 以获取更多信息。）</p>
+<p>只要在板卡定义文件的相应 <a class="reference internal" href="configuration.zh.html#custom-board-current-sense"><span class="std std-ref">电流检测通道</span></a> 中进行了配置，MCAF 将自动处理此符号反转。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>MCAF 根据板卡定义文件中给出的满量程相电流来确定板卡的电流比例。板卡定义文件中的满量程母线电流对代码生成过程的任何部分都没有影响。</p>
+</div>
+</section>
+<section id="voltage-measurement">
+<h3><span class="section-number">6.6.2.2.2. </span>电压测量<a class="headerlink" href="#voltage-measurement" title="本标题的永久链接">¶</a></h3>
+<p>MCAF 要求母线电压测量电路向 ADC 提供零直流偏置的模拟输入，以便能测量从 0V 到正满量程（<span class="math notranslate nohighlight">\(V_\text{fs}\)</span>）范围内的电流，如 <a class="reference internal" href="#fig-custom-board-voltage"><span class="std std-numref">图 6.9</span></a>。</p>
+<figure class="align-center" id="id7">
+<span id="fig-custom-board-voltage"></span><a class="reference internal image-reference" href="../../_images/custom-board-voltage-spec.svg"><img alt="../../_images/custom-board-voltage-spec.svg" src="../../_images/custom-board-voltage-spec.svg" width="360px"/></a>
+<figcaption>
+<p><span class="caption-number">图 6.9 </span><span class="caption-text">ADC 输入与被测相/母线电压的规格关系</span><a class="headerlink" href="#id7" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>相同的规格也适用于相电压测量（MCAF 可选支持）。</p>
+</section>
+</section>
+</section>
+<section id="board-definition-file-structure">
+<h1><span class="section-number">6.6.3. </span>板卡定义文件结构<a class="headerlink" href="#board-definition-file-structure" title="本标题的永久链接">¶</a></h1>
+<p>板卡定义文件是一个描述各种配置设置的层次化数据模型。motorBench 使用的序列化格式为 YAML；未来版本的 motorBench<sup>®</sup> Development Suite 可能扩展为支持 JSON 和/或 TOML。</p>
+<p>更多信息请参见 <a class="reference internal" href="custom_board_definitions.zh.html#custom-board-definitions"><span class="std std-ref">定制板卡定义格式</span></a>。</p>
+</section>
+<section id="system-parameters">
+<span id="custom-board-system-parameters"></span><h1><span class="section-number">6.6.4. </span>系统参数<a class="headerlink" href="#system-parameters" title="本标题的永久链接">¶</a></h1>
+<p>系统参数是应用特定的属性，可在 motorBench<sup>®</sup> Development Suite 的 Configure（配置）页面中查看和编辑。它们包括 PWM 频率和死区等参数，这些是应用选择，而非板卡的固有固定属性。因此它们不是板卡定义的一部分——但确实需要满足板卡的约束条件，例如最大 PWM 频率或最小死区。</p>
+<p>整体概念类似于在自助餐厅取食物。</p>
+<ul class="simple">
+<li><p>餐食 = 手头的项目</p></li>
+<li><p>食物 = 项目属性/系统参数</p></li>
+<li><p>盘子 = 板卡</p></li>
+</ul>
+<p>系统参数“在板卡之上”，需要符合板卡的约束。</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/bento-tray-1400814356.jpg"><img alt="../../_images/bento-tray-1400814356.jpg" src="../../_images/bento-tray-1400814356.jpg" style="width: 480px;"/></a>
+</figure>
+<p>可在 motorBench 中配置的系统参数为：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>系统参数</p></th>
+<th class="head"><p>类型</p></th>
+<th class="head"><p>单位</p></th>
+<th class="head"><p>可编辑</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>使用最大支持的系统时钟频率（Fosc）</p></td>
+<td><p>布尔</p></td>
+<td></td>
+<td class="centered vcentered"><p><img alt="yes" class="no-scaled-link" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>系统时钟频率（Fosc）</p></td>
+<td><p>整数</p></td>
+<td><p>MHz</p></td>
+<td class="centered vcentered"><p><img alt="yes" class="no-scaled-link" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></p></td>
+<td><p>仅在不使用最大支持系统时钟频率时可编辑。</p></td>
+</tr>
+<tr class="row-even"><td><p>PWM 频率</p></td>
+<td><p>浮点</p></td>
+<td><p>kHz</p></td>
+<td class="centered vcentered"><p><img alt="yes" class="no-scaled-link" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></p></td>
+<td><p>初始化为默认值 <a class="footnote-reference brackets" href="#custom-board-defaults" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>PWM 死区</p></td>
+<td><p>浮点</p></td>
+<td><p>ns</p></td>
+<td class="centered vcentered"><p><img alt="yes" class="no-scaled-link" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></p></td>
+<td><p>初始化为默认值 <a class="footnote-reference brackets" href="#custom-board-defaults" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>电流控制环采样时间系数</p></td>
+<td><p>整数</p></td>
+<td><p>Tpwm</p></td>
+<td></td>
+<td><p>电流控制环采样时间，以 PWM 周期的倍数表示。</p></td>
+</tr>
+<tr class="row-odd"><td><p>速度控制环采样时间系数</p></td>
+<td><p>整数</p></td>
+<td><p>Tpwm</p></td>
+<td class="centered vcentered"><p><img alt="yes" class="no-scaled-link" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></p></td>
+<td><p>电压控制环采样时间，以 PWM 周期的倍数表示。</p></td>
+</tr>
+<tr class="row-even"><td><p>ADC 采样时间</p></td>
+<td><p>浮点</p></td>
+<td><p>ns</p></td>
+<td class="centered vcentered"><p><img alt="yes" class="no-scaled-link" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></p></td>
+<td><p>初始化为默认值 <a class="footnote-reference brackets" href="#custom-board-defaults" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>标称母线电压</p></td>
+<td><p>浮点</p></td>
+<td><p>V</p></td>
+<td class="centered vcentered"><p><img alt="yes" class="no-scaled-link" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></p></td>
+<td><p>初始化为默认值 <a class="footnote-reference brackets" href="#custom-board-defaults" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></td>
+</tr>
+</tbody>
+</table>
+<p>导入板卡配置文件后，应配置系统参数以满足应用需求。</p>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>MCAF 保留了两个硬件定时器，由 MCC 配置，不属于定制板卡定义文件：</p>
+<ul class="simple">
+<li><p><strong>Tick 定时器</strong>：用于内部 <a class="reference internal" href="../../components/hal.zh.html#board-service-module"><span class="std std-ref">板卡服务</span></a> 定时器 ISR；定时器周期通过 motorBench <a class="reference internal" href="../ui-customization.zh.html#customize-board-service-uiservicetiming"><span class="std std-ref">UI 服务周期</span></a> 的 Customize（定制）页面上的<sup>®</sup> Development Suite 可能扩展为支持 JSON 和/或 TOML。</p></li>
+<li><p><strong>性能分析定时器</strong>：用于 <a class="reference internal" href="../../components/testharness.zh.html#test-timestamps"><span class="std std-ref">性能分析时间戳</span></a>。</p></li>
+</ul>
+<p>避免将这两个硬件定时器用于 MCAF 之外的任何目的。</p>
+</div>
+<aside class="footnote brackets" id="custom-board-defaults" role="note">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">（<a href="#id1" role="doc-backlink">1</a>，<a href="#id2" role="doc-backlink">2</a>，<a href="#id3" role="doc-backlink">3</a>，<a href="#id4" role="doc-backlink">4</a>）</span>
+<p>部分系统参数会初始化为板卡配置文件中给出的默认值。</p>
+</aside>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">6.6.1. motorBench 中的板卡支持概述<sup>®</sup> Development Suite</a></li>
+<li><a class="reference internal" href="#scope-of-hardware-support">6.6.2. 硬件支持范围</a><ul>
+<li><a class="reference internal" href="#board-configuration-features">6.6.2.1. 板卡配置功能</a></li>
+<li><a class="reference internal" href="#assumptions">6.6.2.2. 假设</a><ul>
+<li><a class="reference internal" href="#current-measurement">6.6.2.2.1. 电流测量</a></li>
+<li><a class="reference internal" href="#voltage-measurement">6.6.2.2.2. 电压测量</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#board-definition-file-structure">6.6.3. 板卡定义文件结构</a></li>
+<li><a class="reference internal" href="#system-parameters">6.6.4. 系统参数</a></li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="index.zh.html" title="上一章"><span class="section-number">6.6. </span>定制板卡支持</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="configuration.zh.html" title="下一章"><span class="section-number">6.6.5. </span>创建定制板卡配置</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="configuration.zh.html" title="6.6.5. Creating a custom board configuration">下一页</a> |</li>
+<li class="right">
+<a href="index.zh.html" title="6.6. Custom Board Support">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.zh.html"><span class="section-number">6.6. </span>定制板卡支持</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.6.1. </span>motorBench 中的板卡支持概述<sup>®</sup> Development Suite</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../../_static/lang-switch.js"></script>
+</body>
+</html>

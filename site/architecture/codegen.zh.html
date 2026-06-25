@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>3.4. 代码生成 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="config-params.zh.html" rel="next" title="3.5. Configuration Parameters"/>
+<link href="statevar.zh.html" rel="prev" title="3.3. State management"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="config-params.zh.html" title="3.5. Configuration Parameters">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="statevar.zh.html" title="3.3. State management">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">3. </span>架构</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">3.4. </span>代码生成</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="code-generation">
+<span id="codegen"></span><h1><span class="section-number">3.4. </span>代码生成<a class="headerlink" href="#code-generation" title="本标题的永久链接">¶</a></h1>
+<p>MCAF 使用 <a class="reference external" href="http://freemarker.org/">FreeMarker</a> 模板引擎来生成代码。本节描述代码生成过程的概述；虽然这对于理解输出代码并非必要，但了解 MCAF 背后的一些背景可能会有所帮助。</p>
+<section id="why-code-generation">
+<h2><span class="section-number">3.4.1. </span>为何使用代码生成？<a class="headerlink" href="#why-code-generation" title="本标题的永久链接">¶</a></h2>
+<p>使用代码生成的一些原因已在 <a class="reference internal" href="../introduction.zh.html#introduction"><span class="std std-ref">简介</span></a>：</p>
+<ul class="simple">
+<li><p><strong>多种硬件配置的管理</strong> ——通过使用代码生成，MCAF 可以用单一固件包支持处理器、板卡、 <a class="reference internal" href="../appendix/glossary.zh.html#term-PIM"><span class="xref std std-term">PIM</span></a>、电机和负载的多种组合。</p></li>
+<li><p><strong>整定过程的自动化</strong> — motorBench<sup>®</sup> Development Suite 包含可自动整定电流和速度控制器的算法。</p></li>
+</ul>
+<p>还有一些更微妙的原因：</p>
+<ul>
+<li><p><strong>C 语言对设计时计算的支持非常有限</strong> ——本质上只有两种机制：</p>
+<ul class="simple">
+<li><p>常量折叠——编译器会在编译时将 <code class="docutils literal notranslate"><span class="pre">(3*7)+1</span></code> 这样的表达式转换为单个值 (22)，而非在运行时计算</p></li>
+<li><p>预处理器——C 预处理器会在编译时（即编译之前）替换 <code class="docutils literal notranslate"><span class="pre">#define</span></code> 表达式中的文本</p></li>
+</ul>
+<p>这些机制不提供测试或验证功能。它们非常脆弱，常常导致错误，而且错误要么静默发生，要么产生难以理解的编译器消息。这些问题将在下一节关于 <a class="reference internal" href="config-params.zh.html#config-params"><span class="std std-ref">配置参数</span></a>。</p>
+</li>
+<li><p><strong>代码生成可以提供 UI 驱动的灵活性。</strong> 例如，motorBench<sup>®</sup> Development Suite 能够在多个可选选项之间提供选择（例如：选择无传感器位置估计器）</p>
+<figure class="align-center" id="fig-cg-option">
+<img alt="../_images/select-estimator.png" src="../_images/select-estimator.png"/>
+</figure>
+<p>，然后利用 MCAF 固件包中适当的源文件来实现所选选项。（注：motorBench<sup>®</sup> Development Suite 的初始版本不提供此功能，但计划在未来版本中实现。）</p>
+</li>
+</ul>
+</section>
+<section id="how-does-code-generation-work">
+<span id="codegen-operation"></span><h2><span class="section-number">3.4.2. </span>代码生成如何工作？<a class="headerlink" href="#how-does-code-generation-work" title="本标题的永久链接">¶</a></h2>
+<p>MCAF 中的代码生成由 <strong>模板引擎</strong> 驱动，它作用于一个静态的 <strong>固件包</strong> 和一个动态的 <strong>数据模型</strong>。</p>
+<figure class="align-center" id="fig-cg1">
+<img alt="../_images/codegen1.png" src="../_images/codegen1.png"/>
+</figure>
+<p>模板引擎主要由 FreeMarker 组成，但也包含其他组件，例如用于支持配置文件、条件代码生成和 Jython 脚本的组件。</p>
+<p>固件包包含一组固定的（静态）模板文件、配置文件和 Jython 脚本，用于生成源代码。</p>
+<p>数据模型是一组命名的键值对，供代码生成应用程序（CGA，其中 motorBench<sup>®</sup> Development Suite 是主要示例）使用，用于将不同的信息项组织在固件包所引用的已知位置。数据模型通常在每次代码生成运行之间会发生变化。</p>
+<p>模板引擎 <strong>渲染</strong> 固件包中的文件，使用数据模型来确定输出文件中依赖于 CGA 输入数据的部分。在某些情况下，渲染操作只是没有输入依赖的逐字复制；在其他情况下，可能会进行复杂的计算；但在许多情况下，渲染只是简单的表达式求值和替换。</p>
+<p>例如，我们可以有 <a class="reference internal" href="#code-cg1"><span class="std std-numref">代码清单 3.1</span></a>中所示的模板文件，以及 <a class="reference internal" href="#code-cg2"><span class="std std-numref">代码清单 3.2</span></a>：</p>
+<div class="literal-block-wrapper docutils container" id="code-cg1">
+<div class="code-block-caption"><span class="caption-number">代码清单 3.1 </span><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">limerick.txt.template</span></code></span><a class="headerlink" href="#code-cg1" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>There was an old lady of ${PLACE}
+Who was baked by mistake in a ${THING}
+To the household's disgust
+She emerged through the crust
+And exclaimed, with a yawn, "${QUOTE}"
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="code-cg2">
+<div class="code-block-caption"><span class="caption-number">代码清单 3.2 </span><span class="caption-text">数据模型</span><a class="headerlink" href="#code-cg2" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">PLACE</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Rye</span>
+<span class="nt">THING</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pie</span>
+<span class="nt">QUOTE</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Where am I?</span>
+</pre></div>
+</div>
+</div>
+<p>这将渲染为 <a class="reference internal" href="#code-cg3"><span class="std std-numref">代码清单 3.3</span></a>：</p>
+<div class="literal-block-wrapper docutils container" id="code-cg3">
+<div class="code-block-caption"><span class="caption-number">代码清单 3.3 </span><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">limerick.txt</span></code></span><a class="headerlink" href="#code-cg3" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>There was an old lady of Rye
+Who was baked by mistake in a pie
+To the household's disgust
+She emerged through the crust
+And exclaimed, with a yawn, "Where am I?"
+</pre></div>
+</div>
+</div>
+<p>模板包含特殊的占位符，例如 <code class="docutils literal notranslate"><span class="pre">${PLACE}</span></code> 和 <code class="docutils literal notranslate"><span class="pre">${THING}</span></code> ，FreeMarker 将其称为 <a class="reference external" href="http://freemarker.org/docs/dgui_template_overallstructure.html">插值</a>。这些占位符包含一个表达式，该表达式会被求值并替换到输出文本中。</p>
+<p>这样的示例对电机控制来说不太实用，但同样的表达式求值和替换机制也可用于生成 C 代码或注释，如 <a class="reference internal" href="#code-cg4"><span class="std std-numref">代码清单 3.4</span></a> 和 <a class="reference internal" href="#code-cg5"><span class="std std-numref">代码清单 3.5</span></a>和 <a class="reference internal" href="#code-cg6"><span class="std std-numref">代码清单 3.6</span></a>：</p>
+<div class="literal-block-wrapper docutils container" id="code-cg4">
+<div class="code-block-caption"><span class="caption-number">代码清单 3.4 </span><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">info.h.template</span></code></span><a class="headerlink" href="#code-cg4" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/*
+ * L = ${(motor.L*1000)?string["#.###"]} mH
+ * R = ${motor.R?string["#.###"]} ohms
+ * Time constant = ${(motor.L/motor.R * 1000)?string["#.###"]} ms
+ * Your inductance is &lt;#compress&gt;
+&lt;#if (motor.L &lt; 0.001) &gt;too low
+&lt;#elseif (motor.L &gt; 0.01) &gt;too high
+&lt;#else &gt;just right
+&lt;/#if&gt;&lt;/#compress&gt;!
+ */
+
+&lt;#assign velocity_scale=ScaleFactor(6000.0/30*PI, "rad/s").q15() &gt;
+/* Maximum motor velocity, converted to integer counts:
+ * ${(motor.max_velocity*30/PI)?string["####.##"]} RPM
+ * ${motor.max_velocity?string["####.##"]} rad/s
+ */
+#define MAX_VEL ${velocity_scale.toCounts(motor.max_velocity)}
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="code-cg5">
+<div class="code-block-caption"><span class="caption-number">代码清单 3.5 </span><span class="caption-text">数据模型</span><a class="headerlink" href="#code-cg5" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">motor</span><span class="p">：</span>
+<span class="w">  </span><span class="nt">L</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.234567e-3</span>
+<span class="w">  </span><span class="nt">R</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6.543210e-1</span>
+<span class="w">  </span><span class="nt">max_velocity</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">234.56</span>
+<span class="nt">ScaleFactor</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;some Java object created to facilitate engineering conversion&gt;</span>
+<span class="nt">PI</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.141592653589793</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="code-cg6">
+<div class="code-block-caption"><span class="caption-number">代码清单 3.6 </span><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">info.h</span></code></span><a class="headerlink" href="#code-cg6" title="本代码块的永久链接">¶</a></div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> * L = 1.235 mH</span>
+<span class="cm"> * R = 0.654 ohms</span>
+<span class="cm"> * Time constant = 1.887 ms</span>
+<span class="cm"> * Your inductance is just right!</span>
+<span class="cm"> */</span>
+
+<span class="cm">/* Maximum motor velocity, converted to integer counts:</span>
+<span class="cm"> * 2239.88 RPM</span>
+<span class="cm"> *  234.56 rad/s</span>
+<span class="cm"> */</span>
+<span class="cp">#define MAX_VEL 12233</span>
+</pre></div>
+</div>
+</div>
+<section id="data-model-preparation">
+<h3><span class="section-number">3.4.2.1. </span>数据模型准备<a class="headerlink" href="#data-model-preparation" title="本标题的永久链接">¶</a></h3>
+<p>值可以通过以下几种机制进入数据模型：</p>
+<ul class="simple">
+<li><p><strong>来自 CGA</strong> (motorBench<sup>®</sup> Development Suite）。这通常发生在需要来自客户输入的配置数据（电机名称、极数等）的值时，或者当值由 CGA 自身计算（自动整定的控制环增益）时。</p></li>
+<li><p><strong>来自 MCAF 固件包中的配置文件。</strong> 这通常用于管理应用框架通用的某些常量，但应与 CGA 解耦，以便作为应用框架包改进的一部分进行更新。</p></li>
+<li><p><strong>来自 MCAF 框架包中的 Jython 脚本。</strong> 这通常用于处理不属于 CGA 核心功能的计算，例如压摆率或其他与应用框架包本身紧密耦合的派生常量。</p></li>
+</ul>
+<p>模板引擎不关心值的来源，只关心数据模型中被固件包模板引用的命名位置包含可用于在输出文件中生成文本字符串的有效值。</p>
+<p>确定数据模型的过程可以设想为如 <a class="reference internal" href="#fig-cg2"><span class="std std-numref">图 3.2</span></a>所示。一般来说，motorBench<sup>®</sup> Development Suite 和 MCAF 提供或计算工程值，然后通过适当选择工程单位缩放因子，在生成的代码中表示为定点整数。</p>
+<blockquote>
+<div><figure class="align-center" id="id1">
+<span id="fig-cg2"></span><img alt="../_images/codegen2.png" src="../_images/codegen2.png"/>
+<figcaption>
+<p><span class="caption-number">图 3.2 </span><span class="caption-text">数据模型生成过程</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+</div></blockquote>
+</section>
+<section id="conditional-code-generation">
+<h3><span class="section-number">3.4.2.2. </span>条件代码生成<a class="headerlink" href="#conditional-code-generation" title="本标题的永久链接">¶</a></h3>
+<p>有时我们需要根据数据模型中的某些内容提供不同的内容：例如，在多个位置/速度估计器之间进行选择。模板引擎支持此功能。</p>
+<ul class="simple">
+<li><p><strong>逐字符/逐行条件生成</strong> FreeMarker 中有可用的条件功能（ <code class="docutils literal notranslate"><span class="pre">&lt;#if&gt;</span></code> 指令，例如），其行为类似于 C 中的 <code class="docutils literal notranslate"><span class="pre">#if</span></code> 预处理器指令，不同之处在于它们在代码生成时而非编译时处理。这些功能可以谨慎使用，以启用或禁用特定的代码行，或从多个选项中进行选择。</p></li>
+<li><p><strong>逐文件条件生成</strong> 对于整个模块的包含或排除，模板引擎中有一些功能允许模板作者将特定源文件与一个"标签"关联，以指定该源文件仅在数据模型中的已知位置存在该标签时才被渲染。这使 CGA 无需知道应包含或排除哪些文件；相反，CGA 列出要包含的标签作为命名功能，然后应用框架包包含标签名称与源文件的关联。</p></li>
+</ul>
+</section>
+<section id="further-information">
+<h3><span class="section-number">3.4.2.3. </span>更多信息<a class="headerlink" href="#further-information" title="本标题的永久链接">¶</a></h3>
+<p>有关代码生成过程的更多信息，请 <a class="reference internal" href="../faq.zh.html#faq-support"><span class="std std-ref">联系 Microchip</span></a>。</p>
+</section>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">3.4. 代码生成</a><ul>
+<li><a class="reference internal" href="#why-code-generation">3.4.1. 为何使用代码生成？</a></li>
+<li><a class="reference internal" href="#how-does-code-generation-work">3.4.2. 代码生成如何工作？</a><ul>
+<li><a class="reference internal" href="#data-model-preparation">3.4.2.1. 数据模型准备</a></li>
+<li><a class="reference internal" href="#conditional-code-generation">3.4.2.2. 条件代码生成</a></li>
+<li><a class="reference internal" href="#further-information">3.4.2.3. 更多信息</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="statevar.zh.html" title="上一章"><span class="section-number">3.3. </span>状态管理</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="config-params.zh.html" title="下一章"><span class="section-number">3.5. </span>配置参数</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="config-params.zh.html" title="3.5. Configuration Parameters">下一页</a> |</li>
+<li class="right">
+<a href="statevar.zh.html" title="3.3. State management">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">3. </span>架构</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">3.4. </span>代码生成</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>4.3. 状态机 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="foc.zh.html" rel="next" title="4.4. Field-Oriented Control (FOC)"/>
+<link href="adc.zh.html" rel="prev" title="4.2. ADC Calibration and Compensation"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="foc.zh.html" title="4.4. Field-Oriented Control (FOC)">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="adc.zh.html" title="4.2. ADC Calibration and Compensation">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">4. </span>组件</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">4.3. </span>状态机</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="state-machine">
+<span id="component-statemachine"></span><h1><span class="section-number">4.3. </span>状态机<a class="headerlink" href="#state-machine" title="本标题的永久链接">¶</a></h1>
+<p>电机控制状态机可以描述为分层状态机，如下方 <a class="reference internal" href="#fig-state-machine"><span class="std std-numref">图 4.1</span></a>所示。状态以蓝色显示；名称（<code class="docutils literal notranslate"><span class="pre">MCSM_xxxx</span></code>）是应用程序框架代码中使用的名称。转换条件以带标签的箭头显示。</p>
+<p>此状态机旨在从非常高的层面处理电机控制器：它不关注电机的详细信息（是否发生了堵转？是否存在过压？），而是围绕一般事件来设计，例如是否检测到故障，或者启动/停止序列是否完成。</p>
+<figure class="align-center" id="id2">
+<span id="fig-state-machine"></span><img alt="../_images/state-machine.svg" src="../_images/state-machine.svg"/><figcaption>
+<p><span class="caption-number">图 4.1 </span><span class="caption-text">电机控制器状态图</span><a class="headerlink" href="#id2" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<section id="states">
+<span id="component-statemachine-states"></span><h2><span class="section-number">4.3.1. </span>状态<a class="headerlink" href="#states" title="本标题的永久链接">¶</a></h2>
+<p>这些状态分为以下子组：</p>
+<ul class="simple">
+<li><p>主要状态：除测试操作中使用的状态外的所有状态。</p>
+<ul>
+<li><p>正常状态：未发生故障的状态。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCSM_FAULT</span></code>：已发生故障。</p></li>
+</ul>
+</li>
+<li><p>次要状态：测试操作中使用的所有状态。这些状态会导致正常状态机被忽略，同时也会忽略一些在测试模式下可能产生误报的故障检测算法。</p></li>
+</ul>
+<p>此处的分组构成了一个分层状态机。例如：任何正常状态在检测到故障时都会转换到 <code class="docutils literal notranslate"><span class="pre">MCSM_FAULT</span></code> 。（传统状态机需要将到 <code class="docutils literal notranslate"><span class="pre">MCSM_FAULT</span></code> 的转换从 <code class="docutils literal notranslate"><span class="pre">MCSM_STOPPED</span></code>， <code class="docutils literal notranslate"><span class="pre">MCSM_STARTING</span></code>， <code class="docutils literal notranslate"><span class="pre">MCSM_RUNNING</span></code>， <code class="docutils literal notranslate"><span class="pre">MCSM_STOPPING</span></code>，和 <code class="docutils literal notranslate"><span class="pre">MCSM_INIT</span></code>分别显示出来。）</p>
+<p>上电复位后的初始状态为 <code class="docutils literal notranslate"><span class="pre">MCSM_RESTART</span></code>。各状态简要描述如下：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>状态</p></th>
+<th class="head"><p>描述</p></th>
+<th class="head"><p>假设条件</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MCSM_RESTART</span></code></p></td>
+<td><p>初始状态，在每次上电、退出故障状态或测试模式且当前无故障时进入。</p>
+<p>可以执行某些运行时校准活动。</p>
+</td>
+<td><p>可以接受电机电流保持为零。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MCSM_STOPPING</span></code></p></td>
+<td><p>电机控制器尝试使电机完全停止。</p></td>
+<td><p>电机可能正在旋转。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MCSM_STOPPED</span></code></p></td>
+<td><p>电机控制器已使电机完全停止。</p></td>
+<td><p>电机未旋转。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MCSM_STARTING</span></code></p></td>
+<td><p>电机控制器尝试从静止状态启动电机旋转。这可能需要专门的代码，例如在使用无传感器估计器的控制器中，或在压缩机中。</p></td>
+<td><p>电机速度可能为零或很小。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MCSM_RUNNING</span></code></p></td>
+<td><p>电机控制器尝试将电机控制到指定的控制目标，通常为电机速度调节。</p></td>
+<td><p>到目前为止电机控制已成功。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MCSM_FAULT</span></code></p></td>
+<td><p>电机控制器已识别到故障状态，在此状态下无法安全地进行正常控制活动。</p>
+<p>电机控制器的执行器被置于 <a class="reference internal" href="hal.zh.html#hardware-pwm"><span class="std std-ref">“最小影响”</span></a> 状态，该状态在故障条件下被认为是可接受的：通常上桥臂晶体管关断，下桥臂晶体管关断或设置为小占空比。</p>
+<p>这是一个“锁定”状态：进入时锁定描述故障的错误代码，并显示此代码，直到来自 <code class="docutils literal notranslate"><span class="pre">CLEAR_FAULT</span></code> 条件的外部干预发生。</p>
+</td>
+<td><p>通常没有假设。电机可能正在旋转或未旋转。电机可能已损坏，晶体管可能已损坏，电压和电流可能超出范围等。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MCSM_TEST_RESTART</span></code></p></td>
+<td><p>测试状态，用于干净地初始化系统行为，类似于 <code class="docutils literal notranslate"><span class="pre">MCSM_RESTART</span></code> 但用于测试模式。</p>
+<p>用户界面输入通常被忽略，以诊断设备的输入为准。</p>
+</td>
+<td><p>电机控制器正在受控条件下由了解操作的人员以非标准测试模式运行。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MCSM_TEST_DISABLE</span></code></p></td>
+<td><p>测试状态，晶体管设置为最小影响状态。</p>
+<p>用户界面输入通常被忽略，以诊断设备的输入为准。</p>
+</td>
+<td><p>在测试模式下检测到故障，或控制器被有意禁用。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MCSM_TEST_ENABLE</span></code></p></td>
+<td><p>测试状态，晶体管已启用。控制目标由测试操作模式设定，通常与正常运行条件不同。</p>
+<p>例如：一个或多个控制环路被禁用，某些故障检测被禁用等。</p>
+<p>用户界面输入通常被忽略，以诊断设备的输入为准。</p>
+</td>
+<td><p>电机控制器正在受控条件下由了解操作的人员以非标准测试模式运行。</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="input-conditions">
+<h2><span class="section-number">4.3.2. </span>输入条件<a class="headerlink" href="#input-conditions" title="本标题的永久链接">¶</a></h2>
+<p>高级输入条件（如 <a class="reference internal" href="#fig-state-machine"><span class="std std-numref">图 4.1</span></a>的状态图所示）以互斥方式使用（换言之，从给定状态出发的所有条件互斥），并可由更基本的条件定义如下：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">FAULT</span></code>：以下两项均为真：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">operating_fault_detected</span></code> 为真（见下一节）</p></li>
+<li><p>操作模式为 <code class="docutils literal notranslate"><span class="pre">OM_NORMAL</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CLEAR_FAULT</span></code>：以下所有条件均为真时为真：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">operating_fault_detected</span></code> 不为真</p></li>
+<li><p>UI 模块指示要清除锁定的故障。</p></li>
+<li><p>操作模式为 <code class="docutils literal notranslate"><span class="pre">OM_NORMAL</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RESTART_COMPLETE</span></code>：控制器可以离开 <code class="docutils literal notranslate"><span class="pre">RESTART</span></code> 状态。以下所有条件均为真时为真：</p>
+<ul>
+<li><p>操作模式为 <code class="docutils literal notranslate"><span class="pre">OM_NORMAL</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operating_fault_detected</span></code> 不为真</p></li>
+<li><p> <code class="docutils literal notranslate"><span class="pre">RESTART</span></code> 状态的初始化活动已完成</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AT_REST</span></code>：控制器可以离开 <code class="docutils literal notranslate"><span class="pre">RESTART</span></code> 状态进入 <code class="docutils literal notranslate"><span class="pre">STOPPED</span></code> 状态。以下所有条件均为真时为真：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">RESTART_COMPLETE</span></code> 为真</p></li>
+<li><p><a class="reference internal" href="../algorithms/stopping.zh.html#algorithm-stopping"><span class="std std-ref">停止模式</span></a> 为闭环</p></li>
+<li><p>启动例程尚未设置启动完成标志。</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">READY</span></code>：控制器可以离开 <code class="docutils literal notranslate"><span class="pre">RESTART</span></code> 状态进入 <code class="docutils literal notranslate"><span class="pre">STOPPING</span></code> 状态。以下所有条件均为真时为真：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">RESTART_COMPLETE</span></code> 为真</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AT_REST</span></code> 不为真</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RESUME</span></code>：控制器可以从 <code class="docutils literal notranslate"><span class="pre">STOPPING</span></code> 状态进入 <code class="docutils literal notranslate"><span class="pre">RUNNING</span></code> 状态。以下所有条件均为真时为真：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">RUN</span></code> 为真</p></li>
+<li><p><a class="reference internal" href="../algorithms/stopping.zh.html#algorithm-stopping"><span class="std std-ref">停止模式</span></a> 为闭环</p></li>
+<li><p>启动例程已设置启动完成标志。</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RUN</span></code>：电机将运行。以下所有条件均为真时为真：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">run_requested</span></code>：UI 模块指示要运行电机。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run_permitted</span></code>：允许电机运行；如果检测到堵转条件则为假。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operating_fault_detected</span></code> 不为真。</p></li>
+<li><p>操作模式为 <code class="docutils literal notranslate"><span class="pre">OM_NORMAL</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">START_COMPLETE</span></code>：以下所有条件均为真时为真：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">RUN</span></code> 为真</p></li>
+<li><p>启动例程已设置启动完成标志。</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">STOP_COMPLETE</span></code>：以下所有条件均为真时为真：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">RESUME</span></code> 不为真</p></li>
+<li><p>停止完成标志已由 <a class="reference internal" href="../algorithms/stopping.zh.html#algorithm-stopping"><span class="std std-ref">停止例程</span></a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operating_fault_detected</span></code> 不为真</p></li>
+<li><p>操作模式为 <code class="docutils literal notranslate"><span class="pre">OM_NORMAL</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TEST_DISABLE</span></code>：以下所有条件均为真时为真：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_fault_detected</span></code> 不为真</p></li>
+<li><p>操作模式为 <code class="docutils literal notranslate"><span class="pre">OM_DISABLED</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TEST_ENABLE</span></code>：以下所有条件均为真时为真：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_fault_detected</span></code> 不为真</p></li>
+<li><p>来自 <a class="reference internal" href="testharness.zh.html#test-harness"><span class="std std-ref">测试框架</span></a> 的 TestRestartRequired 标志未设置。</p></li>
+<li><p>操作模式为除 <code class="docutils literal notranslate"><span class="pre">OM_DISABLED</span></code> 或 <code class="docutils literal notranslate"><span class="pre">OM_NORMAL</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TEST_RESTART</span></code>：以下所有条件均为真时为真：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_fault_detected</span></code> 不为真</p></li>
+<li><p>来自 <a class="reference internal" href="testharness.zh.html#test-harness"><span class="std std-ref">测试框架</span></a> 的 TestRestartRequired 标志已设置。</p></li>
+<li><p>操作模式为除 <code class="docutils literal notranslate"><span class="pre">OM_DISABLED</span></code> 或 <code class="docutils literal notranslate"><span class="pre">OM_NORMAL</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TEST_EXIT</span></code>：如果操作模式为 <code class="docutils literal notranslate"><span class="pre">OM_NORMAL</span></code>，和 <code class="docutils literal notranslate"><span class="pre">test_fault_detected</span></code> 不为真</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TEST_EXIT_FAULT</span></code>：以下任一条件为真时为真：</p>
+<ul>
+<li><p>操作模式为 <code class="docutils literal notranslate"><span class="pre">OM_NORMAL</span></code>，和 <code class="docutils literal notranslate"><span class="pre">operating_fault_detected</span></code> 为真</p></li>
+<li><p>操作模式不为 <code class="docutils literal notranslate"><span class="pre">OM_NORMAL</span></code>，和 <code class="docutils literal notranslate"><span class="pre">test_fault_detected</span></code> 为真</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TEST_CLEAR_FAULT</span></code>：以下所有条件均为真时为真：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_fault_detected</span></code> 不为真</p></li>
+<li><p>UI 模块指示要清除锁定的故障。</p></li>
+<li><p>操作模式不为 <code class="docutils literal notranslate"><span class="pre">OM_NORMAL</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TEST_READY</span></code>：以下所有条件均为真时为真：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_fault_detected</span></code> 不为真</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RESTART_COMPLETE</span></code> 为真</p></li>
+<li><p>操作模式不为 <code class="docutils literal notranslate"><span class="pre">OM_NORMAL</span></code></p></li>
+</ul>
+</li>
+</ul>
+<p>在某些方面，以优先级方式实现状态转换可能更容易理解，其实现可能如下所示：</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">（</span><span class="n">operating_mode</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">OM_NORMAL</span><span class="p">）</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">（</span><span class="n">operating_mode</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">OM_DISABLED</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">test_fault_detected</span><span class="p">）</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">next_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MCSM_TEST_DISABLE</span><span class="p">；</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">else</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">next_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MCSM_TEST_ENABLE</span><span class="p">；</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="cm">/* primary states begin here... */</span>
+<span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">（</span><span class="n">operating_fault_detected</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">this_state</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">MCSM_FAULT</span><span class="p">）</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">next_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MCSM_FAULT</span><span class="p">；</span>
+<span class="p">}</span>
+<span class="k">else</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="cm">/* normal states */</span>
+<span class="w">  </span><span class="k">switch</span><span class="w"> </span><span class="p">（</span><span class="n">state</span><span class="p">）</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">MCSM_TEST_DISABLE</span><span class="p">：</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">MCSM_TEST_ENABLE</span><span class="p">：</span>
+<span class="w">      </span><span class="n">next_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MCSM_RESTART</span><span class="p">；</span>
+<span class="w">      </span><span class="k">break</span><span class="p">；</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">MCSM_RESTART</span><span class="p">：</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">（</span><span class="n">ready</span><span class="p">）</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">next_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MCSM_STOPPING</span><span class="p">；</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="k">break</span><span class="p">；</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">MCSM_STOPPING</span><span class="p">：</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">（</span><span class="n">stop_complete</span><span class="p">）</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">next_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MCSM_STOPPED</span><span class="p">；</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="k">break</span><span class="p">；</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">MCSM_STOPPED</span><span class="p">：</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">（</span><span class="n">run</span><span class="p">）</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">next_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MCSM_STARTING</span><span class="p">；</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="k">break</span><span class="p">；</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">MCSM_STARTING</span><span class="p">：</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">（</span><span class="o">!</span><span class="n">run</span><span class="p">）</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">next_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MCSM_STOPPING</span><span class="p">；</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">（</span><span class="n">start_complete</span><span class="p">）</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">next_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MCSM_RUNNING</span><span class="p">；</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="k">break</span><span class="p">；</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">MCSM_RUNNING</span><span class="p">：</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">（</span><span class="o">!</span><span class="n">run</span><span class="p">）</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">next_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MCSM_STOPPING</span><span class="p">；</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="k">break</span><span class="p">；</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">MCSM_FAULT</span><span class="p">：</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">（</span><span class="n">clear_fault_latch</span><span class="p">）</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">next_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MCSM_RESTART</span><span class="p">；</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="k">break</span><span class="p">；</span>
+<span class="w">    </span><span class="k">default</span><span class="o">：</span>
+<span class="w">      </span><span class="n">next_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MCSM_RESTART</span><span class="p">；</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="miscellaneous-state-machine-issues">
+<h2><span class="section-number">4.3.3. </span>状态机其他问题<a class="headerlink" href="#miscellaneous-state-machine-issues" title="本标题的永久链接">¶</a></h2>
+<section id="startup">
+<span id="motor-startup"></span><h3><span class="section-number">4.3.3.1. </span>启动<a class="headerlink" href="#startup" title="本标题的永久链接">¶</a></h3>
+<p>在 <code class="docutils literal notranslate"><span class="pre">MCSM_STARTING</span></code> 状态下，使用专门的启动过程将电机从静止加速到足够高的速度，以使 <a class="reference internal" href="foc.zh.html#posvelest"><span class="std std-ref">无传感器估计器</span></a> 提供换相信息。在此状态下，速度环路被禁用，换相角以开环方式缓慢加速，而不是使用无传感器估计器的换相角。</p>
+<p>有关更多信息，请参见 <a class="reference internal" href="../algorithms/startup.zh.html#algorithm-startup"><span class="std std-ref">启动</span></a> 一节。</p>
+</section>
+<section id="fault-detection">
+<h3><span class="section-number">4.3.3.2. </span>故障检测<a class="headerlink" href="#fault-detection" title="本标题的永久链接">¶</a></h3>
+<p>故障检测的行为略有不同，取决于系统处于测试状态还是正常操作模式。</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">test_fault_detected</span></code>：在测试状态下，我们希望对允许请求的操作更加宽松，因此此标志仅在任一最严重的故障为真时才为真；这些包括硬件过流、软件过流、过压等。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operating_fault_detected</span></code>：在正常操作模式下，我们希望更加保守，在更广泛的条件下停止操作。这包括 <code class="docutils literal notranslate"><span class="pre">test_fault_detected</span></code>中使用的所有故障，以及 <code class="docutils literal notranslate"><span class="pre">test_fault_detected</span></code>中未包含的其他故障，例如堵转重试次数超限。</p>
+<p>这允许检测技术在正常操作模式下使用，但在测试模式下保持禁用，以免干扰可能触发故障的测试。某些启发式检测技术属于此类，特别是当它们对电机的运行方式做出假设（例如始终在速度控制模式下、始终朝一个方向旋转、速度命令平滑变化等），或者对检测技术是否能避免误报存在不确定性时。</p>
+</li>
+</ul>
+<p>两种故障检测方案都是锁定的，需要外部操作来清除（例如，主要状态下按 UI 按钮，测试状态下通过诊断工具操作）。</p>
+</section>
+</section>
+<section id="implementation-notes">
+<span id="component-statemachine-impl"></span><h2><span class="section-number">4.3.4. </span>实现说明<a class="headerlink" href="#implementation-notes" title="本标题的永久链接">¶</a></h2>
+<p>函数 <code class="docutils literal notranslate"><span class="pre">MCAF_SystemStateMachine_StepIsr()</span></code> 是系统状态机的主入口点。此函数中使用的方法是执行以下子任务：</p>
+<ul class="simple">
+<li><p>首先执行所有状态共有的关键任务—— <code class="docutils literal notranslate"><span class="pre">MCAF_MotorControllerOnAllStates()</span></code></p></li>
+<li><p>确定下一状态—— <code class="docutils literal notranslate"><span class="pre">MCAF_FSM_DetermineNextState()</span></code> 和 <code class="docutils literal notranslate"><span class="pre">MCAF_FSM_DetermineNextStateTestMode()</span></code></p></li>
+<li><p>分派到适当的状态—— <code class="docutils literal notranslate"><span class="pre">MCAF_FSM_Dispatch()</span></code></p></li>
+<li><p>最后执行所有状态共有的非关键任务—— <code class="docutils literal notranslate"><span class="pre">MCAF_MotorControllerOnAllStatesLowPriority()</span></code></p></li>
+</ul>
+<p>磁场定向控制任务在以下函数中执行：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_FocStepIsrFeedbackPath()</span></code> ——此函数在所有状态下执行，包括反馈计算，如 Park/Clarke 变换和位置/速度估计。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_FocStepIsrForwardPath()</span></code> ——此函数在电机控制激活的状态下执行，包括控制器和其他前向通道元素，如逆 Park/Clarke 变换和空间矢量调制。</p></li>
+</ul>
+<p>函数 <code class="docutils literal notranslate"><span class="pre">MCAF_SystemStateMachine_StepMain()</span></code> 执行系统状态机的低优先级任务。目前，唯一的此类任务是为 <a class="reference internal" href="ext-interface.zh.html#ext-interface-leds"><span class="std std-ref">外部接口</span></a> 选择 LED 图案，以指示电机方向和状态机状态。</p>
+<section id="implementation-notes-for-stall-detection-and-recovery">
+<h3><span class="section-number">4.3.4.1. </span>堵转检测和恢复的实现说明：<a class="headerlink" href="#implementation-notes-for-stall-detection-and-recovery" title="本标题的永久链接">¶</a></h3>
+<p>检测到堵转将导致 <code class="docutils literal notranslate"><span class="pre">run_permitted</span></code> 标志为假，从而将电机从 <code class="docutils literal notranslate"><span class="pre">STARTING</span></code> 或 <code class="docutils literal notranslate"><span class="pre">RUNNING</span></code> 状态带入 <code class="docutils literal notranslate"><span class="pre">STOPPING</span></code> 状态。它不会改变来自 UI 的 <code class="docutils literal notranslate"><span class="pre">run_requested</span></code> 标志。</p>
+<p>堵转检测/恢复需要跟踪重试次数，与现有实现一样；当重试次数超过阈值时，将产生“堵转重试次数超限”故障，并进入 <code class="docutils literal notranslate"><span class="pre">FAULT</span></code> 状态。</p>
+</section>
+<section id="other-implementation-notes">
+<h3><span class="section-number">4.3.4.2. </span>其他实现说明<a class="headerlink" href="#other-implementation-notes" title="本标题的永久链接">¶</a></h3>
+<p>每个状态中的状态机函数以及转换函数，除主状态机更新函数 <code class="docutils literal notranslate"><span class="pre">MCAF_FSM_Dispatch()</span></code>外，不应被调用。MCAF 中使用的方法是将这些函数作为内联函数提出，以实现代码模块化和可维护性，但不是运行时模块化（在运行时将其视为一个大函数）。</p>
+<p> <code class="docutils literal notranslate"><span class="pre">STOPPING</span></code> → <code class="docutils literal notranslate"><span class="pre">RUNNING</span></code> 转换是在 MCAF R7 中添加的，同时添加了 <a class="reference internal" href="../algorithms/stopping.zh.html#algorithm-stopping-closed-loop"><span class="std std-ref">闭环停止</span></a>。</p>
+<p> <code class="docutils literal notranslate"><span class="pre">RESTART</span></code> → <code class="docutils literal notranslate"><span class="pre">STOPPED</span></code> 转换是在 MCAF R7 中添加的，同时添加了 <code class="docutils literal notranslate"><span class="pre">AT_REST</span></code> 条件的外部干预发生。 <strong>注意：</strong> 确定 <code class="docutils literal notranslate"><span class="pre">AT_REST</span></code> 有效性的精确条件仍在研究中，可能会在 MCAF 的未来版本中发生变化。</p>
+</section>
+<section id="modules">
+<h3><span class="section-number">4.3.4.3. </span>模块<a class="headerlink" href="#modules" title="本标题的永久链接">¶</a></h3>
+<span id="index-0"></span><table class="components-table docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>模块</p></th>
+<th class="head"><p>文件</p></th>
+<th class="head"><p>描述</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">启动</span></code></td>
+<td class="longcolumn-3"><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">parameters/startup_params.h</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">startup.c</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">startup.h</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">startup_types.h</span></code></div>
+</div>
+</td>
+<td><p>电机启动，包括从开环换相到闭环换相的转换</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">startup_lib</span></code></td>
+<td class="longcolumn-1"><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">startup_lib.h</span></code></div>
+</div>
+</td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td class="longcolumn-1"><code class="docutils literal notranslate"><span class="pre">state_machine</span></code></td>
+<td class="longcolumn-3"><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">state_machine.c</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">state_machine.h</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">state_machine_types.h</span></code></div>
+</div>
+</td>
+<td><p>顶层状态机</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">4.3. 状态机</a><ul>
+<li><a class="reference internal" href="#states">4.3.1. 状态</a></li>
+<li><a class="reference internal" href="#input-conditions">4.3.2. 输入条件</a></li>
+<li><a class="reference internal" href="#miscellaneous-state-machine-issues">4.3.3. 状态机其他问题</a><ul>
+<li><a class="reference internal" href="#startup">4.3.3.1. 启动</a></li>
+<li><a class="reference internal" href="#fault-detection">4.3.3.2. 故障检测</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#implementation-notes">4.3.4. 实现说明</a><ul>
+<li><a class="reference internal" href="#implementation-notes-for-stall-detection-and-recovery">4.3.4.1. 堵转检测和恢复的实现说明：</a></li>
+<li><a class="reference internal" href="#other-implementation-notes">4.3.4.2. 其他实现说明</a></li>
+<li><a class="reference internal" href="#modules">4.3.4.3. 模块</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="adc.zh.html" title="上一章"><span class="section-number">4.2. </span>ADC 校准与补偿</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="foc.zh.html" title="下一章"><span class="section-number">4.4. </span>磁场定向控制（FOC）</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="foc.zh.html" title="4.4. Field-Oriented Control (FOC)">下一页</a> |</li>
+<li class="right">
+<a href="adc.zh.html" title="4.2. ADC Calibration and Compensation">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">4. </span>组件</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">4.3. </span>状态机</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

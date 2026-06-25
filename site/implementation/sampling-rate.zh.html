@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>6.4. 采样率与 PWM 频率的影响 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="integration.zh.html" rel="next" title="6.5. Integration with Custom Code"/>
+<link href="ui-customization.zh.html" rel="prev" title="6.3. Parameter customization"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="integration.zh.html" title="6.5. Integration with Custom Code">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="ui-customization.zh.html" title="6.3. Parameter customization">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.4. </span>采样率与 PWM 频率的影响</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="sampling-rate-and-pwm-frequency-implications">
+<span id="impl-sampling-rate"></span><h1><span class="section-number">6.4. </span>采样率与 PWM 频率的影响<a class="headerlink" href="#sampling-rate-and-pwm-frequency-implications" title="本标题的永久链接">¶</a></h1>
+<p><a class="reference internal" href="#impl-sampling-rate-revhist"><span class="std std-ref">自 MCAF R6</span></a>起，可通过 motorBench<sup>®</sup> Development Suite 的 Configure 页面支持采样率和 PWM 频率的更改。在 MCAF R8 及更高版本中，这些设置位于 System Parameters 节下。（在 MCAF R6 和 R7 中，它们位于 Board 节下。）</p>
+<p><a class="reference internal" href="#fig-custom-board-system-parameters"><span class="std std-numref">图 6.3</span></a> 显示了 Configure 页面的截图以及控制这些速率的三个设置：</p>
+<ul>
+<li><p><strong>电流控制环采样时间因子</strong> — 控制大部分电机控制算法的执行速率，包括电流控制器、参考变换以及位置和速度估计器。</p>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>电流控制环每 <span class="math notranslate nohighlight">\(N\)</span> 个 PWM 周期执行一次，其中 <span class="math notranslate nohighlight">\(N\)</span> 为电流控制环采样时间因子。MCAF R8 不支持修改此参数。</p>
+</div>
+</li>
+<li><p><strong>速度控制环采样时间因子</strong> — 控制速度控制器的执行速率</p>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>速度控制环每 <span class="math notranslate nohighlight">\(N\)</span> 次电流控制环更新执行一次，其中 <span class="math notranslate nohighlight">\(N\)</span> 为速度控制环采样时间因子。</p>
+</div>
+</li>
+<li><p><strong>PWM 频率</strong> — 控制 PWM 开关频率 <span class="math notranslate nohighlight">\(f_{\text{PWM}}\)</span></p></li>
+</ul>
+<p>例如，如果 PWM 频率为 50 kHz，电流环采样时间因子为 2，速度环采样时间因子为 10，则电流环将以 25 kHz 更新，速度环以 2.5 kHz 更新。</p>
+<figure class="align-center" id="id1">
+<span id="fig-custom-board-system-parameters"></span><img alt="../_images/custom-board-system-parameters.png" src="../_images/custom-board-system-parameters.png"/>
+<figcaption>
+<p><span class="caption-number">图 6.3 </span><span class="caption-text">系统参数</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<section id="effects-of-changing-sampling-rate-and-pwm-frequency">
+<h2><span class="section-number">6.4.1. </span>更改采样率和 PWM 频率的影响<a class="headerlink" href="#effects-of-changing-sampling-rate-and-pwm-frequency" title="本标题的永久链接">¶</a></h2>
+<p>更改采样率或 PWM 频率会对系统设计产生一些影响。在大多数情况下，MCAF 的运行与这些选择无关；生成代码中的某些参数将具有取决于采样率和 PWM 频率的不同缩放因子，但净结果大致相同。motorBench<sup>®</sup> Development Suite 的自动整定功能将产生大致相同的电流环和速度环带宽。</p>
+<section id="pwm-frequency">
+<h3><span class="section-number">6.4.1.1. </span>PWM 频率<a class="headerlink" href="#pwm-frequency" title="本标题的永久链接">¶</a></h3>
+<ul class="simple">
+<li><p><strong>纹波电流幅值</strong> — 纹波电流幅值与 <span class="math notranslate nohighlight">\(VT\over L\)</span>成正比，因此一般来说纹波电流与 PWM 周期成正比，降低 PWM 频率将增加 PWM 频率谐波处的纹波电流幅值。</p></li>
+<li><p><strong>死区失真</strong> — 提高 PWM 频率会使死区时间占 PWM 周期的比例更大。这不仅增加了死区失真，还降低了电压的有效利用率，因为在相同死区时间下，较高的 PWM 频率会导致最大占空比降低、最小占空比增加。</p></li>
+<li><p><strong>开关损耗</strong> — 每个 PWM 周期的开关损耗能量 <span class="math notranslate nohighlight">\(E_{sw}\)</span> 取决于导通和关断期间的开关速度以及开关电压和电流。开关损耗中耗散的功率等于 <span class="math notranslate nohighlight">\(f_{\text{PWM}} \times E_{sw}\)</span>，因此提高开关频率会导致更高的开关功率耗散。</p></li>
+</ul>
+</section>
+<section id="sampling-rate">
+<h3><span class="section-number">6.4.1.2. </span>采样率<a class="headerlink" href="#sampling-rate" title="本标题的永久链接">¶</a></h3>
+<ul class="simple">
+<li><p><strong>CPU 使用率</strong> — MCAF 在固件中每次控制环更新运行大部分电机控制计算，因此提高采样率需要更高的 CPU 使用率。</p></li>
+<li><p><strong>电流环增益和带宽</strong> — 电流环增益（工程单位： <span class="math notranslate nohighlight">\(K_{ip}\)</span> 单位为 V/A， <span class="math notranslate nohighlight">\(K_{ii}\)</span> 单位为 V/As）会因采样延迟的影响而略有变化。这在激进（高带宽）电流环中最为明显，提高采样率会降低从输入采样到输出更新的延迟，并允许更快的电流环带宽。如果电流环带宽较低（低于 <span class="math notranslate nohighlight">\(f_{\text{PWM}}/50\)</span>），采样率的变化通常不明显。</p></li>
+<li><p><strong>速度环增益和带宽</strong> — 速度环增益受类似影响；提高速度采样率将允许更快的速度环最大带宽，但如果速度环带宽较低则影响不大。此外，由于速度控制环级联在电流环之外，激进的速度环将受电流环带宽限制。</p></li>
+<li><p><strong>诊断内核</strong> — 诊断内核与电流控制环在同一 ISR 中运行，因此提高采样率将增加向主机 PC 报告数据的速率，并增加通信带宽需求。</p></li>
+</ul>
+</section>
+<section id="compensating-parameters">
+<h3><span class="section-number">6.4.1.3. </span>补偿参数<a class="headerlink" href="#compensating-parameters" title="本标题的永久链接">¶</a></h3>
+<p>生成代码中的若干参数将补偿 PWM 频率和采样率的变化。（整定增益和 <a class="reference internal" href="ui-customization.zh.html#impl-customization"><span class="std std-ref">自定义应用参数</span></a> 始终以归一化无单位值或工程单位给出，与采样时间和 PWM 频率无关，但根据可能依赖于采样时间或 PWM 频率的缩放因子转换为定点表示。）</p>
+<ul class="simple">
+<li><p>时间延迟</p></li>
+<li><p>压摆率、斜坡率和加速度</p></li>
+<li><p>积分器增益</p></li>
+</ul>
+</section>
+</section>
+<section id="implementation-notes">
+<h2><span class="section-number">6.4.2. </span>实现说明<a class="headerlink" href="#implementation-notes" title="本标题的永久链接">¶</a></h2>
+<section id="revision-specific-information">
+<span id="impl-sampling-rate-revhist"></span><h3><span class="section-number">6.4.2.1. </span>版本特定信息<a class="headerlink" href="#revision-specific-information" title="本标题的永久链接">¶</a></h3>
+<ul class="simple">
+<li><p>R1–R5 仅支持 20 kHz 的固定采样率和 PWM 频率。某些增益和其他参数在计算时假设此频率。</p></li>
+<li><p>R6 增加了设置 PWM 频率的灵活性，采样率锁定为 PWM 频率。（见 <a class="reference internal" href="#impl-sampling-rate-restrictions"><span class="std std-ref">限制</span></a> 节。）</p>
+<ul>
+<li><p>如果使用 MCC Melody（dsPIC33C 器件的 MCAF R7），在 motorBench<sup>®</sup> Development Suite 的 Customize 页面中设置 PWM 频率将自动设置 Melody 生成代码中的外设寄存器。</p></li>
+<li><p>如果使用 MCC Classic（所有器件的 MCAF R6，或 dsPIC33E 器件的 MCAF R7），motorBench<sup>®</sup> Development Suite 中设置的 PWM 频率必须与 MCC 中选择的 PWM 频率一致。</p></li>
+</ul>
+</li>
+<li><p>R7 增加了算法相关的 PWM 模式，参见 <a class="reference internal" href="../components/hal.zh.html#hal-pwm-update-options"><span class="std std-ref">PWM 更新选项</span></a> 以获取更多详情。</p></li>
+</ul>
+</section>
+<section id="restrictions">
+<span id="impl-sampling-rate-restrictions"></span><h3><span class="section-number">6.4.2.2. </span>限制<a class="headerlink" href="#restrictions" title="本标题的永久链接">¶</a></h3>
+<p>在 MCAF R6–R9 中，采样率必须锁定为 PWM 频率的特定比例：</p>
+<ul class="simple">
+<li><p>电流采样时间 <span class="math notranslate nohighlight">\(T_{s,I}\)</span> 必须等于 PWM 周期，使大部分电机控制算法以 PWM 频率运行（<span class="math notranslate nohighlight">\(f_{\text{PWM}} \times T_{s,I} = 1\)</span>）</p></li>
+<li><p>速度采样时间 <span class="math notranslate nohighlight">\(T_{s,\omega}\)</span> 必须等于 PWM 周期的 20 倍，使速度控制器每 20 个 PWM 周期运行一次（<span class="math notranslate nohighlight">\(f_{\text{PWM}} \times T_{s,\omega} = 20\)</span>）</p></li>
+</ul>
+<p>这些限制将在未来版本的 MCAF 中移除。</p>
+</section>
+</section>
+<section id="testing">
+<h2><span class="section-number">6.4.3. </span>测试<a class="headerlink" href="#testing" title="本标题的永久链接">¶</a></h2>
+<p>MCAF R6 代码在多个 PWM 频率下进行了测试（电流采样率锁定为 PWM 频率，速度采样率锁定为 1/20 PWM 频率，遵循上述限制）：</p>
+<ul class="simple">
+<li><p>12.5kHz、20kHz 和 25kHz，用于确认 dsPIC33EP256MC506 和 dsPIC33CK256MP508 上的时序和 CPU 使用率</p></li>
+<li><p>10kHz、12.5kHz、16kHz 和 20kHz，用于验证整定与 PWM 频率和电流环采样率的一般独立性</p></li>
+<li><p>12.5kHz 和 20kHz，用于详细验证阶跃响应和估计器独立性，涵盖所有三种 <a class="reference internal" href="../algorithms/estimators.zh.html#algorithm-estimators"><span class="std std-ref">位置和速度估计器</span></a> （<a class="reference internal" href="../algorithms/atpll.zh.html#algorithm-atpll"><span class="std std-ref">ATPLL</span></a>， <a class="reference internal" href="../algorithms/pll.zh.html#algorithm-pll"><span class="std std-ref">PLL</span></a>， <a class="reference internal" href="../algorithms/qei.zh.html#algorithm-qei"><span class="std std-ref">正交编码器</span></a>）在 dsPIC33CK256MP508 上</p></li>
+</ul>
+<p>阶跃响应测试使用 <a class="reference internal" href="../components/testharness.zh.html#test-harness"><span class="std std-ref">测试框架</span></a> 添加 <a class="reference internal" href="../components/testharness.zh.html#test-perturbation"><span class="std std-ref">方波扰动</span></a> 到速度指令，并记录速度和电流。 <a class="reference internal" href="#fig-sampling-rate-test-current"><span class="std std-numref">图 6.4</span></a> 和 <a class="reference internal" href="#fig-sampling-rate-test-velocity"><span class="std std-numref">图 6.5</span></a> 显示了 ATPLL 的电流和速度阶跃响应，分别在 12.5kHz 和 20kHz PWM 频率下记录。注意，这些情况之间的阶跃响应变化很小，符合预期。</p>
+<figure class="align-center" id="id2">
+<span id="fig-sampling-rate-test-current"></span><img alt="../_images/2725-current-atpll.png" src="../_images/2725-current-atpll.png"/>
+<figcaption>
+<p><span class="caption-number">图 6.4 </span><span class="caption-text">电流对速度指令变化的阶跃响应（橙色 = q 轴电流指令，蓝色 = q 轴电流）</span><a class="headerlink" href="#id2" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id3">
+<span id="fig-sampling-rate-test-velocity"></span><img alt="../_images/2725-velocity-atpll.png" src="../_images/2725-velocity-atpll.png"/>
+<figcaption>
+<p><span class="caption-number">图 6.5 </span><span class="caption-text">速度对速度指令变化的阶跃响应（橙色 = 速度指令，蓝色 = 估计速度）</span><a class="headerlink" href="#id3" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">6.4. 采样率与 PWM 频率的影响</a><ul>
+<li><a class="reference internal" href="#effects-of-changing-sampling-rate-and-pwm-frequency">6.4.1. 更改采样率和 PWM 频率的影响</a><ul>
+<li><a class="reference internal" href="#pwm-frequency">6.4.1.1. PWM 频率</a></li>
+<li><a class="reference internal" href="#sampling-rate">6.4.1.2. 采样率</a></li>
+<li><a class="reference internal" href="#compensating-parameters">6.4.1.3. 补偿参数</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#implementation-notes">6.4.2. 实现说明</a><ul>
+<li><a class="reference internal" href="#revision-specific-information">6.4.2.1. 版本特定信息</a></li>
+<li><a class="reference internal" href="#restrictions">6.4.2.2. 限制</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#testing">6.4.3. 测试</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="ui-customization.zh.html" title="上一章"><span class="section-number">6.3. </span>参数定制</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="integration.zh.html" title="下一章"><span class="section-number">6.5. </span>与自定义代码的集成</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="integration.zh.html" title="6.5. Integration with Custom Code">下一页</a> |</li>
+<li class="right">
+<a href="ui-customization.zh.html" title="6.3. Parameter customization">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.4. </span>采样率与 PWM 频率的影响</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

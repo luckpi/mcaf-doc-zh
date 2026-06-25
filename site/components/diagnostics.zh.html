@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>4.8. 诊断内核 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="hal.zh.html" rel="next" title="4.9. Hardware Abstraction Layer (HAL)"/>
+<link href="ext-interface.zh.html" rel="prev" title="4.7. External Interface"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="hal.zh.html" title="4.9. Hardware Abstraction Layer (HAL)">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="ext-interface.zh.html" title="4.7. External Interface">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">4. </span>组件</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">4.8. </span>诊断内核</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="diagnostic-kernel">
+<span id="diag-kernel"></span><h1><span class="section-number">4.8. </span>诊断内核<a class="headerlink" href="#diagnostic-kernel" title="本标题的永久链接">¶</a></h1>
+<p></p>
+<p>诊断内核允许通过与外部主机 PC 交互来进行实时诊断和测试。目前有两个选项，可在 <a class="reference internal" href="../implementation/ui-customization.zh.html#customize-diagnostics-method"><span class="std std-ref">自定义页面</span></a> 的 motorBench<sup>®</sup> 开发套件中选择：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://x2cscope.github.io/">X2Cscope</a> 来自林茨机电一体化中心，用于 MPLAB<sup>®</sup> X 的 X2Cscope 插件。这是默认选项。</p></li>
+<li><p>“无”用于没有诊断 UART 的电路板配置或为了减少 <a class="reference internal" href="../implementation/resource-usage.zh.html#resource-usage-r8"><span class="std std-ref">CPU 使用率</span></a>。</p></li>
+</ul>
+<p>X2Cscope 被配置为在控制 <a class="reference internal" href="../appendix/glossary.zh.html#term-ISR"><span class="xref std std-term">ISR</span></a> （标称 20 kHz）时采样数据，并使用 UART 通道与主机 PC 通信。</p>
+<section id="implementation-notes">
+<h2><span class="section-number">4.8.1. </span>实现说明<a class="headerlink" href="#implementation-notes" title="本标题的永久链接">¶</a></h2>
+<section id="modules">
+<h3><span class="section-number">4.8.1.1. </span>模块<a class="headerlink" href="#modules" title="本标题的永久链接">¶</a></h3>
+<span id="index-0"></span><table class="components-table docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>模块</p></th>
+<th class="head"><p>文件</p></th>
+<th class="head"><p>描述</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">diagnostics</span></code></td>
+<td class="longcolumn-1"><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">diagnostics.c</span></code></div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">diagnostics.h</span></code></div>
+</div>
+</td>
+<td><p>顶层诊断</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">4.8. 诊断内核</a><ul>
+<li><a class="reference internal" href="#implementation-notes">4.8.1. 实现说明</a><ul>
+<li><a class="reference internal" href="#modules">4.8.1.1. 模块</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="ext-interface.zh.html" title="上一章"><span class="section-number">4.7. </span>外部接口</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="hal.zh.html" title="下一章"><span class="section-number">4.9. </span>硬件抽象层（HAL）</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="hal.zh.html" title="4.9. Hardware Abstraction Layer (HAL)">下一页</a> |</li>
+<li class="right">
+<a href="ext-interface.zh.html" title="4.7. External Interface">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">4. </span>组件</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">4.8. </span>诊断内核</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

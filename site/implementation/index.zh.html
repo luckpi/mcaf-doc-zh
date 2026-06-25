@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>6. 通用实现问题 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="source-tree-structure.zh.html" rel="next" title="6.1. Source Tree Structure"/>
+<link href="../algorithms/temperature-measure.zh.html" rel="prev" title="5.9. Temperature measurement"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="source-tree-structure.zh.html" title="6.1. Source Tree Structure">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="../algorithms/temperature-measure.zh.html" title="5.9. Temperature measurement">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">6. </span>通用实现问题</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="general-implementation-issues">
+<span id="implementation-issues"></span><h1><span class="section-number">6. </span>通用实现问题<a class="headerlink" href="#general-implementation-issues" title="本标题的永久链接">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source-tree-structure.zh.html">6.1. 源码树结构</a></li>
+<li class="toctree-l1"><a class="reference internal" href="codegen.zh.html">6.2. 代码生成</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="codegen.zh.html#relationship-with-mb-and-mcc">6.2.1. 与 motorBench 的关系<sup>®</sup> Development Suite 和 MCC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="codegen.zh.html#configurable-parameters">6.2.2. 可配置参数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="codegen.zh.html#source-file-organization">6.2.3. 源文件组织</a></li>
+<li class="toctree-l2"><a class="reference internal" href="codegen.zh.html#auxiliary-reports">6.2.4. 辅助报告</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ui-customization.zh.html">6.3. 参数定制</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ui-customization.zh.html#summary">6.3.1. 概要</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui-customization.zh.html#detailed-information">6.3.2. 详细信息</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sampling-rate.zh.html">6.4. 采样速率与 PWM 频率的影响</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sampling-rate.zh.html#effects-of-changing-sampling-rate-and-pwm-frequency">6.4.1. 改变采样速率和 PWM 频率的影响</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sampling-rate.zh.html#implementation-notes">6.4.2. 实现说明</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sampling-rate.zh.html#testing">6.4.3. 测试</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="integration.zh.html">6.5. 与自定义代码的集成</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="integration.zh.html#overview">6.5.1. 概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="integration.zh.html#modifying-the-main-application">6.5.2. 修改主应用</a></li>
+<li class="toctree-l2"><a class="reference internal" href="integration.zh.html#modifying-the-foc-module">6.5.3. 修改 FOC 模块</a></li>
+<li class="toctree-l2"><a class="reference internal" href="integration.zh.html#modifying-the-state-machine">6.5.4. 修改状态机</a></li>
+<li class="toctree-l2"><a class="reference internal" href="integration.zh.html#modifying-the-supervisory-algorithms">6.5.5. 修改监督算法</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="custom-board-support/index.zh.html">6.6. 定制板卡支持</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="custom-board-support/overview.zh.html">6.6.1. motorBench 中的板卡支持概述<sup>®</sup> Development Suite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom-board-support/overview.zh.html#scope-of-hardware-support">6.6.2. 硬件支持范围</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom-board-support/overview.zh.html#board-definition-file-structure">6.6.3. 板卡定义文件结构</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom-board-support/overview.zh.html#system-parameters">6.6.4. 系统参数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom-board-support/configuration.zh.html">6.6.5. 创建定制板卡配置</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom-board-support/configuration.zh.html#board-definition-file-validation">6.6.6. 板卡定义文件验证</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom-board-support/configuration.zh.html#support-for-mcp802x-gate-drivers-including-mcp8021-based-sip-system-in-package-devices">6.6.7. 对 MCP802X 栅极驱动器的支持，包括基于 MCP8021 的 SiP（系统级封装）器件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom-board-support/verification.zh.html">6.6.8. 验证与板卡调试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom-board-support/custom_board_definitions.zh.html">6.6.9. 定制板卡定义格式</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="resource-usage.zh.html">6.7. 资源占用</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="resource-usage.zh.html#test-case">6.7.1. 测试用例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resource-usage.zh.html#usage-statistics-for-mcaf-r3">6.7.2. MCAF R3 的资源占用统计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resource-usage.zh.html#usage-statistics-for-mcaf-r4">6.7.3. MCAF R4 的资源占用统计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resource-usage.zh.html#usage-statistics-for-mcaf-r5">6.7.4. MCAF R5 的资源占用统计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resource-usage.zh.html#usage-statistics-for-mcaf-r6">6.7.5. MCAF R6 的资源占用统计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resource-usage.zh.html#usage-statistics-for-mcaf-r7">6.7.6. MCAF R7 的资源占用统计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resource-usage.zh.html#usage-statistics-for-mcaf-r8">6.7.7. MCAF R8 的资源占用统计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resource-usage.zh.html#usage-statistics-for-mcaf-r9">6.7.8. MCAF R9 的资源占用统计</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resource-usage.zh.html#changes-between-mcaf-revisions">6.7.9. MCAF 各修订版之间的变化</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="../algorithms/temperature-measure.zh.html" title="上一章"><span class="section-number">5.9. </span>温度测量</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="source-tree-structure.zh.html" title="下一章"><span class="section-number">6.1. </span>源码树结构</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="source-tree-structure.zh.html" title="6.1. Source Tree Structure">下一页</a> |</li>
+<li class="right">
+<a href="../algorithms/temperature-measure.zh.html" title="5.9. Temperature measurement">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">6. </span>通用实现问题</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

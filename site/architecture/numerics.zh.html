@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>3.8. 数值算法处理 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="../components/index.zh.html" rel="next" title="4. Components"/>
+<link href="statemach.zh.html" rel="prev" title="3.7. State Machine"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="../components/index.zh.html" title="4. Components">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="statemach.zh.html" title="3.7. State Machine">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">3. </span>架构</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">3.8. </span>数值算法处理</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="treatment-of-numerical-algorithms">
+<span id="numerics"></span><h1><span class="section-number">3.8. </span>数值算法处理<a class="headerlink" href="#treatment-of-numerical-algorithms" title="本标题的永久链接">¶</a></h1>
+<section id="numerical-representation">
+<h2><span class="section-number">3.8.1. </span>数值表示<a class="headerlink" href="#numerical-representation" title="本标题的永久链接">¶</a></h2>
+<p>MCAF 目前仅使用定点（而非浮点）计算。大多数状态变量和参数表示为 Q15 定点数，存储在有符号 16 位整数（<code class="docutils literal notranslate"><span class="pre">int16_t</span></code>），还有少量 32 位值（通常在积分器或滤波器状态中）和少数无符号 Q15 16 位值。某些增益在适当时使用其他缩放因子（如 Q11 或可变移位）。</p>
+<section id="normalization-factors">
+<span id="normfactors"></span><h3><span class="section-number">3.8.1.1. </span>归一化因子<a class="headerlink" href="#normalization-factors" title="本标题的永久链接">¶</a></h3>
+<p>自 MCAF R3 起使用的主要归一化因子如下所示。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>量</p></th>
+<th class="head"><p>因子（通用）</p></th>
+<th class="head"><p>MCLV-2 使用的因子</p></th>
+<th class="head"><p>MCHV（MCHV-2 和 MCHV-3）使用的因子</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>电压</p></td>
+<td><p>最大 <a class="reference internal" href="../appendix/glossary.zh.html#term-ADC"><span class="xref std std-term">ADC</span></a> 直流母线输入</p></td>
+<td><p>52.8V</p></td>
+<td><p>453.3V</p></td>
+</tr>
+<tr class="row-odd"><td><p>电流</p></td>
+<td><p>最大相电流测量值的两倍，这为增益校准留出了空间，并避免了 Park 和 Clarke 变换中的溢出，代价是低端分辨率降低。</p></td>
+<td><p>8.8A</p></td>
+<td><p>32.8A</p></td>
+</tr>
+<tr class="row-even"><td><p>速度</p></td>
+<td colspan="3"><p>自 MCAF R6 起， <a class="reference internal" href="../implementation/ui-customization.zh.html#customize-operation-fullscale-base-ratio"><span class="std std-ref">满量程速度</span></a> 归一化因子在 motorBench<sup>®</sup> Development Suite 的 Customize 页面上设置。</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="constants-in-code">
+<h2><span class="section-number">3.8.2. </span>代码中的常量<a class="headerlink" href="#constants-in-code" title="本标题的永久链接">¶</a></h2>
+<p id="index-0">如果选择常量值的原因不明确，代码中的常量有时被认为是“魔数”。我们尽量避免在电机控制应用框架中出现这种情况。</p>
+<p>电机控制应用框架中使用的常量通常分为五类之一。</p>
+<ol class="arabic">
+<li><p><strong>自动计算的值</strong>：在 <code class="docutils literal notranslate"><span class="pre">parameters/</span></code> 目录中，在头文件或 C 运行时初始化函数中——这些值由 motorBench<sup>®</sup> Development Suite 在自动整定和代码生成步骤中计算。我们不建议手动更改这些值。对于定点整数常量，通常会附带注释，指示浮点等效值和相应的工程值，以及量化精度，例如：</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#define KIP             8696    </span><span class="c1">// Q15(  0.26538) = +414.67629 mV/A     = +414.65940 mV/A    + 0.0041%</span>
+<span class="cp">#define KII              643    </span><span class="c1">// Q15(  0.01962) = +613.24024 V/A/s    = +613.20687 V/A/s   + 0.0054%</span>
+</pre></div>
+</div>
+<p>在许多其他任务中，我们正在努力改进代码中的文档，以阐明这些常量是如何计算的，或者至少它们依赖于哪些因子。在某些情况下，这些计算是 motorBench<sup>®</sup> Development Suite 的 Customize 页面上设置。</p>
+</li>
+<li><p><strong>硬件抽象层的一部分</strong>：在 <code class="docutils literal notranslate"><span class="pre">hal/</span></code> 目录中。这些旨在与 MCC 自动生成的输出保持一致，并最终被其替换。</p></li>
+<li><p><strong>“显而易见”的值（位于 C 源文件中）</strong> 在 <code class="docutils literal notranslate"><span class="pre">parameters/</span></code> 目录之外的 C 源文件中，包括下面的一些示例。在这些情况下，将它们隐藏在抽象的符号常量后面反而会模糊而非澄清其用法。如果您发现某个示例中它们似乎不合适，请告知我们，我们将考虑替代方案。</p>
+<ul class="simple">
+<li><p>0</p></li>
+<li><p>+1 或 -1 作为符号/方向值</p></li>
+<li><p>最大表示值，如 0xFFFF 或 0x7FFF</p></li>
+<li><p>移位计数，例如 <code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span> <span class="pre">16</span></code> 当从 <code class="docutils literal notranslate"><span class="pre">int32_t</span></code> 转换为 <code class="docutils literal notranslate"><span class="pre">int16_t</span></code>，或 <code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span> <span class="pre">N</span></code> 其中乘以 QN 定点数时，N 的值在代码注释中说明</p></li>
+<li><p>循环展开的数组索引</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_DelayNanoseconds(500);</span></code> （用于输出“短脉冲”，如随附注释中所述）</p></li>
+</ul>
+</li>
+<li><p><strong>手工计算的常量，附带注释解释其推导过程</strong> ——这些不常见；如果有任何不明确之处，请告知我们。</p></li>
+<li><p><strong>遗留代码常量</strong> ——如果由于某种原因您注意到代码中的常量不属于上述任何类别，那可能是疏忽，在这种情况下请告知我们。</p></li>
+</ol>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">3.8. 数值算法处理</a><ul>
+<li><a class="reference internal" href="#numerical-representation">3.8.1. 数值表示</a><ul>
+<li><a class="reference internal" href="#normalization-factors">3.8.1.1. 归一化因子</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#constants-in-code">3.8.2. 代码中的常量</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="statemach.zh.html" title="上一章"><span class="section-number">3.7. </span>状态机</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="../components/index.zh.html" title="下一章"><span class="section-number">4. </span>组件</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="../components/index.zh.html" title="4. Components">下一页</a> |</li>
+<li class="right">
+<a href="statemach.zh.html" title="3.7. State Machine">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">3. </span>架构</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">3.8. </span>数值算法处理</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

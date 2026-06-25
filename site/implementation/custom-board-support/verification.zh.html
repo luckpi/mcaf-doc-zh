@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>6.6.8. 验证与板级调试 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../../_static/rendermath.js"></script>
+<script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/svgcrop.js"></script>
+<script src="../../_static/mcaf-styling.js"></script>
+<link href="../../genindex.zh.html" rel="index" title="Index"/>
+<link href="../../search.zh.html" rel="search" title="Search"/>
+<link href="custom_board_definitions.zh.html" rel="next" title="6.6.9. Custom board definition format"/>
+<link href="configuration.zh.html" rel="prev" title="6.6.5. Creating a custom board configuration"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="custom_board_definitions.zh.html" title="6.6.9. Custom board definition format">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="configuration.zh.html" title="6.6.5. Creating a custom board configuration">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.zh.html"><span class="section-number">6.6. </span>自定义板级支持</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.6.8. </span>验证与板级调试</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="verification-and-board-bring-up">
+<span id="custom-board-verification"></span><h1><span class="section-number">6.6.8. </span>验证与板级调试<a class="headerlink" href="#verification-and-board-bring-up" title="本标题的永久链接">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">6.6.8.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
+<p>本节提供在创建并导入新板级定义后，首次使用 MCAF 调试自定义板的指导。</p>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>在充分信任 motorBench 中的板级定义和板设计/构建之前，请使用限流电源为自定义板供电。</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">注意</p>
+<p><strong>不要尝试连接或启动电机</strong> 在首次编程 MCC 生成的代码后。请按照以下步骤操作以降低硬件损坏风险。</p>
+</div>
+<section id="recommended-equipment">
+<h3><span class="section-number">6.6.8.1.1. </span>推荐设备<a class="headerlink" href="#recommended-equipment" title="本标题的永久链接">¶</a></h3>
+<p>除了所需的电机和自定义板外，我们推荐：</p>
+<ul class="simple">
+<li><p>非接触式电流探头（如 Chauvin Arnoux E3N 或 AEMC SL261），用于测量相电流。</p></li>
+<li><p>用于低压系统的三相交流发电机定子，作为电机负载的替代方案；例如， <a class="reference external" href="https://www.delcoremy.com/find-a-part/product-details/10470688/part-21si-stator-24-volt-50-amp">Delco Remy 10470688 21SI (24V 50A)</a>。</p></li>
+</ul>
+</section>
+<section id="general-procedure">
+<span id="custom-board-verify-execution"></span><h3><span class="section-number">6.6.8.1.2. </span>一般流程<a class="headerlink" href="#general-procedure" title="本标题的永久链接">¶</a></h3>
+<p>在高层面上，我们建议使用新板时遵循以下步骤：</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#custom-board-verify-execution"><span class="std std-ref">固件执行</span></a>：板是否正常执行？（心跳 LED、PWM 通道、实时诊断连接）</p></li>
+<li><p><a class="reference internal" href="#custom-board-verify-open-loop-operation"><span class="std std-ref">验证开环电压运行</span></a></p></li>
+</ol>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p><a class="reference internal" href="#custom-board-verify-configure-open-loop"><span class="std std-ref">配置系统为开环电压运行</span></a></p></li>
+<li><p><a class="reference internal" href="#custom-board-verify-pwm"><span class="std std-ref">验证 PWM</span></a> 运行：确保 PWM 输出正在切换。</p></li>
+<li><p><a class="reference internal" href="#custom-board-verify-dc-link"><span class="std std-ref">验证 DC 母线</span></a> 电压测量在预期范围内。</p></li>
+<li><p><a class="reference internal" href="#custom-board-verify-overcurrent-fault"><span class="std std-ref">测试过流故障</span></a> 功能。</p></li>
+<li><p><a class="reference internal" href="#custom-board-verify-current-measure"><span class="std std-ref">验证电流测量</span></a>。</p></li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p><a class="reference internal" href="#custom-board-verify-closed-loop-current"><span class="std std-ref">验证闭环电流</span></a> 控制。</p></li>
+</ol>
+</section>
+</section>
+<section id="general-firmware-execution">
+<h2><span class="section-number">6.6.8.2. </span>一般固件执行<a class="headerlink" href="#general-firmware-execution" title="本标题的永久链接">¶</a></h2>
+<p>寻找 CPU 正确执行和时序正确的迹象：</p>
+<ul class="simple">
+<li><p>“心跳 LED”——如果板上有此 LED，正常运行时将以 1Hz 速率闪烁，或在故障状态下闪烁错误代码（见 <a class="reference internal" href="../../components/ext-interface.zh.html#ext-interface-leds"><span class="std std-ref">外部接口</span></a>）</p></li>
+<li><p>PWM 通道——如果板未处于故障状态，PWM 低侧通道 (PWMxL) 将以 <a class="reference internal" href="../../components/hal.zh.html#hardware-pwm-minimal-impact"><span class="std std-ref">“最小影响”状态</span></a> 按指定 PWM 频率切换。</p></li>
+<li><p>测试点 <code class="docutils literal notranslate"><span class="pre">MCAF_TESTPOINT1</span></code>（如有）——应有 PWM 开关频率的脉冲，表示 MCAF ADC ISR 执行的时间间隔。</p></li>
+<li><p><a class="reference internal" href="../../components/diagnostics.zh.html#diag-kernel"><span class="std std-ref">实时诊断</span></a> 连接 (X2Cscope)——板应能与实时诊断软件通信。</p></li>
+</ul>
+<p>如果这些不能正常工作，可能是 CPU 未以正确频率运行的问题。</p>
+</section>
+<section id="open-loop-voltage-operation">
+<span id="custom-board-verify-open-loop-operation"></span><h2><span class="section-number">6.6.8.3. </span>开环电压运行<a class="headerlink" href="#open-loop-voltage-operation" title="本标题的永久链接">¶</a></h2>
+<p>该 <a class="reference internal" href="../../components/testharness.zh.html#test-harness"><span class="std std-ref">测试框架</span></a> 可用于在 <a class="reference internal" href="../../components/testharness.zh.html#test-mode-vdq"><span class="std std-ref">开环电压模式</span></a> 下运行控制器，其中 PWM 输出以强制换相频率驱动，输出以正弦变化的线间占空比驱动 PWM。每相具有单独的占空比，遵循空间矢量 PWM / 零序调制的特征双峰波形，如 <a class="reference internal" href="#fig-zsm-waveforms"><span class="std std-numref">图 6.11</span></a>。</p>
+<figure class="align-center" id="id1">
+<span id="fig-zsm-waveforms"></span><img alt="../../_images/zsm_waveforms.png" src="../../_images/zsm_waveforms.png"/>
+<figcaption>
+<p><span class="caption-number">图 6.11 </span><span class="caption-text">零序调制波形作为换相角的函数。深色曲线为线对负母线电压，浅色曲线为线对中性点电压。灰色曲线 <span class="math notranslate nohighlight">\(z_0\)</span> 是零序电压（三个线电压的平均值，即中性点对负母线电压），在换相周期内上下移动以使线电压范围居中于可用 DC 母线电压范围内。</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<ul class="simple">
+<li><p>确保板的电机端子开路（未连接任何电机或负载）</p></li>
+<li><p>按照 <a class="reference internal" href="#table-open-loop-voltage-operation"><span class="std std-numref">表 6.2</span></a> 中的步骤准备控制器以使用开环电压控制进行验证。</p></li>
+</ul>
+<span id="custom-board-verify-configure-open-loop"></span><table class="docutils align-center" id="table-open-loop-voltage-operation">
+<caption><span class="caption-number">表 6.2 </span><span class="caption-text">启用开环电压控制</span><a class="headerlink" href="#table-open-loop-voltage-operation" title="本表格的永久链接">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>步骤</p></th>
+<th class="head"><p>程序变量</p></th>
+<th class="head"><p>值</p></th>
+<th class="head"><p>注释</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>定义宏 <code class="docutils literal notranslate"><span class="pre">MCAF_TEST_HARNESS</span></code> 于 options.h 中。</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>构建项目并编程到测试硬件。</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">systemData.testing.guard.key</span></code></p></td>
+<td><p>0xD1A6 (53670)</p></td>
+<td><p>用于启用测试模式的自动关断——见 <a class="reference internal" href="../../components/testharness.zh.html#test-guard-impl"><span class="std std-ref">测试保护的实现</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">motor.testing.operatingMode</span></code></p></td>
+<td><p>0</p></td>
+<td><p>在配置所需测试用例之前，将测试框架模式设为正常运行。——见 <a class="reference internal" href="../../components/testharness.zh.html#test-modes"><span class="std std-ref">测试框架模式</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">motor.vdqCmd.d</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">motor.vdqCmd.q</span></code></p>
+</td>
+<td><p>0</p></td>
+<td><p>将 <code class="docutils literal notranslate"><span class="pre">vdqCmd</span></code> 的 d 轴和 q 轴分量均设为 0。</p></td>
+</tr>
+<tr class="row-odd"><td><p>6</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">motor.testing.overrides</span></code></p></td>
+<td><p>2</p></td>
+<td><p>覆盖换相角——见 <a class="reference internal" href="../../components/testharness.zh.html#test-overrides-commutation"><span class="std std-ref">换相覆盖</span></a></p></td>
+</tr>
+<tr class="row-even"><td><p>7</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">motor.testing.overrideOmegaElectrical</span></code></p></td>
+<td><p>按需</p></td>
+<td><p>较小的值允许电气角度缓慢变化；例如， <code class="docutils literal notranslate"><span class="pre">overrideOmegaElectrical</span></code> 设为 1 计数时， <code class="docutils literal notranslate"><span class="pre">motor.thetaElectrical</span></code> 在 65536 次电流环更新中完成一个完整电气周期，或在 20 kHz 控制 ISR 下为 3.2768 秒。在此类测试中，0 到 50 计数（20 kHz 控制 ISR 下 15.25 Hz 电气频率）的值是典型的。</p></td>
+</tr>
+<tr class="row-odd"><td><p>8</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">motor.testing.operatingMode</span></code></p></td>
+<td><p>1</p></td>
+<td><p>将测试框架模式设为强制 dq 轴电压——见 <a class="reference internal" href="../../components/testharness.zh.html#test-mode-vdq"><span class="std std-ref">测试框架模式</span></a></p></td>
+</tr>
+</tbody>
+</table>
+<section id="verify-pwm-operation">
+<span id="custom-board-verify-pwm"></span><h3><span class="section-number">6.6.8.3.1. </span>验证 PWM 运行<a class="headerlink" href="#verify-pwm-operation" title="本标题的永久链接">¶</a></h3>
+<p>在电机与任何负载断开的情况下，缓慢增加逆变器的 dq 轴参考电压 <code class="docutils literal notranslate"><span class="pre">motor.vdqCmd.d</span></code> 从零开始。在每一步，观察以下内容：</p>
+<ul class="simple">
+<li><p>检查 PWM 输出的占空比是否以预期电气频率变化 <code class="docutils literal notranslate"><span class="pre">motor.testing.overrideOmegaElectrical</span></code>。</p></li>
+<li><p>验证 <a class="reference internal" href="../../algorithms/dead-time-comp.zh.html#dtc-definition"><span class="std std-ref">死区时间</span></a> 是否如预期出现在数字栅极驱动信号中。</p></li>
+<li><p>确保晶体管导通瞬态正常。</p></li>
+<li><p>检查每个半桥输出，确保其在 0V 和 DC 母线电压之间如预期摆动。</p></li>
+</ul>
+</section>
+<section id="verify-dc-link-voltage-measurement">
+<span id="custom-board-verify-dc-link"></span><h3><span class="section-number">6.6.8.3.2. </span>验证 DC 母线电压测量<a class="headerlink" href="#verify-dc-link-voltage-measurement" title="本标题的永久链接">¶</a></h3>
+<p>如果可以使用可调电源操作板，在预期范围内上下调节，检查 ADC 读取的电压是否落在给定 DC 母线电压的预期容差范围内。</p>
+</section>
+<section id="verify-hardware-overcurrent-fault">
+<span id="custom-board-verify-overcurrent-fault"></span><h3><span class="section-number">6.6.8.3.3. </span>验证硬件过流故障<a class="headerlink" href="#verify-hardware-overcurrent-fault" title="本标题的永久链接">¶</a></h3>
+<ol class="arabic simple">
+<li><p>通过将微控制器的过流检测输入连接到适当的电源轨来手动触发过流输入，具体取决于 <code class="docutils literal notranslate"><span class="pre">peripherals.pwm.fault.polarity</span></code> （见 <a class="reference internal" href="custom_board_definitions.zh.html#custom-board-pwm-fault"><span class="std std-ref">自定义板级 schema</span></a>）：</p>
+<ul class="simple">
+<li><p>至 Vss（<code class="docutils literal notranslate"><span class="pre">polarity</span></code> = <code class="docutils literal notranslate"><span class="pre">active-low</span></code>）</p></li>
+<li><p>至 Vdd（<code class="docutils literal notranslate"><span class="pre">polarity</span></code> = <code class="docutils literal notranslate"><span class="pre">active-high</span></code>）</p></li>
+</ul>
+</li>
+<li><p>验证 PWM 输出停止切换。</p></li>
+<li><p>复位过流输入（如果使用 <a class="reference internal" href="../../components/main.zh.html#sample-application"><span class="std std-ref">示例应用</span></a>，按下主按钮）。</p></li>
+<li><p>验证 PWM 输出重新开始切换。</p></li>
+</ol>
+</section>
+<section id="verify-scaling-and-polarity-of-current-measurement">
+<span id="custom-board-verify-current-measure"></span><h3><span class="section-number">6.6.8.3.4. </span>验证电流测量的缩放和极性<a class="headerlink" href="#verify-scaling-and-polarity-of-current-measurement" title="本标题的永久链接">¶</a></h3>
+<ol class="arabic">
+<li><p>确保测试框架按 <a class="reference internal" href="#table-open-loop-voltage-operation"><span class="std std-numref">表 6.2</span></a></p></li>
+<li><p>连接三相感性负载（交流发电机定子或测试电机）。</p>
+<div class="admonition note">
+<p class="admonition-title">注意</p>
+<p>如果使用电机，为防止反电动势影响测量，请采取以下任一方法：</p>
+<ul class="simple">
+<li><p>锁定转子使其不动</p></li>
+<li><p>将电气频率 <code class="docutils literal notranslate"><span class="pre">motor.testing.overrideOmegaElectrical</span></code> 设为零</p></li>
+</ul>
+</div>
+</li>
+<li><p>增加 d 轴电压 <code class="docutils literal notranslate"><span class="pre">motor.vdqCmd.d</span></code> 逐步增加，直到适量电流（最大连续电流的 10-20%）流过电机相位。所需电压约为 <span class="math notranslate nohighlight">\(\delta_1V_{dc}+IR\)</span> 其中 <span class="math notranslate nohighlight">\(\delta_1\)</span> 为 <a class="reference internal" href="../../algorithms/dead-time-comp.zh.html#dtc-definition"><span class="std std-ref">死区时间</span></a>，以占空比表示，IR 为电机绕组上的线对中性点电压降。每次增加 5–20 计数即可。</p>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>根据电气角度 <code class="docutils literal notranslate"><span class="pre">motor.thetaElectrical</span></code>，一个电机相位的电流可能接近零，即使其他两相有电流流过。确保至少测量两个电机相位的电流，以确保电机相电流不过大。或者，使用足够大的 <code class="docutils literal notranslate"><span class="pre">motor.testing.overrideOmegaElectrical</span></code> 值以确保至少 5 Hz 电气频率，同时调节 d 轴电压，使电气角度平滑变化且所有相位均可见电流。</p>
+</div>
+</li>
+<li><p>设置 <code class="docutils literal notranslate"><span class="pre">motor.testing.overrideOmegaElectrical</span></code> 为零，使电压和电流为直流。</p></li>
+<li><p>用电流探头测量实际相电流，并与固件中 <code class="docutils literal notranslate"><span class="pre">motor.iabc</span></code> 结构中的数字化电流比较；测量值和数字化电流应在合理范围内。</p></li>
+<li><p>验证正向数字化电流与 <a class="reference internal" href="../../algorithms/foc/current_measure.zh.html#foc-current-sense-polarity"><span class="std std-ref">预期电流方向</span></a>。</p></li>
+</ol>
+</section>
+</section>
+<section id="closed-loop-current-control">
+<span id="custom-board-verify-closed-loop-current"></span><h2><span class="section-number">6.6.8.4. </span>闭环电流控制<a class="headerlink" href="#closed-loop-current-control" title="本标题的永久链接">¶</a></h2>
+<p>在此步骤中，将使用感性负载（电机或定子）以闭环电流控制运行 MCAF，指令电流设为较小的期望值并叠加方波扰动。（示例见 <a class="reference internal" href="../../algorithms/foc/tuning.zh.html#fig-ituning-2-1200"><span class="std std-numref">图 5.27</span></a> 中的 <a class="reference internal" href="../../algorithms/foc/tuning.zh.html#ituning-examples"><span class="std std-ref">整定不良和整定良好的电流环示例</span></a>）</p>
+<p>如 <a class="reference external" href="../../dataflow-diagram/dataflow-diagrams.zh.html">数据流图</a>所示，有三组重要的 dq 轴电流：</p>
+<blockquote>
+<div><table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>程序变量</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">motor.idqCmdRaw.d</span></code> <br/> <code class="docutils literal notranslate"><span class="pre">motor.idqCmdRaw.q</span></code></p></td>
+<td><p>扰动前的期望 dq 轴电流</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">motor.idqCmd.d</span></code> <br/> <code class="docutils literal notranslate"><span class="pre">motor.idqCmd.q</span></code></p></td>
+<td><p>包含扰动的期望 dq 轴电流 <br/> （电流控制器的指令输入）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">motor.idq.d</span></code> <br/> <code class="docutils literal notranslate"><span class="pre">motor.idq.q</span></code></p></td>
+<td><p>测量的 dq 轴电流</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>此步骤的目标是确保测量电流 <code class="docutils literal notranslate"><span class="pre">motor.idq</span></code> 跟随指令电流 <code class="docutils literal notranslate"><span class="pre">motor.idqCmd</span></code>；应使用实时诊断软件检查这些电流的 d 轴和 q 轴分量。</p>
+<p>使用 <a class="reference internal" href="../../components/testharness.zh.html#test-harness"><span class="std std-ref">测试框架</span></a>：</p>
+<ol class="arabic simple">
+<li><p>确保 MCAF 初始化为强制换相：</p>
+<ol class="loweralpha simple">
+<li><p>设置 <code class="docutils literal notranslate"><span class="pre">systemData.testing.guardKey</span> <span class="pre">=</span> <span class="pre">0xD1A6</span></code> (53670)</p></li>
+<li><p>设置 <code class="docutils literal notranslate"><span class="pre">motor.testing.operatingMode</span> <span class="pre">=</span> <span class="pre">0</span></code> <br/> （<a class="reference internal" href="../../components/testharness.zh.html#test-mode-disabled"><span class="std std-ref">OM_DISABLED</span></a> 以保持输出晶体管处于最小影响状态）</p></li>
+<li><p>设置 <code class="docutils literal notranslate"><span class="pre">motor.testing.overrides</span> <span class="pre">=</span> <span class="pre">2</span></code> <br/> （<a class="reference internal" href="../../components/testharness.zh.html#test-overrides-commutation"><span class="std std-ref">换相覆盖</span></a> 以强制换相）</p></li>
+</ol>
+</li>
+<li><p>设置 <code class="docutils literal notranslate"><span class="pre">motor.testing.overrideOmegaElectrical</span> <span class="pre">=</span> <span class="pre">0</span></code> 以强制固定换相角</p></li>
+<li><p>设置 <code class="docutils literal notranslate"><span class="pre">motor.idqCmdRaw.d</span></code> 和 <code class="docutils literal notranslate"><span class="pre">motor.idqCmdRaw.q</span></code> 设为零</p></li>
+<li><p>设置 <code class="docutils literal notranslate"><span class="pre">motor.testing.operatingMode</span> <span class="pre">=</span> <span class="pre">2</span></code> <br/> （<a class="reference internal" href="../../components/testharness.zh.html#test-mode-current"><span class="std std-ref">OM_FORCE_CURRENT</span></a> 以闭环电流控制运行控制器，但禁用外环）</p></li>
+<li><p>设置 <code class="docutils literal notranslate"><span class="pre">motor.idqCmdRaw.d</span></code> 设为适中值（例如额定连续电流的 10-25%；见 <code class="docutils literal notranslate"><span class="pre">CURRENT_MAXIMUM_COMMAND</span></code> 于 sat_PI_params.h）</p></li>
+</ol>
+<p>验证测量的 d 轴和 q 轴电流（<code class="docutils literal notranslate"><span class="pre">motor.idq.d</span></code> 和 <code class="docutils literal notranslate"><span class="pre">motor.idq.q</span></code>）跟随各自的指令电流（<code class="docutils literal notranslate"><span class="pre">motor.idqCmd.d</span></code> 和 <code class="docutils literal notranslate"><span class="pre">motor.idqCmd.q</span></code>）。</p>
+<p>添加扰动方波信号，如 <a class="reference internal" href="../../components/testharness.zh.html#test-perturbation-symmetric"><span class="std std-ref">测试框架</span></a>所述，到 d 轴电流指令：</p>
+<ol class="arabic simple" start="6">
+<li><p>设置 <code class="docutils literal notranslate"><span class="pre">motor.testing.sqwave.idq.q</span></code> 设为零</p></li>
+<li><p>设置 <code class="docutils literal notranslate"><span class="pre">motor.testing.sqwave.idq.d</span></code> 设为较小值（建议为 <code class="docutils literal notranslate"><span class="pre">motor.idqCmdRaw.d</span></code> 中使用的值的一半）</p></li>
+<li><p>设置 <code class="docutils literal notranslate"><span class="pre">motor.testing.sqwave.halfPeriod</span></code> 设为中频（建议 10Hz–100Hz）</p></li>
+<li><p>设置 <code class="docutils literal notranslate"><span class="pre">motor.testing.sqwave.value</span></code> 设为 1，以启用扰动</p></li>
+</ol>
+<p>验证测量的 d 轴和 q 轴电流（<code class="docutils literal notranslate"><span class="pre">motor.idq.d</span></code> 和 <code class="docutils literal notranslate"><span class="pre">motor.idq.q</span></code>）跟随各自的指令电流（<code class="docutils literal notranslate"><span class="pre">motor.idqCmd.d</span></code> 和 <code class="docutils literal notranslate"><span class="pre">motor.idqCmd.q</span></code>）。</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">6.6.8. 验证与板级调试</a><ul>
+<li><a class="reference internal" href="#overview">6.6.8.1. 概述</a><ul>
+<li><a class="reference internal" href="#recommended-equipment">6.6.8.1.1. 推荐设备</a></li>
+<li><a class="reference internal" href="#general-procedure">6.6.8.1.2. 一般流程</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#general-firmware-execution">6.6.8.2. 一般固件执行</a></li>
+<li><a class="reference internal" href="#open-loop-voltage-operation">6.6.8.3. 开环电压运行</a><ul>
+<li><a class="reference internal" href="#verify-pwm-operation">6.6.8.3.1. 验证 PWM 运行</a></li>
+<li><a class="reference internal" href="#verify-dc-link-voltage-measurement">6.6.8.3.2. 验证 DC 母线电压测量</a></li>
+<li><a class="reference internal" href="#verify-hardware-overcurrent-fault">6.6.8.3.3. 验证硬件过流故障</a></li>
+<li><a class="reference internal" href="#verify-scaling-and-polarity-of-current-measurement">6.6.8.3.4. 验证电流测量的缩放和极性</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#closed-loop-current-control">6.6.8.4. 闭环电流控制</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="configuration.zh.html" title="上一章"><span class="section-number">6.6.5. </span>创建自定义板级配置</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="custom_board_definitions.zh.html" title="下一章"><span class="section-number">6.6.9. </span>自定义板级定义格式</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="custom_board_definitions.zh.html" title="6.6.9. Custom board definition format">下一页</a> |</li>
+<li class="right">
+<a href="configuration.zh.html" title="6.6.5. Creating a custom board configuration">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.zh.html"><span class="section-number">6.6. </span>自定义板级支持</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.6.8. </span>验证与板级调试</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../../_static/lang-switch.js"></script>
+</body>
+</html>

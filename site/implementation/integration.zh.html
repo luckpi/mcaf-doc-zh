@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>6.5. 与自定义代码的集成 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="custom-board-support/index.zh.html" rel="next" title="6.6. Custom Board Support"/>
+<link href="sampling-rate.zh.html" rel="prev" title="6.4. Sampling Rate and PWM Frequency Implications"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="custom-board-support/index.zh.html" title="6.6. Custom Board Support">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="sampling-rate.zh.html" title="6.4. Sampling Rate and PWM Frequency Implications">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.5. </span>与自定义代码的集成</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="integration-with-custom-code">
+<span id="integration"></span><h1><span class="section-number">6.5. </span>与自定义代码的集成<a class="headerlink" href="#integration-with-custom-code" title="本标题的永久链接">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">6.5.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
+<p>电机控制应用框架及附带的 <a class="reference internal" href="../components/main.zh.html#sample-application"><span class="std std-ref">示例应用</span></a> 设计为使 motorBench<sup>®</sup> Development Suite 生成的代码可在以下开发板上作为演示项目直接使用，无需修改：</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://www.microchip.com/DevelopmentTools/ProductDetails/dm330021-2">dsPICDEM<sup>®</sup> MCLV-2 开发板</a></p></li>
+<li><p><a class="reference external" href="https://www.microchip.com/DevelopmentTools/ProductDetails/dm330023-2">dsPICDEM<sup>®</sup> MCHV-2 开发板</a></p></li>
+<li><p><a class="reference external" href="https://www.microchip.com/DevelopmentTools/ProductDetails/dm330023-3">dsPICDEM<sup>®</sup> MCHV-3 开发板</a></p></li>
+<li><p><a class="reference external" href="https://www.microchip.com/en-us/development-tool/DM330031">dsPIC33CK 低压电机控制 (LVMC) 开发板</a></p></li>
+<li><p><a class="reference external" href="https://www.microchip.com/en-us/development-tool/EV18H47A">MCS MCLV-48V-300W 开发板</a></p></li>
+<li><p><a class="reference external" href="https://www.microchip.com/en-us/development-tool/ev78u65a">MCHV-230VAC-1.5kW 电机控制高压开发板</a></p></li>
+</ul>
+</div></blockquote>
+<p>在其他项目中使用 MCAF 通常需要手动将示例应用替换为自定义应用。虽然 <a class="reference internal" href="../appendix/glossary.zh.html#term-MCAPI"><span class="xref std std-term">MCAPI</span></a> 允许自定义应用在无需了解 MCAF 各组件和模块的情况下控制电机并获取反馈，但此工作仍要求应用开发者了解 MCAF 的时序和资源需求。参见 <a class="reference internal" href="../architecture/schedopt.zh.html#scheduling"><span class="std std-ref">调度与优化</span></a> 和 <a class="reference internal" href="resource-usage.zh.html#resource-usage"><span class="std std-ref">资源使用</span></a> 以获取更多信息。</p>
+<figure class="align-center" id="id1">
+<span id="fig-mcapi-userapp-block-diagram"></span><img alt="../_images/mcapi-block-diagram.svg" src="../_images/mcapi-block-diagram.svg"/><figcaption>
+<p><span class="caption-number">图 6.6 </span><span class="caption-text">显示用户应用相对于 MCAPI 的框图</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>除 mcapi.h 和 mcapi_types.h 中的现有接口外，MCAF 中的函数、模块和组件仍可能变更，截至 MCAF R7，MCAF 内部没有任何接口已被冻结。因此，不建议自定义应用在不使用 <a class="reference internal" href="../appendix/glossary.zh.html#term-MCAPI"><span class="xref std std-term">MCAPI</span></a>。</p>
+</div>
+<p>最后：如果与自定义代码的集成对您很重要，我们鼓励您提供反馈以指导该领域的未来开发。请 <a class="reference internal" href="../faq.zh.html#faq-support"><span class="std std-ref">联系 Microchip</span></a> 提出任何意见或建议。</p>
+</section>
+<section id="modifying-the-main-application">
+<span id="integration-main-application"></span><h2><span class="section-number">6.5.2. </span>修改主应用<a class="headerlink" href="#modifying-the-main-application" title="本标题的永久链接">¶</a></h2>
+<p>主应用包含一个 <a class="reference internal" href="../components/main.zh.html#sample-application"><span class="std std-ref">示例应用</span></a> 于 <code class="docutils literal notranslate"><span class="pre">mcaf_sample_application.c</span></code> 中，使用 <a class="reference internal" href="../components/mcapi.zh.html#mcapi"><span class="std std-ref">运动控制 API (MCAPI)</span></a>实现控制电机的简单用户界面。示例应用的所有接口名称均以 <code class="docutils literal notranslate"><span class="pre">APP_</span></code> 前缀开头。此示例应用可被修改或替换为自定义代码。</p>
+<p>MCAF 与修改后的主应用正常工作的要求如下：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_MainInit()</span></code> 应在系统启动时在 <code class="docutils literal notranslate"><span class="pre">SYSTEM_Initialize()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_MainLoop()</span></code> 之后调用。应在主循环的每次迭代中调用。此函数不必周期性执行，但最小重复频率应约为 100Hz 以服务各项功能。</p></li>
+<li><p>板级处理函数， <code class="docutils literal notranslate"><span class="pre">MCAF_BoardServiceTasks()</span></code>应按 <a class="reference internal" href="ui-customization.zh.html#customize-board-service-uiservicetiming"><span class="std std-ref">UI 服务周期</span></a> （在 motorBench<sup>®</sup> Development Suite 的 Customize 页面中定义）的频率周期性调用。例如，此函数可从应用定时器 <a class="reference internal" href="../appendix/glossary.zh.html#term-ISR"><span class="xref std std-term">ISR</span></a> 或调度器中调用。</p></li>
+</ul>
+<p>自定义应用与 MCAF 接口的要求如下：</p>
+<ul class="simple">
+<li><p>应设置应用初始化函数以初始化指向 MCAF 中 <code class="docutils literal notranslate"><span class="pre">MCAPI_MOTOR_DATA</span></code> 和 <code class="docutils literal notranslate"><span class="pre">MCAF_BOARD_DATA</span></code> 数据的指针。参见 <code class="docutils literal notranslate"><span class="pre">APP_ApplicationInitialize()</span></code> 中的示例。</p></li>
+<li><p>应用初始化函数应从 <code class="docutils literal notranslate"><span class="pre">MCAF_MainInit()</span></code> 中调用以初始化应用-MCAF 接口。</p></li>
+<li><p>应用应使用 <a class="reference internal" href="../appendix/glossary.zh.html#term-MCAPI"><span class="xref std std-term">MCAPI</span></a> 在运行时与 MCAF 交互。</p></li>
+</ul>
+</section>
+<section id="modifying-the-foc-module">
+<span id="integration-foc"></span><h2><span class="section-number">6.5.3. </span>修改 FOC 模块<a class="headerlink" href="#modifying-the-foc-module" title="本标题的永久链接">¶</a></h2>
+<p>由于 MCAF 中状态机、 <a class="reference internal" href="../appendix/glossary.zh.html#term-FOC"><span class="xref std std-term">FOC</span></a>和监督算法之间仍存在紧密耦合，不建议修改 <a class="reference internal" href="../appendix/glossary.zh.html#term-FOC"><span class="xref std std-term">FOC</span></a> 模块。这包括对无传感器估计器、PI 控制器或 <a class="reference internal" href="../algorithms/flux_control/index.zh.html#algorithm-flux-control"><span class="std std-ref">磁通控制模块</span></a>。</p>
+</section>
+<section id="modifying-the-state-machine">
+<span id="integration-state-machine"></span><h2><span class="section-number">6.5.4. </span>修改状态机<a class="headerlink" href="#modifying-the-state-machine" title="本标题的永久链接">¶</a></h2>
+<p>由于 MCAF R7 中状态机、 <a class="reference internal" href="../appendix/glossary.zh.html#term-FOC"><span class="xref std std-term">FOC</span></a>和监督算法之间仍存在紧密耦合，不建议修改状态机。</p>
+</section>
+<section id="modifying-the-supervisory-algorithms">
+<span id="integration-supervisory"></span><h2><span class="section-number">6.5.5. </span>修改监督算法<a class="headerlink" href="#modifying-the-supervisory-algorithms" title="本标题的永久链接">¶</a></h2>
+<p>监督算法（看门狗管理除外）在 MCAF R7 之后的后续版本中可能变更。因此，不建议修改此模块。</p>
+<p>看门狗管理涉及 MCAF 的多个方面；要更改此行为，请参见 <a class="reference internal" href="../components/supervisory.zh.html#watchdog"><span class="std std-ref">看门狗管理</span></a> 和/或在代码中搜索 <code class="docutils literal notranslate"><span class="pre">watchdog</span></code>；相关部分位于 <code class="docutils literal notranslate"><span class="pre">traps</span></code>， <code class="docutils literal notranslate"><span class="pre">ui</span></code>， <code class="docutils literal notranslate"><span class="pre">isr</span></code>和 <code class="docutils literal notranslate"><span class="pre">main</span></code> 模块。</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">6.5. 与自定义代码的集成</a><ul>
+<li><a class="reference internal" href="#overview">6.5.1. 概述</a></li>
+<li><a class="reference internal" href="#modifying-the-main-application">6.5.2. 修改主应用</a></li>
+<li><a class="reference internal" href="#modifying-the-foc-module">6.5.3. 修改 FOC 模块</a></li>
+<li><a class="reference internal" href="#modifying-the-state-machine">6.5.4. 修改状态机</a></li>
+<li><a class="reference internal" href="#modifying-the-supervisory-algorithms">6.5.5. 修改监督算法</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="sampling-rate.zh.html" title="上一章"><span class="section-number">6.4. </span>采样率与 PWM 频率的影响</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="custom-board-support/index.zh.html" title="下一章"><span class="section-number">6.6. </span>自定义板级支持</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="custom-board-support/index.zh.html" title="6.6. Custom Board Support">下一页</a> |</li>
+<li class="right">
+<a href="sampling-rate.zh.html" title="6.4. Sampling Rate and PWM Frequency Implications">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.5. </span>与自定义代码的集成</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

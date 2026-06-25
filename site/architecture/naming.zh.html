@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>3.2. 命名约定 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="statevar.zh.html" rel="next" title="3.3. State management"/>
+<link href="overview.zh.html" rel="prev" title="3.1. Architectural Overview"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="statevar.zh.html" title="3.3. State management">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="overview.zh.html" title="3.1. Architectural Overview">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">3. </span>架构</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">3.2. </span>命名约定</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<span class="target" id="naming"></span><section id="naming-conventions">
+<span id="index-0"></span><h1><span class="section-number">3.2. </span>命名约定<a class="headerlink" href="#naming-conventions" title="本标题的永久链接">¶</a></h1>
+<p>MCAF 使用以下命名约定：</p>
+<ul id="index-1">
+<li><p>A <strong>前缀</strong> 用于所有函数和类型，以降低这些函数与用户自定义代码冲突的可能性。主要前缀有</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MC_</span></code> ——电机控制库</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_</span></code> ——电机控制应用框架</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HAL_</span></code> ——硬件抽象层</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BSP_</span></code> ——板级支持包</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAPI_</span></code> ——运动控制 API</p></li>
+</ul>
+</li>
+<li><p><strong>函数</strong> 使用前缀和 UpperCamelCase（大驼峰命名），即一个或多个单词，每个单词首字母大写（包括第一个单词）。这些通常分为两种类型：</p>
+<ul>
+<li><p>动作类： <em>&lt;名词短语&gt;</em> <em>&lt;动作&gt;</em></p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="n">MCAF_CoastdownTimerReset</span><span class="p">()</span>
+<span class="n">MCAF_PllEstimatorInit</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+<li><p>获取器类： <em>&lt;名词短语&gt;</em> <em>&lt;形容词短语&gt;</em> 或 <em>&lt;名词短语&gt;</em> <em>&lt;属性&gt;</em></p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="n">MCAF_OperatingModeNormal</span><span class="p">()</span>
+<span class="n">MCAF_StartupHasCompleted</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p><strong>类型</strong> 以全大写字母定义，单词之间用下划线分隔：</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int16_t</span><span class="w"> </span><span class="n">d</span><span class="p">；</span>
+<span class="w">    </span><span class="kt">int16_t</span><span class="w"> </span><span class="n">q</span><span class="p">；</span>
+<span class="p">}</span><span class="w"> </span><span class="n">MC_DQ_T</span><span class="p">；</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>枚举</strong> 常量以全大写字母定义，单词之间用下划线分隔。同一类型中的枚举常量应具有特定于该类型的公共前缀，例如本例中的 <code class="docutils literal notranslate"><span class="pre">MADC_</span></code> 前缀：</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="n">tagMCAF_ADC_SELECT</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">MADC_VDC</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">，</span>
+<span class="w">    </span><span class="n">MADC_POTENTIOMETER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="p">}</span><span class="w"> </span><span class="n">MCAF_ADC_SELECT</span><span class="p">；</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>变量</strong> 和结构体/联合体的 <strong>成员</strong> 以 lowerCamelCase（小驼峰命名）声明，即一个或多个单词，除第一个单词外每个单词首字母大写：</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="kt">int16_t</span><span class="w">           </span><span class="n">thetaElectrical</span><span class="p">；</span>
+<span class="kt">int16_t</span><span class="w">           </span><span class="n">omegaElectrical</span><span class="p">；</span>
+<span class="n">MC_SINCOS_T</span><span class="w">       </span><span class="n">sincos</span><span class="p">；</span>
+<span class="n">MCAF_MOTOR_DATA</span><span class="w"> </span><span class="o">*</span><span class="n">pmotor</span><span class="p">；</span>
+<span class="kt">uint16_t</span><span class="w">          </span><span class="n">subsampleCounter</span><span class="p">；</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>不鼓励在变量名和结构体成员中使用下划线字符。</p></li>
+<li><p>全局变量不使用前缀，因为全局变量的数量很少。此外，客户可以更改它们的名称而不会影响 MCAF，因为框架的模块不直接访问它们。</p></li>
+</ul>
+</li>
+<li><p>MCAF 使用 <code class="docutils literal notranslate"><span class="pre">&lt;stdint.h&gt;</span></code> 和 <code class="docutils literal notranslate"><span class="pre">&lt;stdbool.h&gt;</span></code>中定义的标准 C 类型，例如 <code class="docutils literal notranslate"><span class="pre">int16_t</span></code>， <code class="docutils literal notranslate"><span class="pre">uint16_t</span></code>， <code class="docutils literal notranslate"><span class="pre">int32_t</span></code>，以及 <code class="docutils literal notranslate"><span class="pre">bool</span></code>，来表示特定位宽的整数。早期应用笔记代码包含如下代码行：</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="c1">// 使用依赖于实现的类型</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">；</span>
+<span class="kt">short</span><span class="w"> </span><span class="n">qVqRef</span><span class="p">；</span>
+<span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">Startup_Ramp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">；</span>
+
+<span class="c1">// attempt to define specific type aliases</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">short</span><span class="w"> </span><span class="n">WORD</span><span class="p">；</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">signed</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">SFRAC16</span><span class="p">；</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w">  </span><span class="n">BYTE</span><span class="p">；</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w">  </span><span class="kt">bool</span><span class="p">；</span>
+<span class="cp">#define False 0</span>
+<span class="cp">#define True 1</span>
+</pre></div>
+</div>
+<p>这些后来已转换为使用 <code class="docutils literal notranslate"><span class="pre">&lt;stdint.h&gt;</span></code> 和 <code class="docutils literal notranslate"><span class="pre">&lt;stdbool.h&gt;</span></code>。</p>
+</li>
+</ul>
+<section id="additional-naming-guidelines">
+<h2><span class="section-number">3.2.1. </span>附加命名指南<a class="headerlink" href="#additional-naming-guidelines" title="本标题的永久链接">¶</a></h2>
+<ul class="simple">
+<li><p>MCAF 有时使用具有符号性质的变量名（例如 <code class="docutils literal notranslate"><span class="pre">theta</span></code> 或 <code class="docutils literal notranslate"><span class="pre">omega</span></code> 或 <code class="docutils literal notranslate"><span class="pre">iq</span></code>），因为它们在电机控制理论中具有特定含义。</p></li>
+<li><p>符号名中的 camelCase 约定不应改变下标的大小写，例如我们使用 <code class="docutils literal notranslate"><span class="pre">idq</span></code> 和 <code class="docutils literal notranslate"><span class="pre">ialphabeta</span></code> 而不是 <code class="docutils literal notranslate"><span class="pre">iDQ</span></code> 或 <code class="docutils literal notranslate"><span class="pre">iAlphaBeta</span></code>。</p></li>
+<li><p>通常，变量名应以所表示量的概括描述开头，后跟更具体的限定词。这使得相关的同级变量或结构体成员在字母顺序上相邻，并允许读者在从左到右阅读时逐步缩小感兴趣的主题。因此 <code class="docutils literal notranslate"><span class="pre">iMaximum</span></code>， <code class="docutils literal notranslate"><span class="pre">iMinimum</span></code>， <code class="docutils literal notranslate"><span class="pre">vMaximum</span></code>， <code class="docutils literal notranslate"><span class="pre">vMinimum</span></code> 优于 <code class="docutils literal notranslate"><span class="pre">maximumCurrent</span></code>， <code class="docutils literal notranslate"><span class="pre">minimumCurrent</span></code>， <code class="docutils literal notranslate"><span class="pre">minimumVoltage</span></code>， <code class="docutils literal notranslate"><span class="pre">maximumVoltage</span></code>。</p></li>
+</ul>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">3.2. 命名约定</a><ul>
+<li><a class="reference internal" href="#additional-naming-guidelines">3.2.1. 附加命名指南</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="overview.zh.html" title="上一章"><span class="section-number">3.1. </span>架构概述</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="statevar.zh.html" title="下一章"><span class="section-number">3.3. </span>状态管理</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="statevar.zh.html" title="3.3. State management">下一页</a> |</li>
+<li class="right">
+<a href="overview.zh.html" title="3.1. Architectural Overview">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">3. </span>架构</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">3.2. </span>命名约定</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

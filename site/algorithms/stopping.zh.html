@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.3. 停止 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="estimators.zh.html" rel="next" title="5.4. Position and Velocity Estimation"/>
+<link href="startup.zh.html" rel="prev" title="5.2. Startup"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="estimators.zh.html" title="5.4. Position and Velocity Estimation">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="startup.zh.html" title="5.2. Startup">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.3. </span>停止</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="stopping">
+<span id="algorithm-stopping"></span><span id="index-0"></span><h1><span class="section-number">5.3. </span>停止<a class="headerlink" href="#stopping" title="本标题的永久链接">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">5.3.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
+<p>“停止”是在正常运行之后使电机完全停止的过程，目的是使电机断电并静止于 <a class="reference internal" href="../components/statemach.zh.html#component-statemachine-states"><span class="std std-ref">STOPPED 状态</span></a>。</p>
+<p>MCAF 包含 <a class="reference internal" href="../implementation/ui-customization.zh.html#customize-operation-stopping-type"><span class="std std-ref">几种不同的停止选项</span></a> 可在 motorBench 的 Customize（自定义）页面中选择<sup>®</sup> Development Suite（开发套件）：</p>
+<ul class="simple">
+<li><p>最小影响 PWM（“开环”停止或“自由停转”）</p></li>
+<li><p>闭环电流</p></li>
+<li><p>闭环速度</p></li>
+</ul>
+<p>在每种方法中，在 <a class="reference internal" href="../components/statemach.zh.html#component-statemachine-states"><span class="std std-ref">STOPPING 状态</span></a> 中的运行持续直到以下条件之一成立：</p>
+<ul class="simple">
+<li><p>某些原因导致电机退出正常运行（例如：发生故障，或操作员使用实时诊断工具进入测试模式）</p></li>
+<li><p>电机被要求再次运行</p></li>
+<li><p>停止完成标志被设置 — 此条件对于不同的停止方法有不同的判定方式。</p></li>
+</ul>
+</section>
+<section id="minimal-impact-pwm">
+<span id="algorithm-stopping-min-impact"></span><span id="index-1"></span><h2><span class="section-number">5.3.2. </span>最小影响 PWM<a class="headerlink" href="#minimal-impact-pwm" title="本标题的永久链接">¶</a></h2>
+<p>在最小影响 PWM — 也称“开环”停止或“自由停转” — 中，PWM 输出被改变为 <a class="reference internal" href="../components/hal.zh.html#hardware-pwm-minimal-impact"><span class="std std-ref">最小影响状态</span></a>。这本质上是三相桥的开路状态；对于自举栅驱动，下桥致开关管以低占空比维持，以保持自举电容器的电荷。</p>
+<p>电流测量可能丢失，无传感器估计器可能无法提供有效的换相角度和电机速度估计。</p>
+<p><strong>停止完成：</strong> 由于速度估计可能不可用，开环停止等待固定的自由停转时间间隔 <span class="math notranslate nohighlight">\(t_{\rm coast}\)</span>，假设初始速度为最坏情况下的最大值（以防角度估计器错误或系统从复位中恢复）。在自由停转间隔结束时，停止完成标志被设置，此时电机速度很可能低于 <a class="reference internal" href="../implementation/ui-customization.zh.html#customize-operation-coastdown-end-velocity"><span class="std std-ref">自由停转速度阈值</span></a>。</p>
+<p>在这些条件下，作用于电机的唯一转矩假定来自黏性阻尼 <span class="math notranslate nohighlight">\(B\)</span> 和摩擦 <span class="math notranslate nohighlight">\(T_{\mathrm{fr}}\)</span> 作用于转子惯性 <span class="math notranslate nohighlight">\(J\)</span> ，使电机自由停转至静止，如 <a class="reference internal" href="#fig-coastdown-1"><span class="std std-numref">图 5.54</span></a> 所示，并在公式 <a class="reference internal" href="#equation-eq-coastdown-1">5.22</a>：</p>
+<figure class="align-center" id="id1">
+<span id="fig-coastdown-1"></span><img alt="../_images/stopping-open-loop.svg" src="../_images/stopping-open-loop.svg"/><figcaption>
+<p><span class="caption-number">图 5.54 </span><span class="caption-text">自由停转曲线，展示从初始速度 <span class="math notranslate nohighlight">\(\omega_i\)</span> 到达到阈值速度的时间 <span class="math notranslate nohighlight">\(\omega_f\)</span></span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<div class="math notranslate nohighlight" id="equation-eq-coastdown-1">
+<span class="eqno">(5.22)<a class="headerlink" href="#equation-eq-coastdown-1" title="本公式的永久链接">¶</a></span>\[\begin{aligned}
+J\frac{d\omega_m}{dt} &amp;= -B\omega_m - T_{\mathrm{fr}}\operatorname{sgn}\omega_m
+\end{aligned}\]</div>
+<p>可以分析求解机械速度：</p>
+<div class="math notranslate nohighlight" id="equation-eq-coastdown-2">
+<span class="eqno">(5.23)<a class="headerlink" href="#equation-eq-coastdown-2" title="本公式的永久链接">¶</a></span>\[\omega_m = -\omega_{\mathrm{fr}}+(\omega_i+\omega_{\mathrm{fr}})e^{-t/\tau}\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(\omega_i\)</span> 为初始速度， <span class="math notranslate nohighlight">\(\omega_{\mathrm{fr}}=T_{\mathrm{fr}}/B\)</span>，以及时间常数 <span class="math notranslate nohighlight">\(\tau = J/B\)</span>。</p>
+<p>自由停转时间 <span class="math notranslate nohighlight">\(t_{\mathrm{coast}}\)</span> 由公式 <a class="reference internal" href="#equation-eq-coastdown-2">5.23</a> 估计，以确定电机速度 <span class="math notranslate nohighlight">\(\omega_m\)</span> 低于自由停转速度阈值的时间 <span class="math notranslate nohighlight">\(\omega_f\)</span>。</p>
+<p><strong>注意</strong>：最小影响 PWM 不应 <strong>不应</strong> 在以下任何条件下使用：</p>
+<ul class="simple">
+<li><p>电机具有高惯性（至少需要几秒钟才能自由停转）且电机参数不确定</p></li>
+<li><p>电机受到来自环境的再生转矩作用，可维持电机速度（例如：电动自行车、发电机、受风车影响的风扇等）</p></li>
+</ul>
+</section>
+<section id="closed-loop-methods">
+<span id="algorithm-stopping-closed-loop"></span><span id="index-2"></span><h2><span class="section-number">5.3.3. </span>闭环方法<a class="headerlink" href="#closed-loop-methods" title="本标题的永久链接">¶</a></h2>
+<p>在闭环停止下，磁场定向电流控制得以维持，PWM 输出继续正常的开关模式运行。这使无传感器估计器能继续运行，从而速度估计仍然可用。</p>
+<p><strong>停止完成：</strong> 当电机速度在最小时间间隔内持续低于速度阈值时，停止完成标志被设置。</p>
+<p><strong>注意</strong>：闭环停止方法仅应与能够在停止阈值以下维持速度估计的估计器一起使用。（ZS/MT 和 QEI 是合适的例子。AN1292 PLL 可能能够维持速度估计，但应仔细检查闭环停止的使用。已知 ATPLL 在极低速运行时存在稳定性问题。）</p>
+<section id="closed-loop-current">
+<span id="algorithm-stopping-closed-loop-current"></span><h3><span class="section-number">5.3.3.1. </span>闭环电流<a class="headerlink" href="#closed-loop-current" title="本标题的永久链接">¶</a></h3>
+<p>在闭环电流停止下，电机电流被指令为零。这允许电机以与最小影响 PWM 情况类似的动态自由停转至静止。</p>
+</section>
+<section id="closed-loop-velocity">
+<span id="algorithm-stopping-closed-loop-velocity"></span><h3><span class="section-number">5.3.3.2. </span>闭环速度<a class="headerlink" href="#closed-loop-velocity" title="本标题的永久链接">¶</a></h3>
+<p>在闭环速度停止下，外环被指令为零速度。这将使电机非常快地停止，但也会将能量再生回到直流母线上。</p>
+<p><strong>注意</strong>：闭环速度控制仅在有可靠的再生能量流动路径时才应使用 — 例如，电阻电压调节器或连接到直流母线的电池。</p>
+</section>
+</section>
+<section id="implementation-notes">
+<h2><span class="section-number">5.3.4. </span>实现说明<a class="headerlink" href="#implementation-notes" title="本标题的永久链接">¶</a></h2>
+<p>闭环方法的支持在 MCAF R7 中添加。</p>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">5.3. 停止</a><ul>
+<li><a class="reference internal" href="#overview">5.3.1. 概述</a></li>
+<li><a class="reference internal" href="#minimal-impact-pwm">5.3.2. 最小影响 PWM</a></li>
+<li><a class="reference internal" href="#closed-loop-methods">5.3.3. 闭环方法</a><ul>
+<li><a class="reference internal" href="#closed-loop-current">5.3.3.1. 闭环电流</a></li>
+<li><a class="reference internal" href="#closed-loop-velocity">5.3.3.2. 闭环速度</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#implementation-notes">5.3.4. 实现说明</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="startup.zh.html" title="上一章"><span class="section-number">5.2. </span>启动</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="estimators.zh.html" title="下一章"><span class="section-number">5.4. </span>位置和速度估计</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="estimators.zh.html" title="5.4. Position and Velocity Estimation">下一页</a> |</li>
+<li class="right">
+<a href="startup.zh.html" title="5.2. Startup">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.3. </span>停止</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

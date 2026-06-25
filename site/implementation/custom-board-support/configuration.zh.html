@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>6.6.5. 创建自定义板级配置 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+<script src="../../_static/jquery.js"></script>
+<script src="../../_static/underscore.js"></script>
+<script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../../_static/doctools.js"></script>
+<script src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../../_static/rendermath.js"></script>
+<script async="async" src="../../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../../_static/svgcrop.js"></script>
+<script src="../../_static/mcaf-styling.js"></script>
+<link href="../../genindex.zh.html" rel="index" title="Index"/>
+<link href="../../search.zh.html" rel="search" title="Search"/>
+<link href="verification.zh.html" rel="next" title="6.6.8. Verification and board bring-up"/>
+<link href="overview.zh.html" rel="prev" title="6.6.1. Overview of board support in motorBench® Development Suite"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="verification.zh.html" title="6.6.8. Verification and board bring-up">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="overview.zh.html" title="6.6.1. Overview of board support in motorBench® Development Suite">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="index.zh.html"><span class="section-number">6.6. </span>自定义板级支持</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.6.5. </span>创建自定义板级配置</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="creating-a-custom-board-configuration">
+<span id="custom-board-configuration"></span><h1><span class="section-number">6.6.5. </span>创建自定义板级配置<a class="headerlink" href="#creating-a-custom-board-configuration" title="本标题的永久链接">¶</a></h1>
+<p>复制 <a class="reference external" href="https://github.com/microchip-pic-avr-solutions/motorbench-release-collateral">起始板级定义</a> 到文本编辑器中，以您选择的文件名保存到本地磁盘，然后按照 <a class="reference internal" href="#fig-custom-board-workflow"><span class="std std-numref">图 6.10</span></a>。</p>
+<figure class="align-center" id="id1">
+<span id="fig-custom-board-workflow"></span><a class="reference internal image-reference" href="../../_images/custom-board-creation.svg"><img alt="../../_images/custom-board-creation.svg" src="../../_images/custom-board-creation.svg" width="1000px"/></a>
+<figcaption>
+<p><span class="caption-number">图 6.10 </span><span class="caption-text">创建自定义板级配置的流程。</span><a class="headerlink" href="#id1" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<ol class="arabic simple">
+<li><p><strong>修改现有值。</strong> 详细指导见下文 <a class="reference internal" href="#custom-board-modifying"><span class="std std-ref">修改起始板级定义</span></a>。</p>
+</li>
+<li><p><strong>添加新节</strong> 以完全定义自定义板。详细指导见下文 <a class="reference internal" href="#custom-board-adding-features"><span class="std std-ref">向板级定义添加参数</span></a>。</p></li>
+<li><p><strong>导入自定义板级文件</strong> 在 motorBench<sup>®</sup> Development Suite 中。</p></li>
+<li><p><strong>查看板级属性</strong> 在 Configure → Board 中。</p></li>
+</ol>
+<p>或者——导出一个 Microchip 开发板，并根据需要编辑该板级定义文件以匹配自定义板设计。</p>
+<section id="starter-board-file">
+<h2><span class="section-number">6.6.5.1. </span>起始板级文件<a class="headerlink" href="#starter-board-file" title="本标题的永久链接">¶</a></h2>
+<p>起始板级文件提供了 motorBench 所需的最基本内容。请访问 motorBench 发行仓库获取起始板级文件的副本。</p>
+</section>
+<section id="modifying-the-starter-board-definition">
+<span id="custom-board-modifying"></span><h2><span class="section-number">6.6.5.2. </span>修改起始板级定义<a class="headerlink" href="#modifying-the-starter-board-definition" title="本标题的永久链接">¶</a></h2>
+<dl>
+<dt><strong>更改器件</strong></dt><dd><p>更新 <code class="docutils literal notranslate"><span class="pre">characteristics.device</span></code> 为您的板上的特定数字信号控制器器件。</p>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>确保在您的 MPLAB<sup>®</sup> X 项目中选择的器件与此器件一致。</p>
+</div>
+</dd>
+<dt><strong>更改默认 PWM 频率</strong></dt><dd><p>更新 <code class="docutils literal notranslate"><span class="pre">characteristics.pwm.frequency.default</span></code> 为所需的 PWM 频率（单位 Hz）。</p>
+<p>用于 PWM 频率 <a class="reference internal" href="overview.zh.html#custom-board-system-parameters"><span class="std std-ref">系统参数</span></a> 的初始值（在选择此板之后）。</p>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">characteristics.pwm.frequency</span></code>， <code class="docutils literal notranslate"><span class="pre">default</span></code> 必须在 <code class="docutils literal notranslate"><span class="pre">minimum</span></code> 和 <code class="docutils literal notranslate"><span class="pre">maximum</span></code>： <br/>
+<code class="docutils literal notranslate"><span class="pre">minimum</span></code> <span class="math notranslate nohighlight">\(\le\)</span> <code class="docutils literal notranslate"><span class="pre">default</span></code> <span class="math notranslate nohighlight">\(\le\)</span> <code class="docutils literal notranslate"><span class="pre">maximum</span></code>。</p>
+</div>
+</dd>
+<dt><strong>更改默认 DC 母线电压</strong></dt><dd><p>更新 <code class="docutils literal notranslate"><span class="pre">characteristics.voltage.dcLink.default</span></code> 为所需的 DC 母线电压。</p>
+<p>用于标称 DC 母线电压 <a class="reference internal" href="overview.zh.html#custom-board-system-parameters"><span class="std std-ref">系统参数</span></a> 的初始值（在选择此板之后）。</p>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">characteristics.voltage.dcLink</span></code>， <code class="docutils literal notranslate"><span class="pre">default</span></code> 必须在 <code class="docutils literal notranslate"><span class="pre">minimum</span></code> 和 <code class="docutils literal notranslate"><span class="pre">maximum</span></code>： <br/>
+<code class="docutils literal notranslate"><span class="pre">minimum</span></code> <span class="math notranslate nohighlight">\(\le\)</span> <code class="docutils literal notranslate"><span class="pre">default</span></code> <span class="math notranslate nohighlight">\(\le\)</span> <code class="docutils literal notranslate"><span class="pre">maximum</span></code>。</p>
+</div>
+</dd>
+<dt><strong>更改满量程测量范围</strong></dt><dd><p>将以下项目更新为您板子的满量程测量能力：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">characteristics.current.dcLink.fullscale</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">characteristics.current.phase.fullscale</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">characteristics.voltage.dcLink.fullscale</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">characteristics.voltage.phase.fullscale</span></code></p></li>
+</ul>
+</dd>
+<dt><strong>更改 PWM 故障配置</strong></dt><dd><p>PWM 故障信号一旦触发，会在外部检测到过流或过压等故障时自动关闭 PWM 通道。要为 PWM 故障信号配置 MCAF，请更新 <code class="docutils literal notranslate"><span class="pre">source</span></code> 和 <code class="docutils literal notranslate"><span class="pre">polarity</span></code> 属性（属于 <code class="docutils literal notranslate"><span class="pre">peripherals.pwm.fault</span></code>。</p>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>参见 <a class="reference internal" href="custom_board_definitions.zh.html#custom-board-pwm-fault"><span class="std std-ref">自定义板级 schema 的 PWM 故障部分</span></a> 以获取更多信息。</p>
+<p>对 <code class="docutils literal notranslate"><span class="pre">polarity</span></code> 属性的指定仅在 <code class="docutils literal notranslate"><span class="pre">source</span></code> 不为 <code class="docutils literal notranslate"><span class="pre">none</span></code>。</p>
+</div>
+</dd>
+<dt><strong>更改 PWM 通道到电机相位的映射</strong></dt><dd><p>更新 <code class="docutils literal notranslate"><span class="pre">peripherals.pwm.generators</span></code> 以更改电机相位 A、B、C 与相应 PWM 发生器之间的映射。例如：如果相位 A 由 PWM3 生成，相位 B 由 PWM4 生成，相位 C 由 PWM1 生成，则板级定义应包含：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">peripherals</span><span class="p">：</span>
+  <span class="n">pwm</span><span class="p">：</span>
+    <span class="n">generators</span><span class="p">：</span>
+      <span class="n">a</span><span class="p">：</span> <span class="mi">3</span>
+      <span class="n">b</span><span class="p">：</span> <span class="mi">4</span>
+      <span class="n">c</span><span class="p">：</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl id="custom-board-current-sense">
+<dt><strong>更改电流检测通道支持</strong></dt><dd><p>更新 <code class="docutils literal notranslate"><span class="pre">peripherals.adc.current</span></code> 以适当添加或移除通道。这定义了可用于电流检测的 ADC 输入。</p>
+<p>例如，LVMC 33CK 板包含全部四个通道：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">peripherals</span><span class="p">：</span>
+<span class="w">  </span><span class="nt">adc</span><span class="p">：</span>
+<span class="w">    </span><span class="nt">current</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">a</span><span class="p">：</span>
+<span class="w">        </span><span class="nt">channel</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AN0</span>
+<span class="w">        </span><span class="nt">inverted</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">signed</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">b</span><span class="p">：</span>
+<span class="w">        </span><span class="nt">channel</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AN1</span>
+<span class="w">        </span><span class="nt">inverted</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">signed</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">c</span><span class="p">：</span>
+<span class="w">        </span><span class="nt">channel</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AN10</span>
+<span class="w">        </span><span class="nt">inverted</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">signed</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">dcLink</span><span class="p">：</span>
+<span class="w">        </span><span class="nt">channel</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AN4</span>
+<span class="w">        </span><span class="nt">inverted</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">        </span><span class="nt">signed</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>motorBench/MCAF 支持多种电流测量配置：</p>
+<ul class="simple">
+<li><p>三通道电流检测（A、B、C）</p></li>
+<li><p>双通道电流检测（仅 A、B）</p></li>
+<li><p>单通道电流检测（DC 母线）</p></li>
+</ul>
+<p>参见 <a class="reference internal" href="../../algorithms/foc/current_measure.zh.html#foc-current-sense-polarity"><span class="std std-ref">电流极性约定</span></a> 以确定您板上各通道的 inverted 应为 true 还是 false。</p>
+</div>
+</dd>
+<dt><strong>更改振荡器配置</strong></dt><dd><p>更新 <code class="docutils literal notranslate"><span class="pre">peripherals.oscillator.clockSource</span></code> 为 <a class="reference internal" href="custom_board_definitions.zh.html#custom-board-clocksource"><span class="std std-ref">时钟源选项</span></a> 中列出的有效时钟源选项之一。</p>
+</dd>
+</dl>
+</section>
+<section id="adding-parameters-to-the-board-definition">
+<span id="custom-board-adding-features"></span><h2><span class="section-number">6.6.5.3. </span>向板级定义添加参数<a class="headerlink" href="#adding-parameters-to-the-board-definition" title="本标题的永久链接">¶</a></h2>
+<p>可以向板级定义添加新内容，但必须符合 <a class="reference internal" href="custom_board_definitions.zh.html#custom-board-schema"><span class="std std-ref">自定义板级 schema</span></a>。</p>
+<p>在某些情况下，如果父键尚不存在，则需要在适当位置添加新节。请参阅以下指导以获取更具体的细节。</p>
+<dl>
+<dt><strong>添加 MCAF UI GPIO</strong></dt><dd><p>在 <a class="reference internal" href="custom_board_definitions.zh.html#board-schema-gpio"><span class="std std-ref">GPIO 通道</span></a> 下指定 MCAF <code class="docutils literal notranslate"><span class="pre">peripherals.gpio</span></code> 的引脚映射，用于 <a class="reference internal" href="../../components/ext-interface.zh.html#ext-interface-ui-guidelines"><span class="std std-ref">通用 UI 指南</span></a>中推荐的接口功能，格式如下：</p>
+<pre class="literal-block"><em>&lt;MCAFGpioName&gt;</em>:
+  pin: <em>&lt;pin name&gt;</em>
+  direction: <em>&lt;input/output&gt;</em>
+  polarity: <em>&lt;active-high/active-low&gt;</em></pre>
+<p>例如，dsPIC33CK 低压电机控制（LVMC）开发板上所有可能的 MCAF 兼容 GPIO 配置如下：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">peripherals</span><span class="p">：</span>
+<span class="w">  </span><span class="nt">gpio</span><span class="p">：</span>
+<span class="w">    </span><span class="nt">MCAF_BUTTON1</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">direction</span><span class="p">：</span><span class="w"> </span><span class="s">"input"</span>
+<span class="w">      </span><span class="nt">pin</span><span class="p">：</span><span class="w"> </span><span class="s">"RE11"</span>
+<span class="w">      </span><span class="nt">polarity</span><span class="p">：</span><span class="w"> </span><span class="s">"active-high"</span>
+<span class="w">    </span><span class="nt">MCAF_BUTTON2</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">direction</span><span class="p">：</span><span class="w"> </span><span class="s">"input"</span>
+<span class="w">      </span><span class="nt">pin</span><span class="p">：</span><span class="w"> </span><span class="s">"RE12"</span>
+<span class="w">      </span><span class="nt">polarity</span><span class="p">：</span><span class="w"> </span><span class="s">"active-high"</span>
+<span class="w">    </span><span class="nt">MCAF_LED1</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">direction</span><span class="p">：</span><span class="w"> </span><span class="s">"output"</span>
+<span class="w">      </span><span class="nt">pin</span><span class="p">：</span><span class="w"> </span><span class="s">"RE6"</span>
+<span class="w">      </span><span class="nt">polarity</span><span class="p">：</span><span class="w"> </span><span class="s">"active-high"</span>
+<span class="w">    </span><span class="nt">MCAF_LED2</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">direction</span><span class="p">：</span><span class="w"> </span><span class="s">"output"</span>
+<span class="w">      </span><span class="nt">pin</span><span class="p">：</span><span class="w"> </span><span class="s">"RE7"</span>
+<span class="w">      </span><span class="nt">polarity</span><span class="p">：</span><span class="w"> </span><span class="s">"active-high"</span>
+<span class="w">    </span><span class="nt">MCAF_TESTPOINT1</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">direction</span><span class="p">：</span><span class="w"> </span><span class="s">"output"</span>
+<span class="w">      </span><span class="nt">pin</span><span class="p">：</span><span class="w"> </span><span class="s">"RE4"</span>
+<span class="w">      </span><span class="nt">polarity</span><span class="p">：</span><span class="w"> </span><span class="s">"active-high"</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>添加电位器配置</strong></dt><dd><p>在 <a class="reference internal" href="custom_board_definitions.zh.html#board-schema-adcchannelvoltage"><span class="std std-ref">模拟通道</span></a> 下指定 MCAF <code class="docutils literal notranslate"><span class="pre">peripherals.adc</span></code> 的引脚映射，用于 <a class="reference internal" href="../../components/ext-interface.zh.html#ext-interface-ui-guidelines"><span class="std std-ref">通用 UI 指南</span></a>中推荐的接口功能，格式如下：</p>
+<blockquote>
+<div><pre class="literal-block">other:
+  potentiometer:
+    channel: ANx
+    signed: <em>&lt;true/false&gt;</em></pre>
+</div></blockquote>
+<p>例如，dsPIC33CK 低压电机控制（LVMC）开发板上的 MCAF 电位器 ADC 配置如下：</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">peripherals</span><span class="p">：</span>
+<span class="w">  </span><span class="nt">adc</span><span class="p">：</span>
+<span class="w">    </span><span class="nt">other</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">potentiometer</span><span class="p">：</span>
+<span class="w">        </span><span class="nt">channel</span><span class="p">：</span><span class="w"> </span><span class="s">"AN11"</span>
+<span class="w">        </span><span class="nt">signed</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd>
+</dl>
+<dl id="custom-board-adding-uart">
+<dt><strong>添加 UART 引脚映射</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.uart.pins</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">peripherals</span><span class="p">：</span>
+<span class="w">  </span><span class="nt">uart</span><span class="p">：</span>
+<span class="w">    </span><span class="nt">pins</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">RX</span><span class="p">：</span><span class="w"> </span><span class="s">"R&lt;port&gt;&lt;number&gt;"</span>
+<span class="w">      </span><span class="nt">TX</span><span class="p">：</span><span class="w"> </span><span class="s">"R&lt;port&gt;&lt;number&gt;"</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>仅支持一个 UART 实例，该 UART 将由 MCAF 专用于实时诊断。</p>
+</div>
+</dd>
+<dt><strong>添加新的自定义 ADC 通道</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.adc.custom</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<pre class="literal-block">custom:
+  <em>&lt;channelName&gt;</em>:
+    channel: ANx
+    signed: <em>&lt;true/false&gt;</em></pre>
+<p>两个模拟通道的自定义模拟通道指定示例：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">peripherals</span><span class="p">：</span>
+<span class="w">  </span><span class="nt">adc</span><span class="p">：</span>
+<span class="w">    </span><span class="nt">current</span><span class="p">：</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">    </span><span class="nt">voltage</span><span class="p">：</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">    </span><span class="nt">custom</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">sineInput</span><span class="p">：</span>
+<span class="w">        </span><span class="nt">channel</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AN2</span>
+<span class="w">        </span><span class="nt">signed</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">cosineInput</span><span class="p">：</span>
+<span class="w">        </span><span class="nt">channel</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AN3</span>
+<span class="w">        </span><span class="nt">signed</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>自定义名称 <code class="docutils literal notranslate"><span class="pre">&lt;channelName&gt;</span></code> 应为有效的 C 标识符（不含空格或除下划线外的特殊字符）。</p>
+</div>
+</dd>
+<dt><strong>添加新的自定义 GPIO</strong></dt><dd><p>在 <a class="reference internal" href="custom_board_definitions.zh.html#board-schema-gpio"><span class="std std-ref">自定义 GPIO 通道</span></a> 下指定 MCAF <code class="docutils literal notranslate"><span class="pre">peripherals.gpio</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<pre class="literal-block"><em>&lt;customGpioName&gt;</em>:
+  pin: <em>&lt;pin name&gt;</em>
+  direction: <em>&lt;input/output&gt;</em>
+  polarity: <em>&lt;active-high/active-low&gt;</em></pre>
+<p>引脚、方向和极性是指定 GPIO 通道所需的最少属性集。</p>
+<p>如果需要，GPIO 通道指定中可以包含以下附加 GPIO 属性：</p>
+<pre class="literal-block"><em>&lt;customGpioName&gt;</em>:
+  pin: <em>&lt;pin name&gt;</em>
+  direction: <em>&lt;input/output&gt;</em>
+  polarity: <em>&lt;active-high/active-low&gt;</em>
+  openDrain: <em>&lt;true/false&gt;</em>
+  weakPullUp: <em>&lt;true/false&gt;</em>
+  weakPullDown: <em>&lt;true/false&gt;</em>
+  startHigh: <em>&lt;true/false&gt;</em></pre>
+<p>以下配置是引脚 RA1 上自定义 GPIO 的指定示例，配置为输出、高电平有效、带上拉电阻。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">peripherals</span><span class="p">：</span>
+<span class="w">  </span><span class="nt">gpio</span><span class="p">：</span>
+<span class="w">    </span><span class="nt">customgpio1</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">pin</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RA1</span>
+<span class="w">      </span><span class="nt">direction</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output</span>
+<span class="w">      </span><span class="nt">polarity</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">active-high</span>
+<span class="w">      </span><span class="nt">weakPullUp</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>自定义名称 <code class="docutils literal notranslate"><span class="pre">&lt;customGpioName&gt;</span></code> 必须为有效的 C 标识符（不含空格或除下划线外的特殊字符）。</p>
+</div>
+</dd>
+<dt><strong>添加内部比较器配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.comparator</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<pre class="literal-block">source: CMP&lt;instance&gt;&lt;muxinput&gt;
+inverted: <em>&lt;true/false&gt;</em>
+threshold: <em>&lt;fraction&gt;</em></pre>
+<p>Source、inverted 和 threshold 是完全指定比较器所需的必填字段。</p>
+<p>以下配置是 CMP1 的指定示例，配置为将其 mux 输入“C”处的模拟信号与内部 DAC 参考值 (0.95*Add) 进行比较，并输出非反相逻辑信号：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">peripherals</span><span class="p">：</span>
+<span class="w">  </span><span class="nt">comparator</span><span class="p">：</span>
+<span class="w">    </span><span class="nt">source</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CMP1C</span>
+<span class="w">    </span><span class="nt">inverted</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">threshold</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.95</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>目前，motorBench 仅允许指定一个内部比较器。</p>
+</div>
+</dd>
+<dt><strong>添加内部运放配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.opamp</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<pre class="literal-block">enabled:
+  - <em>&lt;numbertoenable&gt;</em>
+  - <em>&lt;numbertoenable&gt;</em>
+  - <em>&lt;numbertoenable&gt;</em></pre>
+<p>启用内部运放 1 和 3 的指定示例：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">peripherals</span><span class="p">：</span>
+<span class="w">  </span><span class="nt">opamp</span><span class="p">：</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">：</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>添加 QEI 配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.qei</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<pre class="literal-block">pins:
+  A: <em>&lt;port for phase-A&gt;</em>
+  B: <em>&lt;port for phase-B&gt;</em>
+  Z: <em>&lt;port for index pulse&gt;</em></pre>
+<p>如果指定了 QEI 配置，则 phase-A 和 phase-B 为必填，而 index (Z) 为可选。</p>
+<p>以下是在端口引脚 RC12、RC13 和 RC14 上分别启用 QEI 的 phase-A、phase-B 和 Index 输入的指定示例。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">peripherals</span><span class="p">：</span>
+<span class="w">  </span><span class="nt">qei</span><span class="p">：</span>
+<span class="w">    </span><span class="nt">pins</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">A</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RC12</span>
+<span class="w">      </span><span class="nt">B</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RC13</span>
+<span class="w">      </span><span class="nt">Z</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RC14</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>目前，motorBench 仅允许指定一个 QEI 外设实例。</p>
+</div>
+</dd>
+<dt><strong>添加逆变桥温度传感器配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.adc.other</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<pre class="literal-block">bridgeTemperature:
+  channel: ANx
+  signed: <em>&lt;true/false&gt;</em>
+  offset: <em>&lt;voltage&gt;</em>
+  gain: <em>&lt;fraction&gt;</em></pre>
+<p>例如，dsPIC33CK LVMC 板包含一个 MCP9700 温度传感器，对应的板级定义包含：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">peripherals</span><span class="p">：</span>
+<span class="w">  </span><span class="nt">adc</span><span class="p">：</span>
+<span class="w">    </span><span class="nt">other</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">bridgeTemperature</span><span class="p">：</span>
+<span class="w">        </span><span class="nt">channel</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AN12</span>
+<span class="w">        </span><span class="nt">signed</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">        </span><span class="nt">offset</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="w">        </span><span class="nt">gain</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.50354</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>MCAF 温度传感器支持目前仅限于线性温度传感器。这些传感器通常规格为 10 mV/°C，在 0 °C 时有给定的电压偏移；例如 <a class="reference external" href="https://www.microchip.com/en-us/product/mcp9700">MCP9700</a> 规格为 10 mV/°C，0 °C 时偏移 500mV。</p>
+<p><code class="docutils literal notranslate"><span class="pre">bridgeTemperature.offset</span></code> 以 0 °C 时的电压 [V] 表示。</p>
+<p><code class="docutils literal notranslate"><span class="pre">bridgeTemperature.gain</span></code> 是在将完整 ADC 范围映射到 0–65535 计数范围后，将温度缩放至 0.01 °C/计数所需的 ADC 增益。对于 AVdd = 3.3V，1 °C 的增量 → 10 mV → 0.01 V / 3.3 V × 65536 = 198.594 计数。要将其缩放为每 °C 100 计数，需要乘以 100 / 198.594 = 0.50354。一般而言， <code class="docutils literal notranslate"><span class="pre">bridgeTemperature.gain</span></code> <span class="math notranslate nohighlight">\(G_T\)</span> 的公式为</p>
+<div class="math notranslate nohighlight" id="equation-implementation-custom-board-support-configuration-0">
+<span class="eqno">(6.2)<a class="headerlink" href="#equation-implementation-custom-board-support-configuration-0" title="本公式的永久链接">¶</a></span>\[G_T = \frac{100 AV_{dd}}{2^{16} K_V}\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(K_V\)</span> 是温度传感器每 °C 的电压增益。另一个例子， <a class="reference external" href="https://www.microchip.com/en-us/product/mcp9701">MCP9701</a> 规格为 19.5 mV/°C，偏移 400 mV，因此使用 MCP9701 且模拟供电电压 AVdd = 3.3V 的板级定义应包含 <span class="math notranslate nohighlight">\(G_T = \frac{100 \cdot 3.3}{65536 \cdot 0.0195}\)</span> = 0.25823：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">peripherals</span><span class="p">：</span>
+<span class="w">  </span><span class="nt">adc</span><span class="p">：</span>
+<span class="w">    </span><span class="nt">other</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">bridgeTemperature</span><span class="p">：</span>
+<span class="w">        </span><span class="nt">offset</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.4</span>
+<span class="w">        </span><span class="nt">gain</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.25823</span>
+</pre></div>
+</div>
+</div>
+</dd>
+<dt><strong>添加 SiP 器件配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">characteristics</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<pre class="literal-block">device: dsPIC33CDV[C/L][64/256]M[P/C]XXX
+  gateDriver:
+    device: MCP8021
+    configuration:
+      sleepMode: <em>&lt;standby/sleep&gt;</em>
+      shortCircuitDetect: <em>&lt;true/false&gt;</em>
+      underVoltageLockout: <em>&lt;true/false&gt;</em>
+    pins:
+      RX: R&lt;port&gt;&lt;number&gt;
+      TX: R&lt;port&gt;&lt;number&gt;
+      fault: R&lt;port&gt;&lt;number&gt;
+      outputEnable: R&lt;port&gt;&lt;number&gt;</pre>
+<p>例如，使用 dsPIC33CDVC256MP506 器件的板配置如下：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">characteristics</span><span class="p">：</span>
+<span class="w">  </span><span class="nt">device</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dsPIC33CDVC256MP506</span>
+<span class="w">  </span><span class="nt">gateDriver</span><span class="p">：</span>
+<span class="w">    </span><span class="nt">device</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MCP8021</span>
+<span class="w">    </span><span class="nt">configuration</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">sleepMode</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standby</span>
+<span class="w">      </span><span class="nt">shortCircuitDetect</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">underVoltageLockout</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">pins</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">RX</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RC12</span>
+<span class="w">      </span><span class="nt">TX</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RC12</span>
+<span class="w">      </span><span class="nt">fault</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RB12</span>
+<span class="w">      </span><span class="nt">outputEnable</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RB13</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>以下 MCP8021 的附加参数由 motorBench/MCAF 预配置，不能直接修改。参见 <a class="reference internal" href="#custom-board-sip-devices-param-override"><span class="std std-ref">configuration</span></a> 以获取更多信息。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">driverDeadTime</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">250</span>
+<span class="nt">driverBlankingTime</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4000</span>
+<span class="nt">overcurrentLimit</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
+</pre></div>
+</div>
+<p>注：所有 SiP 器件均配备单一栅极驱动器选项 MCP8021，且微控制器与栅极驱动器器件之间的引脚连接为硬连线。</p>
+</div>
+</dd>
+<dt><strong>添加 MCP8021 栅极驱动器配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">characteristics</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<pre class="literal-block">gateDriver:
+  device: MCP8021
+  configuration:
+    sleepMode: <em>&lt;standby/sleep&gt;</em>
+    shortCircuitDetect: <em>&lt;true/false&gt;</em>
+    underVoltageLockout: <em>&lt;true/false&gt;</em>
+  pins:
+    RX: R&lt;port&gt;&lt;number&gt;
+    TX: R&lt;port&gt;&lt;number&gt;
+    fault: R&lt;port&gt;&lt;number&gt;
+    outputEnable: R&lt;port&gt;&lt;number&gt;</pre>
+<p>例如，使用 dsPIC33CK256MP508 和 MCP8021 栅极驱动器的板配置如下：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">characteristics</span><span class="p">：</span>
+<span class="w">  </span><span class="nt">device</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dsPIC33CK256MP508</span>
+<span class="w">  </span><span class="nt">gateDriver</span><span class="p">：</span>
+<span class="w">    </span><span class="nt">device</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MCP8021</span>
+<span class="w">    </span><span class="nt">configuration</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">sleepMode</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standby</span>
+<span class="w">      </span><span class="nt">shortCircuitDetect</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">underVoltageLockout</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">pins</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">RX</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RB8</span>
+<span class="w">      </span><span class="nt">TX</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RB9</span>
+<span class="w">      </span><span class="nt">fault</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RB4</span>
+<span class="w">      </span><span class="nt">outputEnable</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RA2</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>以下 MCP8021 的附加参数由 motorBench/MCAF 预配置，不能直接修改。参见 <a class="reference internal" href="#custom-board-sip-devices-param-override"><span class="std std-ref">configuration</span></a> 以获取更多信息。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">driverDeadTime</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">250</span>
+<span class="nt">driverBlankingTime</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4000</span>
+<span class="nt">overcurrentLimit</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
+</pre></div>
+</div>
+</div>
+</dd>
+<dt><strong>添加 MCP8022 栅极驱动器配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">characteristics</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<pre class="literal-block">gateDriver:
+  device: MCP8022
+  configuration:
+    sleepMode: <em>&lt;standby/sleep&gt;</em>
+    shortCircuitDetect: <em>&lt;true/false&gt;</em>
+    underVoltageLockout: <em>&lt;true/false&gt;</em>
+    opampEnabledDuringDeviceStandby: <em>&lt;true/false&gt;</em>
+  pins:
+    RX: R&lt;port&gt;&lt;number&gt;
+    TX: R&lt;port&gt;&lt;number&gt;
+    fault: R&lt;port&gt;&lt;number&gt;
+    outputEnable: R&lt;port&gt;&lt;number&gt;</pre>
+<p>例如，使用 dsPIC33CK256MP508 和 MCP8022 栅极驱动器的板配置如下：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">characteristics</span><span class="p">：</span>
+<span class="w">  </span><span class="nt">device</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dsPIC33CK256MP508</span>
+<span class="w">  </span><span class="nt">gateDriver</span><span class="p">：</span>
+<span class="w">    </span><span class="nt">device</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MCP8022</span>
+<span class="w">    </span><span class="nt">configuration</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">sleepMode</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standby</span>
+<span class="w">      </span><span class="nt">shortCircuitDetect</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">underVoltageLockout</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">opampEnabledDuringDeviceStandby</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">pins</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">RX</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RB8</span>
+<span class="w">      </span><span class="nt">TX</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RB9</span>
+<span class="w">      </span><span class="nt">fault</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RB4</span>
+<span class="w">      </span><span class="nt">outputEnable</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RA2</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>以下 MCP8022 的附加参数由 motorBench/MCAF 预配置，不能直接修改。参见 <a class="reference internal" href="#custom-board-sip-devices-param-override"><span class="std std-ref">configuration</span></a> 以获取更多信息。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">driverDeadTime</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">250</span>
+<span class="nt">driverBlankingTime</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4000</span>
+<span class="nt">overcurrentLimit</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
+</pre></div>
+</div>
+</div>
+</dd>
+<dt><strong>添加 MCP8027 栅极驱动器配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">characteristics</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<pre class="literal-block">gateDriver:
+  device: MCP8027
+  configuration:
+    sleepMode: <em>&lt;standby/sleep&gt;</em>
+    shortCircuitDetect: <em>&lt;true/false&gt;</em>
+    underVoltageLockout: <em>&lt;true/false&gt;</em>
+    linPullUpsEnabled: <em>&lt;true/false&gt;</em>
+    dacReference: <em>&lt;voltage&gt;</em>
+  pins:
+    RX: R&lt;port&gt;&lt;number&gt;
+    TX: R&lt;port&gt;&lt;number&gt;
+    fault: R&lt;port&gt;&lt;number&gt;
+    outputEnable: R&lt;port&gt;&lt;number&gt;</pre>
+<p>例如，使用 dsPIC33CK256MP508 和 MCP8027 栅极驱动器的板配置如下：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">characteristics</span><span class="p">：</span>
+<span class="w">  </span><span class="nt">device</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dsPIC33CK256MP508</span>
+<span class="w">  </span><span class="nt">gateDriver</span><span class="p">：</span>
+<span class="w">    </span><span class="nt">device</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MCP8027</span>
+<span class="w">    </span><span class="nt">configuration</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">sleepMode</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">standby</span>
+<span class="w">      </span><span class="nt">shortCircuitDetect</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">underVoltageLockout</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">linPullUpsEnabled</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">dacReference</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.872</span>
+<span class="w">    </span><span class="nt">pins</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">RX</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RB8</span>
+<span class="w">      </span><span class="nt">TX</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RB9</span>
+<span class="w">      </span><span class="nt">fault</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RB4</span>
+<span class="w">      </span><span class="nt">outputEnable</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RA2</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>以下 MCP8027 的附加参数由 motorBench/MCAF 预配置，不能直接修改。参见 <a class="reference internal" href="#custom-board-sip-devices-param-override"><span class="std std-ref">configuration</span></a> 以获取更多信息。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">driverDeadTime</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">250</span>
+<span class="nt">driverBlankingTime</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4000</span>
+<span class="nt">overcurrentLimit</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
+</pre></div>
+</div>
+</div>
+</dd>
+<dt><strong>为 PWMxH 和 PWMxL 互换的板添加 PWM 交换配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.pwm.outputSwap</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<pre class="literal-block">peripherals:
+  pwm:
+    outputSwap:
+      a: <em>&lt;true/false&gt;</em>
+      b: <em>&lt;true/false&gt;</em>
+      c: <em>&lt;true/false&gt;</em></pre>
+<p>例如，以下配置将交换分配给相位 A 和相位 B 的 PWM 发生器的 PWMxH 和 PWMxL 输出。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">peripherals</span><span class="p">：</span>
+<span class="w">  </span><span class="nt">pwm</span><span class="p">：</span>
+<span class="w">    </span><span class="nt">outputSwap</span><span class="p">：</span>
+<span class="w">      </span><span class="nt">a</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">b</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">c</span><span class="p">：</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</section>
+<section id="adding-a-non-mcaf-uart">
+<span id="custom-board-non-mcaf-uart"></span><h2><span class="section-number">6.6.5.4. </span>添加非 MCAF UART<a class="headerlink" href="#adding-a-non-mcaf-uart" title="本标题的永久链接">¶</a></h2>
+<p>motorBench<sup>®</sup> Development Suite 仅配置板级定义文件和 motorBench 设置中定义的资源。板级定义文件中配置的 UART 专用于 MCAF 实时诊断（见 <a class="reference internal" href="#custom-board-adding-uart"><span class="std std-ref">添加 UART 引脚映射</span></a>）。</p>
+<p>要使用额外的 UART，请先用 motorBench 生成代码，然后通过 <a class="reference external" href="https://www.microchip.com/en-us/tools-resources/configure/mplab-code-configurator/melody">MCC Melody</a> 单独添加额外的 UART 实例。同样的原则适用于 motorBench 未管理的其他外设，如附加定时器或 CAN。</p>
+</section>
+<section id="custom-boards-without-pushbuttons-or-potentiometer">
+<span id="custom-board-without-ui"></span><h2><span class="section-number">6.6.5.5. </span>无按钮或电位器的自定义板<a class="headerlink" href="#custom-boards-without-pushbuttons-or-potentiometer" title="本标题的永久链接">¶</a></h2>
+<p><a class="reference internal" href="../../components/diagnostics.zh.html#diag-kernel"><span class="std std-ref">实时诊断软件</span></a> 如 X2Cscope 允许没有按钮或电位器的板在使用 <a class="reference internal" href="../../components/main.zh.html#sample-application"><span class="std std-ref">示例应用</span></a>。</p>
+<ol class="arabic simple">
+<li><p>通过实时诊断连接到板。</p></li>
+<li><p>设置 <code class="docutils literal notranslate"><span class="pre">app.hardwareUiEnabled</span></code> 为 0。这将禁用 MCAF 示例应用中的用户界面功能。</p></li>
+<li><p>更新 <code class="docutils literal notranslate"><span class="pre">motor.apiData.velocityReference</span></code> 以设置电机速度。此 Q15 整数值由 <span class="math notranslate nohighlight">\(ω_{u}\)</span> 页面中设置的满量程速度进行缩放。参考速度将在 Customize 页面中设置的最小和最大速度值（<span class="math notranslate nohighlight">\(ω_{min}\)</span> 和 <span class="math notranslate nohighlight">\(ω_{max}\)</span>）之间饱和。</p></li>
+<li><p>设置 <code class="docutils literal notranslate"><span class="pre">motor.apiData.runMotorRequest</span></code> 为 1 以启动电机。MCAF 将尝试启动电机，并且 <code class="docutils literal notranslate"><span class="pre">motor.apiData.runMotorRequest</span></code> 将被复位为 0。</p></li>
+<li><p>设置 <code class="docutils literal notranslate"><span class="pre">motor.apiData.stopMotorRequest</span></code> 为 1 以停止电机。MCAF 将停止电机，并且 <code class="docutils literal notranslate"><span class="pre">motor.apiData.stopMotorRequest</span></code> 将被复位为 0。</p></li>
+</ol>
+</section>
+</section>
+<section id="board-definition-file-validation">
+<h1><span class="section-number">6.6.6. </span>板级定义文件验证<a class="headerlink" href="#board-definition-file-validation" title="本标题的永久链接">¶</a></h1>
+<p>导入自定义板时，motorBench 会验证板级定义以确保其符合 <a class="reference internal" href="custom_board_definitions.zh.html#custom-board-schema"><span class="std std-ref">自定义板级 schema</span></a>。如果验证失败，motorBench 将显示详细说明所报告错误的错误消息。</p>
+</section>
+<section id="support-for-mcp802x-gate-drivers-including-mcp8021-based-sip-system-in-package-devices">
+<span id="custom-board-sip-devices"></span><h1><span class="section-number">6.6.7. </span>对 MCP802X 栅极驱动器的支持，包括基于 MCP8021 的 SiP（系统级封装）器件<a class="headerlink" href="#support-for-mcp802x-gate-drivers-including-mcp8021-based-sip-system-in-package-devices" title="本标题的永久链接">¶</a></h1>
+<p>MCAF 通过栅极驱动器固件模块支持 MCP802X 系列等智能栅极驱动器，该模块管理配置、诊断和故障处理等任务。通过在板级定义文件中指定使用 MCP802X 栅极驱动器，即可在 MCAF 中使用栅极驱动器。</p>
+<section id="overview">
+<h2><span class="section-number">6.6.7.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
+<p>栅极驱动器接口执行以下核心功能：</p>
+<div class="highlighted-refs docutils container">
+<ul class="simple">
+<li><p><strong>初始化：</strong> 将板级配置应用于栅极驱动器以准备使用。</p></li>
+<li><p><strong>使能/禁用控制：</strong> 安全地使能或禁用栅极驱动器电路。</p></li>
+<li><p><strong>周期性服务：</strong> 在运行期间保持与栅极驱动器的通信。</p></li>
+<li><p><a class="reference internal" href="../../components/mcapi.zh.html#mcapi-fault-flags"><span class="std std-ref">故障监控</span></a>：捕获并存储故障条件以用于诊断或关断协议。</p></li>
+</ul>
+</div>
+<p>硬件抽象层（HAL）将这些功能提供给 MCAF 的高层组件，如系统板级服务和状态机。</p>
+</section>
+<section id="integration-with-mcaf">
+<h2><span class="section-number">6.6.7.2. </span>与 MCAF 的集成<a class="headerlink" href="#integration-with-mcaf" title="本标题的永久链接">¶</a></h2>
+<p>当板级定义指定了栅极驱动器器件时，MCAF 会包含栅极驱动器模块。</p>
+<div class="highlighted-refs docutils container">
+<ul class="simple">
+<li><p>在 <strong>板级初始化</strong>期间，栅极驱动器被配置。</p></li>
+<li><p>在 <a class="reference internal" href="../../components/hal.zh.html#board-service-module-board-handler"><span class="std std-ref">运行时服务</span></a>期间，MCAF 对栅极驱动器的内部状态和故障监控执行周期性更新。</p></li>
+<li><p>在 <a class="reference internal" href="../../components/hal.zh.html#board-service-module-bootstrap-charging"><span class="std std-ref">自举序列</span></a>中，系统等待栅极驱动器通信其就绪状态后，再启动自举电容充电。</p></li>
+</ul>
+</div>
+<p>这确保栅极驱动器已准备好正常运行。</p>
+</section>
+<section id="configuration">
+<h2><span class="section-number">6.6.7.3. </span>配置<a class="headerlink" href="#configuration" title="本标题的永久链接">¶</a></h2>
+<p>motorBench<sup>®</sup> Development Suite 会自动使用微控制器的预设设置来配置 MCP802X 器件。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>摘要</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">driverDeadTime</span></code></p></td>
+<td><p>设置 <a class="reference internal" href="../../algorithms/dead-time-comp.zh.html#dtc-definition"><span class="std std-ref">死区时间</span></a> ，即切换高侧和低侧 MOSFET 之间的时间，以防止直通。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">driverBlankingTime</span></code></p></td>
+<td><p>设置电流检测比较器禁用的时间间隔。这可防止因开关噪声导致的误过流或短路检测。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">shortCircuitDetection</span></code></p></td>
+<td><p>通过监控电流检测输入的快速过流条件来启用和配置短路故障检测。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">underVoltageLockOut</span></code></p></td>
+<td><p>如果供电电压低于此定义的阈值，栅极驱动输出将被禁用以防止不当操作。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">overcurrentLimit</span></code></p></td>
+<td><p>配置最大允许电流水平。如果超过，驱动器将关断或限制电流。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sleepMode</span></code></p></td>
+<td><p>内部电路断电以降低静态电流。LIN 唤醒和其他唤醒条件可用于恢复完全运行。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">opampEnabledDuringDeviceStandby</span></code></p></td>
+<td><p>允许内部运放在待机模式下保持活动，使外部信号调理电路在主驱动器不活动时仍能继续工作。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">linPullUpsEnabled</span></code></p></td>
+<td><p>在 LIN（局域互联网络）总线引脚上启用内部上拉电阻。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dacReference</span></code></p></td>
+<td><p>配置内部 DAC 的参考电压，用于设置过流阈值。</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">注</p>
+<p>所列配置参数的可用性和行为可能因 MCP8021、MCP8022 和 MCP8027 器件而异。请参阅特定器件的数据手册或板级定义 schema 以获取详细实现和有效设置。</p>
+</div>
+<p id="custom-board-sip-devices-param-override">MCAF 预配置以下参数以确保一致的行为：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">driverDeadTime</span></code>：MCP802X 不插入对称死区时间。为避免与微控制器生成的死区时间干扰，MCAF 将 MCP802X 配置为最小值（250 ns）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">driverBlankingTime</span></code>：设为最大值（4000 ns）以忽略开关引起的电流尖峰。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">overcurrentLimit</span></code>：设为 1.0 V（最高允许值），将有效过流阈值留给 MCAF。</p></li>
+</ul>
+<p>要覆盖这些默认值，请在 MCC Melody 应用构建器中使用 MCP802X EasyView 配置。MCC Melody MCP802X 接口支持栅极驱动器的自定义配置，可将其选为 motorBench 的默认配置。</p>
+</section>
+<section id="system-level-behavior">
+<h2><span class="section-number">6.6.7.4. </span>系统级行为<a class="headerlink" href="#system-level-behavior" title="本标题的永久链接">¶</a></h2>
+<section id="initialization">
+<h3><span class="section-number">6.6.7.4.1. </span>Initialization<a class="headerlink" href="#initialization" title="本标题的永久链接">¶</a></h3>
+<p>栅极驱动器初始化例程配置栅极驱动器的所有相关控制引脚、通信参数和内部寄存器，然后使能运行。</p>
+</section>
+<section id="bootstrap-sequence">
+<h3><span class="section-number">6.6.7.4.2. </span>Bootstrap sequence<a class="headerlink" href="#bootstrap-sequence" title="本标题的永久链接">¶</a></h3>
+<p>MCAF 在继续进行 <a class="reference internal" href="../../components/hal.zh.html#board-service-module-bootstrap-charging"><span class="std std-ref">自举电容充电</span></a>之前监控栅极驱动器的就绪状态。这确保了在依赖已充电自举电容的设计中实现正确的高侧开关。</p>
+</section>
+<section id="runtime-service">
+<h3><span class="section-number">6.6.7.4.3. </span>Runtime service<a class="headerlink" href="#runtime-service" title="本标题的永久链接">¶</a></h3>
+<p>MCAF 从板级服务层或主控制循环周期性调用栅极驱动器服务函数。这保持了与硬件的同步，处理故障轮询，并启用诊断功能。</p>
+</section>
+<section id="fault-handling">
+<h3><span class="section-number">6.6.7.4.4. </span>Fault handling<a class="headerlink" href="#fault-handling" title="本标题的永久链接">¶</a></h3>
+<p>栅极驱动器模块周期性地从栅极驱动器 IC 读取并存储故障标志。这使系统能够检测和响应欠压、过流或通信故障。</p>
+</section>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">6.6.5. 创建自定义板级配置</a><ul>
+<li><a class="reference internal" href="#starter-board-file">6.6.5.1. 起始板级文件</a></li>
+<li><a class="reference internal" href="#modifying-the-starter-board-definition">6.6.5.2. 修改起始板级定义</a></li>
+<li><a class="reference internal" href="#adding-parameters-to-the-board-definition">6.6.5.3. 向板级定义添加参数</a></li>
+<li><a class="reference internal" href="#adding-a-non-mcaf-uart">6.6.5.4. 添加非 MCAF UART</a></li>
+<li><a class="reference internal" href="#custom-boards-without-pushbuttons-or-potentiometer">6.6.5.5. 无按钮或电位器的自定义板</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#board-definition-file-validation">6.6.6. 板级定义文件验证</a></li>
+<li><a class="reference internal" href="#support-for-mcp802x-gate-drivers-including-mcp8021-based-sip-system-in-package-devices">6.6.7. 对 MCP802X 栅极驱动器的支持，包括基于 MCP8021 的 SiP（系统级封装）器件</a><ul>
+<li><a class="reference internal" href="#overview">6.6.7.1. 概述</a></li>
+<li><a class="reference internal" href="#integration-with-mcaf">6.6.7.2. 与 MCAF 的集成</a></li>
+<li><a class="reference internal" href="#configuration">6.6.7.3. 配置</a></li>
+<li><a class="reference internal" href="#system-level-behavior">6.6.7.4. 系统级行为</a><ul>
+<li><a class="reference internal" href="#initialization">6.6.7.4.1. 初始化</a></li>
+<li><a class="reference internal" href="#bootstrap-sequence">6.6.7.4.2. 自举序列</a></li>
+<li><a class="reference internal" href="#runtime-service">6.6.7.4.3. 运行时服务</a></li>
+<li><a class="reference internal" href="#fault-handling">6.6.7.4.4. 故障处理</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="overview.zh.html" title="上一章"><span class="section-number">6.6.1. </span>motorBench 中的板级支持概述<sup>®</sup> Development Suite</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="verification.zh.html" title="下一章"><span class="section-number">6.6.8. </span>验证与板级调试</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="verification.zh.html" title="6.6.8. Verification and board bring-up">下一页</a> |</li>
+<li class="right">
+<a href="overview.zh.html" title="6.6.1. Overview of board support in motorBench® Development Suite">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="../index.zh.html"><span class="section-number">6. </span>通用实现问题</a> »</li>
+<li class="nav-item nav-item-2"><a href="index.zh.html"><span class="section-number">6.6. </span>自定义板级支持</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">6.6.5. </span>创建自定义板级配置</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../../_static/lang-switch.js"></script>
+</body>
+</html>

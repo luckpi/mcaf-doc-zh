@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>4. 组件 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="main.zh.html" rel="next" title="4.1. Main Application"/>
+<link href="../architecture/numerics.zh.html" rel="prev" title="3.8. Treatment of Numerical Algorithms"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="main.zh.html" title="4.1. Main Application">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="../architecture/numerics.zh.html" title="3.8. Treatment of Numerical Algorithms">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">4. </span>组件</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="components">
+<span id="id1"></span><h1><span class="section-number">4. </span>组件<a class="headerlink" href="#components" title="本标题的永久链接">¶</a></h1>
+<figure class="align-center" id="fig-components">
+<a class="reference internal image-reference" href="../_images/app-framework-components.svg"><img alt="../_images/app-framework-components.svg" src="../_images/app-framework-components.svg" width="65%"/></a>
+</figure>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="main.zh.html">4.1. 主应用</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="main.zh.html#implementation-notes">4.1.1. 实现说明</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="adc.zh.html">4.2. ADC 校准与补偿</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="adc.zh.html#phase-current-offset-compensation">4.2.1. 相电流偏置补偿</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adc.zh.html#adc-gain-error-compensation">4.2.2. ADC 增益误差补偿</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adc.zh.html#implementation-notes">4.2.3. 实现说明</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="statemach.zh.html">4.3. 状态机</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="statemach.zh.html#states">4.3.1. 状态</a></li>
+<li class="toctree-l2"><a class="reference internal" href="statemach.zh.html#input-conditions">4.3.2. 输入条件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="statemach.zh.html#miscellaneous-state-machine-issues">4.3.3. 状态机其他问题</a></li>
+<li class="toctree-l2"><a class="reference internal" href="statemach.zh.html#implementation-notes">4.3.4. 实现说明</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="foc.zh.html">4.4. 磁场定向控制（FOC）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="foc.zh.html#velocity-control">4.4.1. 速度控制</a></li>
+<li class="toctree-l2"><a class="reference internal" href="foc.zh.html#current-control">4.4.2. 电流控制</a></li>
+<li class="toctree-l2"><a class="reference internal" href="foc.zh.html#position-and-velocity-estimator">4.4.3. 位置与速度估计器</a></li>
+<li class="toctree-l2"><a class="reference internal" href="foc.zh.html#implementation-notes">4.4.4. 实现说明</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="testharness.zh.html">4.5. 测试框架</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="testharness.zh.html#overview">4.5.1. 概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.zh.html#accretive-testing">4.5.2. 增量测试</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.zh.html#test-harness-parameters">4.5.3. 测试框架参数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.zh.html#test-guarding">4.5.4. 测试防护</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.zh.html#test-harness-architecture">4.5.5. 测试框架架构</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.zh.html#test-harness-modes">4.5.6. 测试框架模式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.zh.html#interaction-with-the-system-state-machine">4.5.7. 与系统状态机的交互</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.zh.html#forcing-system-state-machine-transitions">4.5.8. 强制系统状态机转换</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.zh.html#test-harness-switches-overrides">4.5.9. 测试框架开关（覆盖）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.zh.html#perturbation-signals">4.5.10. 扰动信号</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.zh.html#seizures">4.5.11. 卡住检测</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.zh.html#stack-overflow">4.5.12. 栈溢出</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.zh.html#profiling-timestamps">4.5.13. 性能分析时间戳</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.zh.html#triggered-average">4.5.14. 触发平均</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.zh.html#example-use-cases">4.5.15. 用例示例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testharness.zh.html#implementation-notes">4.5.16. 实现说明</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="supervisory.zh.html">4.6. 监督算法</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="supervisory.zh.html#implementation-notes">4.6.1. 实现说明</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ext-interface.zh.html">4.7. 外部接口</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ext-interface.zh.html#general-ui-guidelines">4.7.1. 通用 UI 指南</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ext-interface.zh.html#implemented-behavior">4.7.2. 已实现的行为</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ext-interface.zh.html#error-codes">4.7.3. 错误代码</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ext-interface.zh.html#timing-and-fault-clearing-issues-in-ui-indicators">4.7.4. UI 指示灯的时序与故障清除问题</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ext-interface.zh.html#implementation">4.7.5. 实现</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="diagnostics.zh.html">4.8. 诊断内核</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="diagnostics.zh.html#implementation-notes">4.8.1. 实现说明</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="hal.zh.html">4.9. 硬件抽象层（HAL）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="hal.zh.html#hardware-related-behavior">4.9.1. 与硬件相关的行为</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hal.zh.html#implementation">4.9.2. 实现</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mcapi.zh.html">4.10. 运动控制 API（MCAPI）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mcapi.zh.html#overview">4.10.1. 概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mcapi.zh.html#api-description">4.10.2. API 描述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mcapi.zh.html#usage-notes">4.10.3. 使用说明</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mcapi.zh.html#implementation-notes">4.10.4. 实现说明</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="miscellaneous.zh.html">4.11. 其他</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="miscellaneous.zh.html#implementation-notes">4.11.1. 实现说明</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="../architecture/numerics.zh.html" title="上一章"><span class="section-number">3.8. </span>数值算法处理</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="main.zh.html" title="下一章"><span class="section-number">4.1. </span>主应用</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="main.zh.html" title="4.1. Main Application">下一页</a> |</li>
+<li class="right">
+<a href="../architecture/numerics.zh.html" title="3.8. Treatment of Numerical Algorithms">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">4. </span>组件</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

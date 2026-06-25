@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>4.9. 硬件抽象层（HAL） — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script async="async" src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="mcapi.zh.html" rel="next" title="4.10. Motion Control API (MCAPI)"/>
+<link href="diagnostics.zh.html" rel="prev" title="4.8. Diagnostic Kernel"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="mcapi.zh.html" title="4.10. Motion Control API (MCAPI)">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="diagnostics.zh.html" title="4.8. Diagnostic Kernel">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a accesskey="U" href="index.zh.html"><span class="section-number">4. </span>组件</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">4.9. </span>硬件抽象层（HAL）</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="hardware-abstraction-layer-hal">
+<span id="hal"></span><h1><span class="section-number">4.9. </span>硬件抽象层（HAL）<a class="headerlink" href="#hardware-abstraction-layer-hal" title="本标题的永久链接">¶</a></h1>
+<p>HAL 被 MCAF 用于通过众所周知的函数调用来解耦所有设备特定硬件寄存器的知识。HAL 由两层组成： <a class="reference external" href="https://www.microchip.com/mplab/mplab-code-configurator">MPLAB<sup>®</sup> 代码配置器</a> （MCC）层和 HAF 层。MCC 层是基础层，其中设备特定的硬件寄存器被抽象为一系列外设驱动 API。然后 HAF 层调用 MCC 层中的函数来抽象设备特定功能，使更高层的 MCAF 层与设备无关。</p>
+<p>只要保留 HAL 函数名称和语义，HAL 组件就可以被替换为替代实现。</p>
+<section id="hardware-related-behavior">
+<h2><span class="section-number">4.9.1. </span>硬件相关行为<a class="headerlink" href="#hardware-related-behavior" title="本标题的永久链接">¶</a></h2>
+<p>MCAF 的某些方面利用 HAL 提供的功能，但行为的选择在于 MCAF。其中一些选择是为了便于在具有不同底层外设机制的设备之间移植。</p>
+<p><strong>注意：这种可移植性是有代价的</strong> ——每个系列的微控制器都有某些最优的外设使用模式，但这些模式可能无法很好地跨不同系列使用。</p>
+<p>对于 CPU 或外设性能是严重约束且优先于可移植性和可维护性的客户，应考虑根据需要修改 HAL 以满足这些约束。Microchip 不推荐这种方法，除非绝对必要。</p>
+<section id="interrupt-priorities">
+<h3><span class="section-number">4.9.1.1. </span>中断优先级<a class="headerlink" href="#interrupt-priorities" title="本标题的永久链接">¶</a></h3>
+<p>MCAF 的大部分代码在几个不同的中断服务程序中执行。以下中断按从高到低的优先级列出，供 MCAF 使用。参见 <a class="reference internal" href="../architecture/schedopt.zh.html#scheduling-requirements"><span class="std std-ref">调度要求</span></a> 一节了解更多信息。</p>
+<ul class="simple">
+<li><p>主 ADC ISR——执行 <a class="reference internal" href="statemach.zh.html#component-statemachine"><span class="std std-ref">状态机</span></a> 和几个其他关键 MCAF 组件，每个 PWM 周期执行一次。</p></li>
+<li><p>单通道 ADC ISR——每个 PWM 周期对直流母线电流采样两次。仅在 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-single-channel"><span class="std std-ref">单通道电流测量</span></a> 时执行。</p></li>
+<li><p>定时器 ISR——执行 <a class="reference internal" href="#board-service-module"><span class="std std-ref">板级服务</span></a> 任务和 <a class="reference internal" href="main.zh.html#component-main"><span class="std std-ref">主应用程序</span></a> 周期性地。</p></li>
+</ul>
+</section>
+<section id="pwm-outputs">
+<span id="hardware-pwm"></span><h3><span class="section-number">4.9.1.2. </span>PWM 输出<a class="headerlink" href="#pwm-outputs" title="本标题的永久链接">¶</a></h3>
+<p><a class="reference internal" href="../appendix/glossary.zh.html#term-PWM"><span class="xref std std-term">PWM</span></a> 三相桥的输出设置为以下三种模式之一：</p>
+<ul class="simple">
+<li><p><strong>关闭</strong> ——在设备复位时和严重故障期间，桥完全关闭</p></li>
+</ul>
+<span id="index-0"></span><ul class="simple" id="hardware-pwm-minimal-impact">
+<li><p><strong>“最小影响”</strong> ——当不对电机端子施加电压时（在 <a class="reference internal" href="statemach.zh.html#component-statemachine"><span class="std std-ref">状态机</span></a>的某些状态下），上桥臂晶体管完全关闭，但下桥臂晶体管以低占空比（通常 1-3%）导通，以维持自举栅极驱动电容器的电荷。参见 <code class="docutils literal notranslate"><span class="pre">MCAF_SetPwmMinimalImpact()</span></code> 在 <a class="reference internal" href="statemach.zh.html#component-statemachine"><span class="std std-ref">state_machine</span></a> 模块中。</p></li>
+<li><p><strong>正常</strong> ——当对电机端子施加电压时，所有 6 个晶体管都在开关，分为三对互补对，每相一对。每相在一个晶体管关断和互补晶体管导通之间有死区时间，以避免直通。</p></li>
+</ul>
+</section>
+<section id="overcurrent-fault-detection-and-clearing">
+<h3><span class="section-number">4.9.1.3. </span>过流故障检测与清除<a class="headerlink" href="#overcurrent-fault-detection-and-clearing" title="本标题的永久链接">¶</a></h3>
+<p>MCAF 需要两阶段故障清除方案来复位锁存电路。为了在 dsPIC33EP 设备的锁存模式下清除故障，需要在下一个 PWM 周期清除中断标志并启用故障模式。请参阅 <a class="reference external" href="http://ww1.microchip.com/downloads/en/devicedoc/70645c.pdf#page=101">DS70645C p.14-101</a> 获取更多信息。</p>
+<p>阶段 1 在当前 PWM 周期发生</p>
+<ul class="simple">
+<li><p>33EP：禁用故障锁存模式</p></li>
+<li><p>33CK：清除故障锁存</p></li>
+</ul>
+<p>阶段 2 在下一个 PWM 周期发生</p>
+<ul class="simple">
+<li><p>33CK 和 33EP：清除故障中断标志</p></li>
+<li><p>33EP：启用故障锁存</p></li>
+</ul>
+</section>
+<section id="analog-to-digital-conversion">
+<span id="hardware-adc"></span><span id="index-1"></span><h3><span class="section-number">4.9.1.4. </span>模数转换<a class="headerlink" href="#analog-to-digital-conversion" title="本标题的永久链接">¶</a></h3>
+<p>一些 ADC 输入有严格的时序要求，如 <a class="reference internal" href="#table-hal-adc-sampling"><span class="std std-numref">表 4.8</span></a>。</p>
+<p>（目前，MCAF 要求固定的 <span class="math notranslate nohighlight">\(f_{PW\!M}\)</span> = 20 kHz.)</p>
+<table class="docutils align-default" id="table-hal-adc-sampling">
+<caption><span class="caption-number">表 4.8 </span><span class="caption-text">MCAF 的采样要求</span><a class="headerlink" href="#table-hal-adc-sampling" title="本表格的永久链接">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>模拟输入</p></th>
+<th class="head"><p>采样频率</p></th>
+<th class="head"><p>时序要求</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>电机电流（A、B、Sum）</p></td>
+<td><p><span class="math notranslate nohighlight">\(f_{PW\!M}/K\)</span></p></td>
+<td><p>在 PWM 周期中心附近采样（通常为中心对齐周期的起始点）。所有采样应在某个较小时间 Tskew 内完成。（通常 1 μ s 或更小）</p></td>
+</tr>
+<tr class="row-odd"><td><p>直流母线电压</p></td>
+<td><p><span class="math notranslate nohighlight">\(f_{PW\!M}/K\)</span></p></td>
+<td><p>典型 K=1 或 K=2。（优先最小化 K。）否则，无严格时序要求</p></td>
+</tr>
+<tr class="row-even"><td><p>电位器</p></td>
+<td><p><span class="math notranslate nohighlight">\(f_{PW\!M}/K\)</span></p></td>
+<td><p>取决于应用；MCAF 使用 K=2。否则，无严格时序要求</p></td>
+</tr>
+</tbody>
+</table>
+<p>给定上述约束，可以使用多种 ADC 采样调度方案。下面的时序图显示了 33CK 和 33EP 中电机相电流、直流母线电压和电位器的采样调度。ADC 触发源通过在电路板配置文件中将任何可用的 PWM 实例映射到 Phase A 来选择。这允许用户选择不同的 PWM 生成器（例如 PWM 生成器 2 或 3）通过相应映射来触发 ADC。</p>
+<figure class="align-center" id="id3">
+<span id="fig-hal-adc-33ck"></span><img alt="../_images/adc-33ck-timing-diagram.svg" src="../_images/adc-33ck-timing-diagram.svg"/><figcaption>
+<p><span class="caption-number">图 4.12 </span><span class="caption-text">具有多个 ADC 核的 dsPIC33CK 设备的建议 ADC 时序（横轴未按比例）</span><a class="headerlink" href="#id3" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p><a class="reference internal" href="#fig-hal-adc-33ck"><span class="std std-numref">图 4.12</span></a> 展示了具有多个核的 dsPIC33CK 设备（如 dsPIC33CK64MP105 和 dsPIC33CK256MP508）在中心对齐 PWM 周期开始时同时采样电机相电流 A 和 B 的示例。在电机相电流 B 之后，采样间隔小于 1 μ s，共享核依次采样直流母线电压和电位器，随后电位器转换结束触发 ADC ISR。</p>
+<figure class="align-center" id="id4">
+<span id="fig-hal-adc-33ck64mc105"></span><img alt="../_images/adc-33ck64mc105-timing-diagram.svg" src="../_images/adc-33ck64mc105-timing-diagram.svg"/><figcaption>
+<p><span class="caption-number">图 4.13 </span><span class="caption-text">具有单个 ADC 核的 dsPIC33CK 设备的建议 ADC 时序（横轴未按比例）</span><a class="headerlink" href="#id4" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p><a class="reference internal" href="#fig-hal-adc-33ck64mc105"><span class="std std-numref">图 4.13</span></a> 展示了具有单个 ADC 核的 dsPIC33CK 设备（如 dsPIC33CK64MC105）依次采样模拟输入的示例：电机相电流 A、B、直流母线电压和电位器。在转换序列结束时，ADC ISR 被触发并执行。</p>
+<figure class="align-center" id="id5">
+<span id="fig-hal-adc-33ep"></span><img alt="../_images/adc-33ep-timing-diagram.svg" src="../_images/adc-33ep-timing-diagram.svg"/><figcaption>
+<p><span class="caption-number">图 4.14 </span><span class="caption-text">dsPIC33EP 设备的建议 ADC 时序（横轴未按比例）</span><a class="headerlink" href="#id5" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p><a class="reference internal" href="#fig-hal-adc-33ep"><span class="std std-numref">图 4.14</span></a> 展示了 dsPIC33EP256MC506 在中心对齐 PWM 周期开始时同时采样所有模拟输入（电位器输入除外）的示例。模拟输入采样和转换完成后，触发 ADC ISR 的开始。在下一个中心对齐 PWM 周期，共享 ADC 核从感测直流母线电压切换到感测电位器输入。在下一个 PWM 边界，此循环重复。</p>
+<section id="difference-between-33ep-and-33ck-pwm-modules-and-its-implications-on-adc-operation">
+<h4><span class="section-number">4.9.1.4.1. </span>33EP 和 33CK PWM 模块之间的差异及其对 ADC 操作的影响<a class="headerlink" href="#difference-between-33ep-and-33ck-pwm-modules-and-its-implications-on-adc-operation" title="本标题的永久链接">¶</a></h4>
+<p>为了准确测量电机相电流，ADC 必须在低侧占空比脉冲的中间开始采样。这是为了在低侧脉冲结束前留出足够的时间让电流检测信号调理稳定并给 ADC 采样电容充电。</p>
+<figure class="align-center" id="id6">
+<span id="fig-hal-symmetric-asymmetric-deadtime"></span><img alt="../_images/symmetric-asymmetric-deadtime.svg" src="../_images/symmetric-asymmetric-deadtime.svg"/><figcaption>
+<p><span class="caption-number">图 4.15 </span><span class="caption-text"> </span><a class="headerlink" href="#id6" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p><a class="reference internal" href="#fig-hal-symmetric-asymmetric-deadtime"><span class="std std-numref">图 4.15</span></a> 显示了对称和不对称死区时间之间的差异。在对称死区时间中，高到低转换提前 DT/2，低到高转换延迟 DT/2。在不对称死区时间中，低到高转换延迟 DT。此图还显示在不对称死区时间插入中，PWM 中心事件延迟 T1。</p>
+<dl class="simple">
+<dt>dsPIC33EP：</dt><dd><ul class="simple">
+<li><p>在 PWM 模块中实现对称死区时间</p></li>
+<li><p>由于对称死区时间，中心对齐周期的开始与低侧脉冲的中心对齐。</p></li>
+<li><p>不需要延迟来确保采样/转换发生在低侧脉冲的中间。</p></li>
+</ul>
+</dd>
+<dt>dsPIC33CK：</dt><dd><ul class="simple">
+<li><p>在 PWM 模块中实现不对称死区时间</p></li>
+<li><p>由于不对称死区时间，中心对齐周期的开始略超前于低侧脉冲的中心。</p></li>
+<li><p>我们建议在 ADC 触发中添加半个死区时间的小延迟，以确保采样/转换发生在低侧脉冲的中间。</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+</section>
+<section id="pwm-update-options">
+<span id="hal-pwm-update-options"></span><h3><span class="section-number">4.9.1.5. </span>PWM 更新选项<a class="headerlink" href="#pwm-update-options" title="本标题的永久链接">¶</a></h3>
+<p>对于中心对齐 PWM，有几个选项决定 PWM 占空比寄存器的更新何时实际加载到 PWM 生成器中使用。</p>
+<p>这些选项通常包括以下内容：</p>
+<ul class="simple">
+<li><p><strong>立即更新</strong> ——占空比寄存器更新立即加载到 PWM 生成器中。这具有最低的额外延迟，但可能导致额外的输出转换（例如，如果占空比寄存器从较旧的较大占空比更新为较新的较小占空比，在较旧占空比已引起低到高转换之后，但在较新占空比将引起低到高转换之前）或落入 PWM 模块的已知勘误中。不建议在 MCAF 中使用立即更新。</p></li>
+<li><p><strong>单次更新</strong> （单次同步更新）——占空比寄存器更新在中心对齐 PWM 周期开始时加载到 PWM 生成器中。这每个 PWM 周期只为控制环路创建一次更新占空比的机会。</p></li>
+<li><p><strong>双次更新</strong> （双次同步更新）——占空比寄存器更新在中心对齐 PWM 周期的开始和中心都加载到 PWM 生成器中。这每个 PWM 周期为控制环路创建两次更新占空比的机会。</p></li>
+</ul>
+<p>更新选择在电流控制环路时序中产生有效延迟。关键指标是 <a class="reference internal" href="../algorithms/foc/tuning.zh.html#ituning-sample-update-delay"><span class="std std-ref">采样到更新延迟</span></a>
+<span class="math notranslate nohighlight">\(T_{su}\)</span>，它测量从 ADC 采样信息可用的时刻到新一组 PWM 占空比加载到 PWM 生成器的时间。单次更新和双次更新如 <a class="reference internal" href="#fig-hal-pwm-update-timing"><span class="std std-numref">图 4.16</span></a>所示。双次更新 PWM 允许最小延迟 <span class="math notranslate nohighlight">\(T_{su}\)</span> 为半个 PWM 周期。单次更新 PWM 允许最小延迟 <span class="math notranslate nohighlight">\(T_{su}\)</span> 为一个完整周期。实际延迟取决于控制环路执行 ADC 采样和 PWM 占空比寄存器更新之间关键代码的速度。</p>
+<figure class="align-center" id="id7">
+<span id="fig-hal-pwm-update-timing"></span><img alt="../_images/scheduling1.svg" src="../_images/scheduling1.svg"/><figcaption>
+<p><span class="caption-number">图 4.16 </span><span class="caption-text">单次更新和双次更新。虚线表示 PWM 生成器更新的机会。</span><a class="headerlink" href="#id7" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+<p>通常建议 MCAF 使用双次更新以减少采样到更新延迟，但某些控制方法需要其他 PWM 更新选项。 <a class="reference internal" href="../algorithms/zsmt.zh.html#algorithm-zsmt"><span class="std std-ref">ZS/MT</span></a> 在中心对齐 PWM 模式下需要单次更新。对于其他估算器， <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-single-channel"><span class="std std-ref">single-channel</span></a> 电流测量在双沿中心对齐 PWM 模式下需要单次更新，而对于 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-dual-channel"><span class="std std-ref">dual-channel</span></a> 或 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-triple-channel"><span class="std std-ref">triple-channel</span></a> 电流测量，配置双次更新中心对齐 PWM 模式以减少采样到更新延迟。</p>
+<p>注意：在 dsPIC33E 设备中，双次更新默认启用，不需要也不允许更改外设配置。对于 dsPIC33E，请检查设备勘误。某些设备的早期硅片版本实现单次更新行为而非双次更新行为。</p>
+</section>
+<section id="board-service-module">
+<span id="id1"></span><h3><span class="section-number">4.9.1.6. </span>板级服务模块<a class="headerlink" href="#board-service-module" title="本标题的永久链接">¶</a></h3>
+<p>MCAF 中的板级服务模块与 HAL 中的硬件访问功能（HAF）协同工作，以为 MCAF 提供板级功能。它提供两个主要的板级相关功能：板级处理程序和 PWM 自举充电例程。</p>
+<section id="board-handler">
+<span id="board-service-module-board-handler"></span><h4><span class="section-number">4.9.1.6.1. </span>板级处理程序<a class="headerlink" href="#board-handler" title="本标题的永久链接">¶</a></h4>
+<p>板级处理程序包括配置和执行板级服务进程的接口。板级服务进程使用定时器周期性地处理板级服务。与适当的 HAL 接口配合工作，板级处理程序向用户级应用程序（如 <a class="reference internal" href="main.zh.html#sample-application"><span class="std std-ref">示例应用程序</span></a>。</p>
+</section>
+<section id="pwm-bootstrap-charging-routine">
+<span id="board-service-module-bootstrap-charging"></span><h4><span class="section-number">4.9.1.6.2. </span>PWM 自举充电例程<a class="headerlink" href="#pwm-bootstrap-charging-routine" title="本标题的永久链接">¶</a></h4>
+<p>PWM 自举充电例程包括初始化和执行 PWM 自举充电过程的接口。该例程首先关闭高侧晶体管并将低侧晶体管设置为 0% 占空比。然后 PWM 自举充电例程延迟预设数量的 PWM 周期，再开始充电自举电容。在此过程中，PWM 自举电容以受控速率依次充电（参见 <a class="reference internal" href="#hal-errata"><span class="std std-ref">勘误</span></a>）。该过程首先以低占空比短时间开关 A 相低侧晶体管，然后短时间进行 B 相，最后是 C 相：</p>
+<figure class="align-center" id="id8">
+<span id="fig-bootstrap-charging-pwm-signals"></span><img alt="../_images/bootstrap-charging-pwm-signals.PNG" src="../_images/bootstrap-charging-pwm-signals.PNG"/>
+<figcaption>
+<p><span class="caption-number">图 4.17 </span><span class="caption-text">自举充电例程期间的 PWM 低侧信号。</span><a class="headerlink" href="#id8" title="本图片的永久链接">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+</section>
+<section id="implementation">
+<h2><span class="section-number">4.9.2. </span>实现<a class="headerlink" href="#implementation" title="本标题的永久链接">¶</a></h2>
+<section id="mcc-integration">
+<h3><span class="section-number">4.9.2.1. </span>MCC 集成<a class="headerlink" href="#mcc-integration" title="本标题的永久链接">¶</a></h3>
+<p>在 MCAF R3 之前，生成的代码未与 MCC 集成；MCAF 完全提供自己的 HAL。</p>
+<section id="mcaf-r3">
+<span id="hal-mcaf-r3"></span><h4><span class="section-number">4.9.2.1.1. </span>MCAF R3<a class="headerlink" href="#mcaf-r3" title="本标题的永久链接">¶</a></h4>
+<p>在 MCAF R3 中，以下项目已从 MCAF 中移除并由 MCC 负责：</p>
+<ul class="simple">
+<li><p>配置位</p></li>
+<li><p>振荡器设置</p></li>
+</ul>
+<p>MCC 系统模块的某些方面仍存在于 MCAF 中。MCC 和 MCAF 代码都执行；MCAF 代码稍后运行并覆盖 MCC 的任何设置。以下区域由 MCC 和 MCAF 共同处理：</p>
+<ul class="simple">
+<li><p>GPIO 配置</p></li>
+<li><p>中断初始化</p></li>
+<li><p>CORCON 初始化</p></li>
+</ul>
+<p>这种重叠是暂时的，这些区域计划完全转移到 MCC。</p>
+<p>其他模块如 ADC 和 PWM 完全由 MCAF 配置，将在未来版本的 MCAF 中转移到 MCC。</p>
+</section>
+<section id="mcaf-r4">
+<span id="hal-mcaf-r4"></span><h4><span class="section-number">4.9.2.1.2. </span>MCAF R4<a class="headerlink" href="#mcaf-r4" title="本标题的永久链接">¶</a></h4>
+<p>在 MCAF R4 中，以下项目已从 MCAF 中移除并由 MCC 负责：</p>
+<ul class="simple">
+<li><p>GPIO 配置</p></li>
+<li><p>中断模块</p></li>
+<li><p>CORCON 初始化</p></li>
+<li><p>PWM 模块</p></li>
+<li><p>ADC 模块</p></li>
+<li><p>定时器模块</p></li>
+<li><p>UART 模块</p></li>
+<li><p>DMA 模块</p></li>
+<li><p>看门狗模块</p></li>
+<li><p>LED 模块</p></li>
+<li><p>开关模块</p></li>
+<li><p>引脚管理（部分）</p></li>
+</ul>
+<p>MCC 处理所有外设初始化、引脚初始化、引脚管理，并且是与硬件交互的基础层。目前，由于 MCC 尚不支持 QEI，引脚管理不能完全由 MCC 单独处理。首先，MCC 系统模块配置所有外设包括设备引脚管理。然后，在 MCC 系统模块完成配置后，MCAF 引脚管理也运行以初始化 QEI 引脚。QEI 模块完全由 MCAF 处理，将在 MCC 为 16 位设备提供 QEI 支持时转移到 MCC。</p>
+<p>大多数硬件访问操作通过 HAF 层进行，但少量对 MCC 外设层的调用直接从 MCAF 应用程序发出。未来，所有硬件访问将委托给 HAF 层。这是为了避免 MCAF 应用程序与 MCC 之间的耦合。</p>
+<p><code class="docutils literal notranslate"><span class="pre">HAL_InterruptVectorNumberGet()</span></code> 是添加到 HAF 层的函数。此函数获取中断向量号，不直接通过 MCC 执行此操作。</p>
+<p>有关 MCAF 中 MCC 配置的更多信息，请参见 <a class="reference internal" href="../appendix/otherdocs.zh.html#otherdocs-mcc"><span class="std std-ref">MCC 外设文档</span></a>。</p>
+</section>
+<section id="mcaf-r5">
+<span id="hal-mcaf-r5"></span><h4><span class="section-number">4.9.2.1.3. </span>MCAF R5<a class="headerlink" href="#mcaf-r5" title="本标题的永久链接">¶</a></h4>
+<ul class="simple">
+<li><p>增加了对 dsPIC33CK256MP508 的支持。</p></li>
+<li><p>MCAF 调用的所有外设和硬件相关功能都通过硬件访问功能层进行。</p></li>
+<li><p>MCAF 需要特定的外设实例。所需实例为：PWM、ADC1、TMR1、SCCP1-TMR/TMR2、UART1 和 QEI1</p></li>
+<li><p>MCC 处理大部分外设生成代码，QEI 和故障中断状态位清除除外。</p></li>
+</ul>
+</section>
+<section id="mcaf-r6">
+<span id="hal-mcaf-r6"></span><h4><span class="section-number">4.9.2.1.4. </span>MCAF R6<a class="headerlink" href="#mcaf-r6" title="本标题的永久链接">¶</a></h4>
+<ul class="simple">
+<li><p>增加了对 dsPIC33CK64MP105 和 dsPIC33CK64MC105 的支持。</p></li>
+<li><p>MCC 现在处理所有外设生成代码，QEI 除外。</p></li>
+<li><p>板级服务模块重构为分为 <a class="reference internal" href="#board-service-module-bootstrap-charging"><span class="std std-ref">PWM 自举充电</span></a> 和 <a class="reference internal" href="#board-service-module-board-handler"><span class="std std-ref">板级处理程序</span></a> 部分</p></li>
+</ul>
+</section>
+<section id="mcaf-r7">
+<span id="hal-mcaf-r7"></span><h4><span class="section-number">4.9.2.1.5. </span>MCAF R7<a class="headerlink" href="#mcaf-r7" title="本标题的永久链接">¶</a></h4>
+<ul>
+<li><dl class="simple">
+<dt>增加了对 <a class="reference external" href="https://www.microchip.com/en-us/tools-resources/configure/mplab-code-configurator/melody">MCC Melody</a> 和 <a class="reference external" href="https://www.microchip.com/en-us/tools-resources/configure/mplab-code-configurator/classic">MCC Classic</a>。</dt><dd><ul class="simple">
+<li><p>MCC Melody 仅支持 dsPIC33CK 系列设备。</p></li>
+<li><p>MCC Classic 仅支持 dsPIC33EP 系列设备。</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>MCC Melody 处理所有外设生成代码，包括 QEI。使用 MCC Classic 时，MCAF 提供 QEI 代码。</p></li>
+<li><p>MCAF 使用的中断优先级总结于 <a class="reference internal" href="#table-hal-isr-priorities"><span class="std std-numref">表 4.9</span></a>。</p>
+<blockquote>
+<div><table class="docutils align-default" id="table-hal-isr-priorities">
+<caption><span class="caption-number">表 4.9 </span><span class="caption-text">MCAF 的 ISR 优先级</span><a class="headerlink" href="#table-hal-isr-priorities" title="本表格的永久链接">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>ISR 类型</p></th>
+<th class="head"><p>MCC Classic</p></th>
+<th class="head"><p>MCC Melody</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>主 ADC</p></td>
+<td><p>4</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-odd"><td><p>单通道 ADC</p></td>
+<td><p>不适用</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>定时器</p></td>
+<td><p>4</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<section id="mcaf-r9">
+<h4><span class="section-number">4.9.2.1.6. </span>MCAF R9<a class="headerlink" href="#mcaf-r9" title="本标题的永久链接">¶</a></h4>
+<p>在 MCAF R9 之前，ADC 触发器硬编码为 PWM 生成器 1。从 MCAF R9 开始，用户可以通过在电路板配置文件中将任何可用的 PWM 实例映射到 Phase A 来自定义 ADC 触发源。</p>
+</section>
+</section>
+<section id="hal-errata">
+<span id="id2"></span><h3><span class="section-number">4.9.2.2. </span>HAL 勘误<a class="headerlink" href="#hal-errata" title="本标题的永久链接">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_BootstrapChargeStepIsr()</span></code> 包含一个软启动序列，旨在缓慢打开占空比并减少栅极驱动电源负载，以充电自举电容。此序列以过低的占空比开始，可能在某些栅极驱动器中产生残缺脉冲。（DB_MC-978；适用性：MCAF R2 – R6）</p></li>
+</ul>
+</section>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">4.9. 硬件抽象层（HAL）</a><ul>
+<li><a class="reference internal" href="#hardware-related-behavior">4.9.1. 硬件相关行为</a><ul>
+<li><a class="reference internal" href="#interrupt-priorities">4.9.1.1. 中断优先级</a></li>
+<li><a class="reference internal" href="#pwm-outputs">4.9.1.2. PWM 输出</a></li>
+<li><a class="reference internal" href="#overcurrent-fault-detection-and-clearing">4.9.1.3. 过流故障检测与清除</a></li>
+<li><a class="reference internal" href="#analog-to-digital-conversion">4.9.1.4. 模数转换</a><ul>
+<li><a class="reference internal" href="#difference-between-33ep-and-33ck-pwm-modules-and-its-implications-on-adc-operation">4.9.1.4.1. 33EP 和 33CK PWM 模块之间的差异及其对 ADC 操作的影响</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pwm-update-options">4.9.1.5. PWM 更新选项</a></li>
+<li><a class="reference internal" href="#board-service-module">4.9.1.6. 板级服务模块</a><ul>
+<li><a class="reference internal" href="#board-handler">4.9.1.6.1. 板级处理程序</a></li>
+<li><a class="reference internal" href="#pwm-bootstrap-charging-routine">4.9.1.6.2. PWM 自举充电例程</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#implementation">4.9.2. 实现</a><ul>
+<li><a class="reference internal" href="#mcc-integration">4.9.2.1. MCC 集成</a><ul>
+<li><a class="reference internal" href="#mcaf-r3">4.9.2.1.1. MCAF R3</a></li>
+<li><a class="reference internal" href="#mcaf-r4">4.9.2.1.2. MCAF R4</a></li>
+<li><a class="reference internal" href="#mcaf-r5">4.9.2.1.3. MCAF R5</a></li>
+<li><a class="reference internal" href="#mcaf-r6">4.9.2.1.4. MCAF R6</a></li>
+<li><a class="reference internal" href="#mcaf-r7">4.9.2.1.5. MCAF R7</a></li>
+<li><a class="reference internal" href="#mcaf-r9">4.9.2.1.6. MCAF R9</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#hal-errata">4.9.2.2. HAL 勘误</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="diagnostics.zh.html" title="上一章"><span class="section-number">4.8. </span>诊断内核</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="mcapi.zh.html" title="下一章"><span class="section-number">4.10. </span>运动控制 API（MCAPI）</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="mcapi.zh.html" title="4.10. Motion Control API (MCAPI)">下一页</a> |</li>
+<li class="right">
+<a href="diagnostics.zh.html" title="4.8. Diagnostic Kernel">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+          <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">4. </span>组件</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">4.9. </span>硬件抽象层（HAL）</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo">
+        © 版权所有 2017-2026，Microchip Technology, Inc..
+    </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

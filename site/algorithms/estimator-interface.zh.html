@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>5.4.1. 固件接口 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="pll.zh.html" rel="next" title="5.4.2. AN1292 Phase-locked Loop (PLL)"/>
+<link href="estimators.zh.html" rel="prev" title="5.4. Position and Velocity Estimation"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="pll.zh.html" title="5.4.2. AN1292 Phase-locked Loop (PLL)">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="estimators.zh.html" title="5.4. Position and Velocity Estimation">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> » <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a accesskey="U" href="estimators.zh.html"><span class="section-number">5.4. </span>位置和速度估计</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4.1. </span>固件接口</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="firmware-interface">
+<span id="algorithm-estimator-interface"></span><span id="index-0"></span><h1><span class="section-number">5.4.1. </span>固件接口<a class="headerlink" href="#firmware-interface" title="本标题的永久链接">¶</a></h1>
+<section id="overview">
+<h2><span class="section-number">5.4.1.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
+<p>MCAF 中的位置和速度估计器具有几个共同特性。本节描述它们的方法、类型和语义。一个名为 <code class="docutils literal notranslate"><span class="pre">Xyz</span></code> 的虚构估计器将用于示例目的。</p>
+</section>
+<section id="terminology">
+<span id="algorithm-estimator-terminology"></span><h2><span class="section-number">5.4.1.2. </span>术语<a class="headerlink" href="#terminology" title="本标题的永久链接">¶</a></h2>
+<p>MCAF 中使用以下术语来描述估计器：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>术语 </p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>活跃</p></td>
+<td><p>活跃估计器正在运行并确定角度和速度。（在 motorBench 的 Customize（自定义）页面中选择<sup>®</sup> Development Suite（开发套件）中的所有估计器默认为活跃状态。）</p></td>
+</tr>
+<tr class="row-odd"><td><p>主</p></td>
+<td><p>主估计器确定用于换相和反馈的角度和速度。多个估计器可以同时活跃，但在任何给定时刻只能有一个主估计器。</p></td>
+</tr>
+<tr class="row-even"><td><p>侵入式</p></td>
+<td><p>侵入式估计器是用某种激励波形扰动控制器输出的估计器，可能对电机电流和电压有轻微影响。非侵入式估计器通过现有的电流、电压或其他传感器测量来确定角度和速度，除了作为主估计器使用外不影响运行。大多数估计器是非侵入式的。</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="filesystem-location">
+<h2><span class="section-number">5.4.1.3. </span>文件系统位置<a class="headerlink" href="#filesystem-location" title="本标题的永久链接">¶</a></h2>
+<p>使用估计器的调用点可在 <code class="docutils literal notranslate"><span class="pre">commutation.c</span></code> 和 <code class="docutils literal notranslate"><span class="pre">commutation.h</span></code>中找到；存储声明在 <code class="docutils literal notranslate"><span class="pre">commutation_types.h</span></code>。</p>
+<p>各个估计器模块的实现位于 <code class="docutils literal notranslate"><span class="pre">commutation</span></code> 目录中。它们通常至少包含一个 .h 文件和一个 .c 文件，例如 <code class="docutils literal notranslate"><span class="pre">commutation/xyz.h</span></code> 和 <code class="docutils literal notranslate"><span class="pre">commutation/xyz.c</span></code>。一些估计器模块将类型定义单独放在 types.h 文件中，例如 <code class="docutils literal notranslate"><span class="pre">commutation/xyz_types.h</span></code>。估计器的状态变量结构定义在 types.h 文件中（如果存在），连同内联静态获取方法；否则定义在主 .h 文件中。函数原型声明在主 .h 文件中。</p>
+<p>估计器特定参数（如延迟、限制和调节增益）生成在 <code class="docutils literal notranslate"><span class="pre">parameters/xyz_params.h</span></code>。</p>
+</section>
+<section id="storage-and-types">
+<h2><span class="section-number">5.4.1.4. </span>存储和类型<a class="headerlink" href="#storage-and-types" title="本标题的永久链接">¶</a></h2>
+<p>每个估计器都有一个状态变量结构定义在 <code class="docutils literal notranslate"><span class="pre">commutation/xyz.h</span></code> 或 <code class="docutils literal notranslate"><span class="pre">commutation/xyz_types.h</span></code>，例如：</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="c1">// 供 Xyz 估计器使用的状态变量结构</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">tagMCAF_ESTIMATOR_XYZ</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="p">...</span>
+<span class="p">}</span><span class="w"> </span><span class="n">MCAF_ESTIMATOR_XYZ_T</span><span class="p">；</span>
+</pre></div>
+</div>
+<p>此状态变量结构的存储将声明在 <code class="docutils literal notranslate"><span class="pre">commutation_types.h</span></code>，通常如下所示：</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * 用于比较估计器电气角度的相对角度</span>
+<span class="cm"> */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">tagMCAF_RELATIVE_ANGLE_T</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">MCAF_U_ANGLE_ELEC</span><span class="w"> </span><span class="n">qei</span><span class="p">；</span><span class="w"> </span><span class="cm">/** 带速度跟踪环的正交编码器 */</span>
+<span class="p">}</span><span class="w"> </span><span class="n">MCAF_RELATIVE_ANGLE_T</span><span class="p">；</span>
+
+<span class="cm">/**</span>
+<span class="cm">* 位置/速度的状态估计器数据</span>
+<span class="cm">*/</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">tagMCAF_ESTIMATOR_T</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">MCAF_ESTIMATOR_QEI_T</span><span class="w"> </span><span class="n">qei</span><span class="p">；</span><span class="w">  </span><span class="cm">/** 带速度跟踪环的正交编码器 */</span>
+<span class="w">   </span><span class="n">MCAF_ESTIMATOR_XYZ_T</span><span class="w"> </span><span class="n">xyz</span><span class="p">；</span><span class="w">  </span><span class="cm">/** XYZ 估计器 */</span>
+<span class="w">   </span><span class="n">MCAF_ESTIMATOR_INPUTS_T</span><span class="w"> </span><span class="n">inputs</span><span class="p">；</span><span class="w">             </span><span class="cm">/** 大多数估计器的公共输入 */</span>
+<span class="w">   </span><span class="n">MCAF_U_ANGLE_ELEC</span><span class="w">     </span><span class="n">theta</span><span class="p">；</span><span class="w">                   </span><span class="cm">/** 估计的转子角度（电气） */</span>
+<span class="w">   </span><span class="n">MCAF_U_VELOCITY_ELEC</span><span class="w">  </span><span class="n">omega</span><span class="p">；</span><span class="w">                   </span><span class="cm">/** 估计的转子速度（电气） */</span>
+<span class="w">   </span><span class="n">MCAF_RELATIVE_ANGLE_T</span><span class="w"> </span><span class="n">thetaRelativeTo</span><span class="p">；</span>
+<span class="p">}</span><span class="w"> </span><span class="n">MCAF_ESTIMATOR_T</span><span class="p">；</span>
+
+<span class="kr">inline</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">MCAF_EstimatorQeiIsActive</span><span class="p">（</span><span class="k">const</span><span class="w"> </span><span class="n">MCAF_ESTIMATOR_T</span><span class="o">*</span><span class="w"> </span><span class="n">pestimator</span><span class="p">）</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">；</span><span class="w"> </span><span class="p">}</span>
+<span class="kr">inline</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">MCAF_EstimatorXyzIsActive</span><span class="p">（</span><span class="k">const</span><span class="w"> </span><span class="n">MCAF_ESTIMATOR_T</span><span class="o">*</span><span class="w"> </span><span class="n">pestimator</span><span class="p">）</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">；</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">MCAF_ESTIMATOR_T</span></code> 在 <code class="docutils literal notranslate"><span class="pre">system_init.h</span></code> 中引用，作为主电机数据结构的一部分，因此 Xyz 估计器状态变量位于 <code class="docutils literal notranslate"><span class="pre">motor.estimator.xyz</span></code>。</p>
+<p>在 MCAF 生成的代码中，可能有多个估计器同时运行，但恰好只有一个估计器是用于换相反馈的主估计器。</p>
+<p>中的值 <code class="docutils literal notranslate"><span class="pre">motor.estimator.thetaRelativeTo</span></code> 是估计器的换相角度，相对于主估计器。这些值可用于调试或性能分析，并包括所有被选为 <em>参考估计器</em>。</p>
+<p>该 <code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorXyzIsActive()</span></code> 函数是一个常值，为每个估计器返回 true 或 false，以指示它是否为主估计器。</p>
+<p><strong>注意：</strong> 估计器固件接口中使用“活跃”一词目前是不正确的。参见 <a class="reference internal" href="#estimator-interface-errata"><span class="std std-ref">勘误</span></a> 了解更多信息。</p>
+</section>
+<section id="entry-points-and-methods">
+<h2><span class="section-number">5.4.1.5. </span>入口点和方法<a class="headerlink" href="#entry-points-and-methods" title="本标题的永久链接">¶</a></h2>
+<p>位置和速度估计器有几个入口点和方法。</p>
+<p>入口点如下：</p>
+<ul>
+<li><p><strong>初始化</strong>： <code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorXyzInit()</span></code> 在整体初始化期间被调用。这发生在上电复位后不久，只执行一次，给估计器机会初始化自己的状态变量。某些估计器可能依赖其他估计器，在这种情况下还会调用函数 <code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorXyzSetupOutputDependencies()</span></code> ，以提供对其他估计器输出的访问。</p></li>
+<li><p><strong>电机启动时的重新初始化</strong>： <code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorXyzStartupInit()</span></code> 在 <a class="reference internal" href="../components/statemach.zh.html#component-statemachine"><span class="std std-ref">主电机状态机</span></a> 转入 <code class="docutils literal notranslate"><span class="pre">STARTUP</span></code> 状态时被调用。这给估计器机会在电机启动开始时重新初始化其状态变量。</p></li>
+<li><p><strong>步函数</strong>： <code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorXyzStep()</span></code> 在主控制速率下被调用，由 <code class="docutils literal notranslate"><span class="pre">MCAF_CommutationStep()</span></code> 在 commutation.c 中。</p>
+<p>某些估计器还可能有其他入口点，以与步函数相同的速率调用：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorXyzInteractionStep()</span></code> — 包含与其他 MCAF 模块紧密耦合的任何操作，并可访问完整的 <code class="docutils literal notranslate"><span class="pre">motor</span></code> 数据结构。（不鼓励这样做，因为它违反了模块化，但在某些情况下不可避免。）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorXyzStartupDelayRequested()</span></code> — 这是一个获取函数，允许估计器在某些点延迟启动进度，以便估计器完成自己的任务。</p></li>
+</ul>
+</li>
+<li><p><strong>活跃换相角度和速度的选择</strong>：在 commutation.c 中， <code class="docutils literal notranslate"><span class="pre">MCAF_CommutationStep()</span></code> 从可用的估计器中确定角度和速度，通常通过以下结构：</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">（</span><span class="n">MCAF_EstimatorXyzActive</span><span class="p">（</span><span class="n">pestimator</span><span class="p">))</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">pestimator</span><span class="o">-&gt;</span><span class="n">theta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MCAF_EstimatorXyzCommutationAngle</span><span class="p">（</span><span class="o">&amp;</span><span class="n">pestimator</span><span class="o">-&gt;</span><span class="n">xyz</span><span class="p">);</span>
+<span class="w">   </span><span class="n">pestimator</span><span class="o">-&gt;</span><span class="n">omega</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MCAF_EstimatorXyzElectricalFrequency</span><span class="p">（</span><span class="o">&amp;</span><span class="n">pestimator</span><span class="o">-&gt;</span><span class="n">xyz</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>编译器会优化掉非活跃估计器的此类代码块，其中 <code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorXyzActive()</span></code> 在编译时已知为 <code class="docutils literal notranslate"><span class="pre">false</span></code>。</p>
+</li>
+</ul>
+<p>以下是与每个估计器相关的方法。</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="c1">// 供 Xyz 估计器使用的状态变量结构</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">tagMCAF_ESTIMATOR_XYZ</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="p">...</span>
+<span class="p">}</span><span class="w"> </span><span class="n">MCAF_ESTIMATOR_XYZ_T</span><span class="p">；</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * 在复位时初始化 Xyz 状态变量。</span>
+<span class="cm"> * @param xyz Xyz 状态变量结构</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MCAF_EstimatorXyzInit</span><span class="p">（</span><span class="n">MCAF_ESTIMATOR_XYZ_T</span><span class="w"> </span><span class="o">*</span><span class="n">xyz</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * 在启动电机前初始化 Xyz 状态变量。</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param xyz Xyz 状态变量结构</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MCAF_EstimatorXyzStartupInit</span><span class="p">（</span><span class="n">MCAF_ESTIMATOR_XYZ_T</span><span class="w"> </span><span class="o">*</span><span class="n">xyz</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * 执行 Xyz 估计器的一个控制步。</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param xyz Xyz 状态变量结构</span>
+<span class="cm"> * @param pinput 公共输入信号（例如静止坐标系电压和电流）</span>
+<span class="cm"> * @param pmotor 电机参数（例如电阻、电感等）</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MCAF_EstimatorXyzStep</span><span class="p">（</span><span class="n">MCAF_ESTIMATOR_XYZ_T</span><span class="w"> </span><span class="o">*</span><span class="n">xyz</span><span class="p">，</span>
+<span class="w">               </span><span class="k">const</span><span class="w"> </span><span class="n">MCAF_STANDARD_INPUT_SIGNALS_T</span><span class="w"> </span><span class="o">*</span><span class="n">pinput</span><span class="p">，</span>
+<span class="w">               </span><span class="k">const</span><span class="w"> </span><span class="n">MCAF_MOTOR_PARAMETERS_T</span><span class="w"> </span><span class="o">*</span><span class="n">pmotor</span><span class="p">，</span>
+<span class="w">               </span><span class="p">...);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * 返回换相角度</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param xyz 状态</span>
+<span class="cm"> * @return 换相角度</span>
+<span class="cm"> */</span>
+<span class="kr">inline</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">MCAF_U_ANGLE_ELEC</span><span class="w"> </span><span class="nf">MCAF_EstimatorXyzCommutationAngle</span><span class="p">（</span>
+<span class="w">               </span><span class="k">const</span><span class="w"> </span><span class="n">MCAF_ESTIMATOR_XYZ_T</span><span class="w"> </span><span class="o">*</span><span class="n">xyz</span><span class="p">）</span>
+<span class="w">               </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * 返回电气频率</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param xyz 状态</span>
+<span class="cm"> * @return 电气频率</span>
+<span class="cm"> */</span>
+<span class="kr">inline</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">MCAF_U_VELOCITY_ELEC</span><span class="w"> </span><span class="nf">MCAF_EstimatorXyzElectricalFrequency</span><span class="p">（</span>
+<span class="w">               </span><span class="k">const</span><span class="w"> </span><span class="n">MCAF_ESTIMATOR_XYZ_T</span><span class="w"> </span><span class="o">*</span><span class="n">xyz</span><span class="p">）</span>
+<span class="w">               </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * 确定是否请求启动延迟</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param xyz 状态</span>
+<span class="cm"> * @param startupStatus 启动状态</span>
+<span class="cm"> * @return 是否请求启动延迟</span>
+<span class="cm"> */</span>
+<span class="kr">inline</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">MCAF_EstimatorXyzStartupDelayRequested</span><span class="p">（</span>
+<span class="w">               </span><span class="k">const</span><span class="w"> </span><span class="n">MCAF_ESTIMATOR_XYZ_T</span><span class="w"> </span><span class="o">*</span><span class="n">xyz</span><span class="p">，</span><span class="w"> </span><span class="n">MCAF_STARTUP_STATUS_T</span><span class="w"> </span><span class="n">startupStatus</span><span class="p">）</span>
+<span class="w">               </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="method-summary">
+<h2><span class="section-number">5.4.1.6. </span>方法概述<a class="headerlink" href="#method-summary" title="本标题的永久链接">¶</a></h2>
+<p>这些方法在下表中概述。（为节省空间，前缀 <code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorXyz</span></code> 被省略，因此例如 <code class="docutils literal notranslate"><span class="pre">Init()</span></code> 指的是 <code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorXyzInit()</span></code>）</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>方法</p></th>
+<th class="head"><p>概述</p></th>
+<th class="head"><p>调用点</p></th>
+<th class="head"><p>适用性</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Init()</span></code></p></td>
+<td><p>一次性初始化</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCAF_CommutationInit()</span></code></p></td>
+<td><p>全部</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SetupOutputDependencies()</span></code></p></td>
+<td><p>输出依赖的一次性初始化</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCAF_CommutationInit()</span></code></p></td>
+<td><p>混合估计器</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">StartupInit()</span></code></p></td>
+<td><p>每次启动时的重新初始化</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCAF_CommutationStartupInit()</span></code></p></td>
+<td><p>全部</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Step()</span></code></p></td>
+<td><p>步更新函数</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCAF_CommutationStep()</span></code></p></td>
+<td><p>全部</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">InteractionStep()</span></code></p></td>
+<td><p>次级更新函数；仅在与其他模块紧密耦合时需要</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCAF_CommutationStep()</span></code></p></td>
+<td><p>按需</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CommutationAngle()</span></code></p></td>
+<td><p>获取函数，返回换相角度</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCAF_CommutationStep()</span></code></p></td>
+<td><p>全部</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ElectricalFrequency()</span></code></p></td>
+<td><p>获取函数，返回电气频率</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCAF_CommutationStep()</span></code></p></td>
+<td><p>全部</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">StartupDelayRequested()</span></code></p></td>
+<td><p>获取函数，返回是否请求延迟。</p>
+<p>估计器可在某些点延迟启动进度，通过返回 <code class="docutils literal notranslate"><span class="pre">true</span></code>。</p>
+</td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCAF_CommutationStep()</span></code></p></td>
+<td><p>全部</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Active()</span></code></p></td>
+<td><p>获取函数，如果估计器角度是选定用于换相的主估计器则返回 true</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MCAF_CommutationStep()</span></code></p></td>
+<td><p>全部</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="errata">
+<span id="estimator-interface-errata"></span><h2><span class="section-number">5.4.1.7. </span>勘误<a class="headerlink" href="#errata" title="本标题的永久链接">¶</a></h2>
+<ul class="simple">
+<li><p>使用“活跃”而非“主”（DB_MC-4325；适用性：MCAF R4、R5、R6、R7）— “活跃”一词在 commutation.c 和 commutation_types.h 中使用不正确，将在未来版本中修复为“主”，包括将 <code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorXyzIsActive()</span></code> 改为 <code class="docutils literal notranslate"><span class="pre">MCAF_EstimatorXyzIsPrimary()</span></code>。</p></li>
+</ul>
+</section>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h3><a href="../index.zh.html">目录</a></h3>
+<ul>
+<li><a class="reference internal" href="#">5.4.1. 固件接口</a><ul>
+<li><a class="reference internal" href="#overview">5.4.1.1. 概述</a></li>
+<li><a class="reference internal" href="#terminology">5.4.1.2. 术语</a></li>
+<li><a class="reference internal" href="#filesystem-location">5.4.1.3. 文件系统位置</a></li>
+<li><a class="reference internal" href="#storage-and-types">5.4.1.4. 存储和类型</a></li>
+<li><a class="reference internal" href="#entry-points-and-methods">5.4.1.5. 入口点和方法</a></li>
+<li><a class="reference internal" href="#method-summary">5.4.1.6. 方法概述</a></li>
+<li><a class="reference internal" href="#errata">5.4.1.7. 勘误</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="estimators.zh.html" title="上一章"><span class="section-number">5.4. </span>位置和速度估计</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="pll.zh.html" title="下一章"><span class="section-number">5.4.2. </span>AN1292 锁相环（PLL）</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="pll.zh.html" title="5.4.2. AN1292 Phase-locked Loop (PLL)">下一页</a> |</li>
+<li class="right">
+<a href="estimators.zh.html" title="5.4. Position and Velocity Estimation">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> » <li class="nav-item nav-item-1"><a href="index.zh.html"><span class="section-number">5. </span>详细算法说明</a> »</li>
+<li class="nav-item nav-item-2"><a href="estimators.zh.html"><span class="section-number">5.4. </span>位置和速度估计</a> »</li>
+<li class="nav-item nav-item-this"><a href=""><span class="section-number">5.4.1. </span>固件接口</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo"> © 版权所有 2017-2026，Microchip Technology, Inc.. </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.18.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>3. 架构 — MCAF R9 RC31 文档 (docver 9.0.1)</title>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/microchip.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/mcaf_doc.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/katex/0.16.4/katex.min.css" rel="stylesheet" type="text/css"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+<script src="../_static/doctools.js"></script>
+<script src="../_static/katex/0.16.4/katex.min.js"></script>
+<script src="../_static/katex/0.16.4/contrib/auto-render.min.js"></script>
+<script src="../_static/rendermath.js"></script>
+<script src="../_static/svgcrop.js"></script>
+<script src="../_static/mcaf-styling.js"></script>
+<link href="../genindex.zh.html" rel="index" title="Index"/>
+<link href="../search.zh.html" rel="search" title="Search"/>
+<link href="overview.zh.html" rel="next" title="3.1. Architectural Overview"/>
+<link href="../getting-started.zh.html" rel="prev" title="2. Getting Started"/>
+</head><body>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a accesskey="I" href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a accesskey="N" href="overview.zh.html" title="3.1. Architectural Overview">下一页</a> |</li>
+<li class="right">
+<a accesskey="P" href="../getting-started.zh.html" title="2. Getting Started">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">3. </span>架构</a></li>
+</ul>
+</div>
+<div class="document">
+<div class="documentwrapper">
+<div class="bodywrapper">
+<div class="body" role="main">
+<section id="architecture">
+<span id="id1"></span><h1><span class="section-number">3. </span>架构<a class="headerlink" href="#architecture" title="本标题的永久链接">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.zh.html">3.1. 架构概览</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="overview.zh.html#how-to-spin-a-motor-in-brief">3.1.1. 如何驱动电机（简述）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.zh.html#modules-and-components">3.1.2. 模块与组件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.zh.html#software-design-principles-for-modular-and-maintainable-code">3.1.3. 面向模块化与可维护代码的软件设计原则</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="naming.zh.html">3.2. 命名约定</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="naming.zh.html#additional-naming-guidelines">3.2.1. 补充命名指南</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="statevar.zh.html">3.3. 状态管理</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="statevar.zh.html#miscellaneous-guidelines">3.3.1. 其他指南</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="codegen.zh.html">3.4. 代码生成</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="codegen.zh.html#why-code-generation">3.4.1. 为什么使用代码生成？</a></li>
+<li class="toctree-l2"><a class="reference internal" href="codegen.zh.html#how-does-code-generation-work">3.4.2. 代码生成是如何工作的？</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="config-params.zh.html">3.5. 配置参数</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="config-params.zh.html#classic-application-notes">3.5.1. 经典应用笔记</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config-params.zh.html#motor-control-application-framework">3.5.2. 电机控制应用框架</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="schedopt.zh.html">3.6. 调度与优化</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="schedopt.zh.html#scheduling">3.6.1. 调度</a></li>
+<li class="toctree-l2"><a class="reference internal" href="schedopt.zh.html#optimization">3.6.2. 优化</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="statemach.zh.html">3.7. 状态机</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="statemach.zh.html#states">3.7.1. 状态</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="numerics.zh.html">3.8. 数值算法处理</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="numerics.zh.html#numerical-representation">3.8.1. 数值表示</a></li>
+<li class="toctree-l2"><a class="reference internal" href="numerics.zh.html#constants-in-code">3.8.2. 代码中的常量</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<div class="clearer"></div>
+</div>
+</div>
+</div>
+<div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+<div class="sphinxsidebarwrapper">
+<div>
+<h4>上一主题</h4>
+<p class="topless"><a href="../getting-started.zh.html" title="上一章"><span class="section-number">2. </span>快速入门</a></p>
+</div>
+<div>
+<h4>下一主题</h4>
+<p class="topless"><a href="overview.zh.html" title="下一章"><span class="section-number">3.1. </span>架构概览</a></p>
+</div>
+<div id="searchbox" role="search" style="display: none">
+<h3 id="searchlabel">快速搜索</h3>
+<div class="searchformwrapper">
+<form action="../search.html" class="search" method="get">
+<input aria-labelledby="searchlabel" autocapitalize="off" autocomplete="off" autocorrect="off" name="q" spellcheck="false" type="text"/>
+<input type="submit" value="Go"/>
+</form>
+</div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+</div>
+</div>
+<div class="clearer"></div>
+</div>
+<div aria-label="related navigation" class="related" role="navigation">
+<h3>导航</h3>
+<ul>
+<li class="right" style="margin-right: 10px">
+<a href="../genindex.zh.html" title="总索引">索引</a></li>
+<li class="right">
+<a href="overview.zh.html" title="3.1. Architectural Overview">下一页</a> |</li>
+<li class="right">
+<a href="../getting-started.zh.html" title="2. Getting Started">上一页</a> |</li>
+<li><img alt="" class="nav-logo" src="../_static/Microchip-Logo-Horizontal-White-Red-120x28.png"/></li>
+<li><a href=""></a> »</li>
+<a href="../index.zh.html">MCAF R9 RC31 (docver 9.0.1)</a> »
+    
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">3. </span>架构</a></li>
+</ul>
+</div>
+<div class="footer" role="contentinfo"> © 版权所有 2017-2026，Microchip Technology, Inc.. </div>
+<script src="../_static/lang-switch.js"></script>
+</body>
+</html>
