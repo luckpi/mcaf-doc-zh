@@ -1,0 +1,63 @@
+# -*- coding: utf-8 -*-
+import txutil
+
+rel = "dataflow-diagram/dataflow-diagrams"
+title_zh = "数据流图：MCAF R7 RC37"
+
+m = {
+    "Data flow diagram: MCAF R7 RC37": "数据流图：MCAF R7 RC37",
+    "Symbol": "符号",
+    "Program variable": "程序变量",
+    "Description": "描述",
+    "MCAF firmware contains amplitude of velocity command perturbation \u2014 note: used only in OM_FORCE_VOLTAGE.": "MCAF 固件包含速度指令扰动幅值——注：仅在 OM_FORCE_VOLTAGE 中使用。",
+    "Asymmetric perturbation": "非对称扰动",
+    "located in": "位于",
+    "MCAF firmware contains amplitude of current command perturbation (d- and q-axis components)": "MCAF 固件包含电流指令扰动幅值（d 轴和 q 轴分量）",
+    "MCAF firmware contains amplitude of voltage command perturbation (d- and q-axis components)": "MCAF 固件包含电压指令扰动幅值（d 轴和 q 轴分量）",
+    "Represents excitation voltage added in the dq-frame.": "表示在 dq 坐标系中添加的激励电压。",
+    "Result of": "结果为",
+    "and": "和",
+    "; this is zero for": "；对于",
+    "non-intrusive estimators": "非侵入式估计器",
+    ", and will be optimized away.": "，此值为零，将被优化消除。",
+    "Represents excitation voltage added in the \u03b1\u03b2 frame.": "表示在 \u03b1\u03b2 坐标系中添加的激励电压。",
+    "DC link voltage": "DC 母线电压",
+    "\u201cValve\u201d to enable data flow into reciprocal voltage": "\u201c阀门\u201d，用于启用到倒数电压的数据流",
+    "reciprocal of DC link voltage": "DC 母线电压的倒数",
+    "MCAF R7: Velocity command from Motion Control API": "MCAF R7：来自运动控制 API 的速度指令",
+    "\u201cValve\u201d to enable data flow into velocity command": "\u201c阀门\u201d，用于启用到速度指令的数据流",
+    "rate-limited velocity command": "速率限制后的速度指令",
+    "Desired q-axis current from velocity controller": "来自速度控制器的期望 q 轴电流",
+    "Desired d-axis current from flux control module": "来自磁通控制模块的期望 d 轴电流",
+    "\u201cValve\u201d to enable data flow into current command": "\u201c阀门\u201d，用于启用到电流指令的数据流",
+    "Desired dq-frame currents, prior to perturbation": "扰动前的期望 dq 坐标系电流",
+    "Desired dq-frame currents": "期望 dq 坐标系电流",
+    "\u201cValve\u201d to enable data flow into voltage command": "\u201c阀门\u201d，用于启用到电压指令的数据流",
+    "Desired dq-frame (synchronous) voltages prior to perturbation": "扰动前的期望 dq 坐标系（同步）电压",
+    "Desired dq-frame (synchronous) voltages": "期望 dq 坐标系（同步）电压",
+    "\u201cValve\u201d to enable data flow into alphabeta voltage command": "\u201c阀门\u201d，用于启用到 alphabeta 电压指令的数据流",
+    "Desired alphabeta-frame (stationary) voltages prior to perturbation": "扰动前的期望 alphabeta 坐标系（静止）电压",
+    "Desired alphabeta-frame (stationary) voltages": "期望 alphabeta 坐标系（静止）电压",
+    "Desired phase voltages": "期望相电压",
+    "Duty cycle outputs prior to dead-time compensation, ZSM and clipping": "死区补偿、ZSM 和削波之前的占空比输出",
+    "Duty cycle outputs after dead-time compensation but before ZSM and clipping": "死区补偿之后但 ZSM 和削波之前的占空比输出",
+    "\u201cValve\u201d to enable data flow into output duty cycle": "\u201c阀门\u201d，用于启用到输出占空比的数据流",
+    "Duty cycle outputs after ZSM and clipping": "ZSM 和削波之后的占空比输出",
+    "Forward-path dead-time compensation of duty cycle; zero if \u201c": "前向通道占空比死区补偿；如果使用\u201c",
+    "\u201d variant used": "\u201d变体则为零",
+    "electrical angle": "电气角度",
+    "sine and cosine of electrical angle": "电气角度的正弦和余弦",
+    "Estimated alphabeta-frame (stationary) feedback voltages": "估计的 alphabeta 坐标系（静止）反馈电压",
+    "measured motor phase currents": "测量的电机相电流",
+    "alphabeta-frame (stationary) measured current": "alphabeta 坐标系（静止）测量电流",
+    "dq-frame (synchronous) measured current": "dq 坐标系（同步）测量电流",
+    "commutation override": "换相覆盖",
+    "determines source of commutation angle": "确定换相角的来源",
+    "Commutation override electrical frequency": "换相覆盖电气频率",
+    "Estimated electrical angle": "估计电气角度",
+    "Estimated electrical frequency (note: in MCAF the equivalent electrical and mechanical frequencies are represented by the same integer values and are interchangeable during computations.)": "估计电气频率（注：在 MCAF 中，等效电气频率和机械频率以相同的整数值表示，在计算中可互换。）",
+    "Commutation angle offset": "换相角偏移",
+}
+
+path = txutil.translate_dict_page(rel, title_zh, m)
+print("translated", path)
