@@ -65,17 +65,17 @@
     });
 
     // Insert into top nav as a right-aligned <li>, before "index" in DOM order.
-    // Since li.right floats right, DOM order index/next/previous renders as
-    // previous | next | index visually. Inserting before index puts it:
-    // previous | next | index | 中文
+    // Add " |" to the end of the index <li> so the separator is on index's right.
+    // Visual: previous | next | index | 中文
     var topNav = document.querySelector("div.related > ul, div.related ul");
     if (topNav) {
       var li = document.createElement("li");
       li.className = "right";
       li.appendChild(a);
-      li.appendChild(document.createTextNode(" |"));
       var firstRight = topNav.querySelector("li.right");
       if (firstRight) {
+        // Append " |" to the index li
+        firstRight.appendChild(document.createTextNode(" |"));
         topNav.insertBefore(li, firstRight);
       } else {
         topNav.appendChild(li);
