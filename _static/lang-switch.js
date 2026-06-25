@@ -52,29 +52,56 @@
     }
   }
 
-  function buildButton() {
-    var btn = document.createElement("button");
-    btn.id = "mcaf-lang-toggle";
-    btn.type = "button";
-    btn.textContent = isZhPage() ? "English" : "中文";
-    btn.title = isZhPage() ? "Switch to English" : "切换到中文";
-    btn.addEventListener("click", function () {
-      setLang(isZhPage() ? "en" : "zh");
+  function buildLink() {
+    var zh = isZhPage();
+    var a = document.createElement("a");
+    a.id = "mcaf-lang-toggle";
+    a.href = "#";
+    a.textContent = zh ? "English" : "中文";
+    a.title = zh ? "Switch to English" : "切换到中文";
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      setLang(zh ? "en" : "zh");
     });
-    document.body.appendChild(btn);
+
+    // Insert into top nav as a right-aligned <li>, before "index" in DOM order.
+    // Since li.right floats right, DOM order index/next/previous renders as
+    // previous | next | index visually. Inserting before index puts it:
+    // previous | next | index | 中文
+    var topNav = document.querySelector("div.related > ul, div.related ul");
+    if (topNav) {
+      var li = document.createElement("li");
+      li.className = "right";
+      li.appendChild(document.createTextNode("| "));
+      li.appendChild(a);
+      var firstRight = topNav.querySelector("li.right");
+      if (firstRight) {
+        topNav.insertBefore(li, firstRight);
+      } else {
+        topNav.appendChild(li);
+      }
+      return;
+    }
+
+    // Fallback: footer
+    var footer = document.querySelector("div.footer");
+    if (footer) {
+      footer.appendChild(document.createTextNode(" | "));
+      footer.appendChild(a);
+      return;
+    }
+
+    // Last resort: fixed corner
+    a.style.cssText =
+      "position:fixed;top:6px;right:10px;z-index:9999;" +
+      "font-size:12px;color:#fff;text-decoration:none;font-family:inherit;";
+    document.body.appendChild(a);
   }
 
   function addStyle() {
     var css = [
-      "#mcaf-lang-toggle{",
-      "position:fixed;top:8px;right:10px;z-index:9999;",
-      "background:#1e6f3c;color:#fff;border:1px solid #155a2e;",
-      "padding:5px 12px;font-size:13px;font-weight:600;",
-      "border-radius:4px;cursor:pointer;line-height:1.4;",
-      "box-shadow:0 1px 3px rgba(0,0,0,.25);font-family:inherit;",
-      "}",
-      "#mcaf-lang-toggle:hover{background:#287a47;}",
-      "#mcaf-lang-toggle:active{transform:translateY(1px);}"
+      "#mcaf-lang-toggle{color:#fff;text-decoration:none;}",
+      "#mcaf-lang-toggle:hover{text-decoration:underline;}"
     ].join("\n");
     var s = document.createElement("style");
     s.id = "mcaf-lang-toggle-style";
@@ -83,8 +110,8 @@
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", function () { addStyle(); buildButton(); });
+    document.addEventListener("DOMContentLoaded", function () { addStyle(); buildLink(); });
   } else {
-    addStyle(); buildButton();
+    addStyle(); buildLink();
   }
 })();
