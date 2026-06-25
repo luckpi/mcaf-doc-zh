@@ -52,7 +52,7 @@
 <p>MCAF 对电机电流采用磁场定向控制（FOC）。本节一般性地介绍 FOC 的理论，并给出一些针对 MCAF 实现的具体说明。</p>
 <section id="torque-production-and-reference-frames">
 <span id="foc-refframe"></span><span id="foc-torque"></span><span id="index-0"></span><h2><span class="section-number">5.1.2.1. </span>转矩产生与参考坐标系<a class="headerlink" href="#torque-production-and-reference-frames" title="本标题的永久链接">¶</a></h2>
-<p><a class="reference internal" href="../../appendix/glossary.zh.html#term-FOC"><span class="xref std std-term">磁场定向控制（FOC）</span></a> 的目标是以高带宽控制瞬时电磁转矩。这可以通过在某个电角度的参考坐标系中管理两个正交的电流分量来实现——尽管对初学者而言这并不直观。 <span class="math notranslate nohighlight">\(\theta_e\)</span>。电频率 <span class="math notranslate nohighlight">\(\omega_e = \frac{d\theta_e}{dt}\)</span> 是电角度的变化率。</p>
+<p><a class="reference internal" href="../../appendix/glossary.zh.html#term-FOC"><span class="xref std std-term">磁场定向控制（FOC）</span></a> 的目标是以高带宽控制瞬时电磁转矩。这可以通过在某个电角度 <span class="math notranslate nohighlight">\(\theta_e\)</span> 的参考坐标系中管理两个正交的电流分量来实现——尽管对初学者而言这并不直观。电频率 <span class="math notranslate nohighlight">\(\omega_e = \frac{d\theta_e}{dt}\)</span> 是电角度的变化率。</p>
 <p>电角度和电频率与机械角度和机械频率成正比，如公式 <a class="reference internal" href="#equation-eq-foc-polepairs">5.1</a>所示，其中 <span class="math notranslate nohighlight">\(N_p\)</span> 为极对数。例如，一台六极电机， <span class="math notranslate nohighlight">\(N_p=3\)</span>，每旋转一圈（机械旋转）经历三个电周期。</p>
 <div class="math notranslate nohighlight" id="equation-eq-foc-polepairs">
 <span class="eqno">(5.1)<a class="headerlink" href="#equation-eq-foc-polepairs" title="本公式的永久链接">¶</a></span>\[\begin{split}\begin{aligned}
@@ -72,12 +72,12 @@ T_{em} &amp;= \tfrac{3}{2}N_p \left(\boldsymbol{\psi} \times \boldsymbol{I}\righ
 <p><span class="caption-number">图 5.1 </span><span class="caption-text">磁链矢量、电流矢量及其夹角 <span class="math notranslate nohighlight">\(\phi\)</span> ，位于一个任意 <span class="math notranslate nohighlight">\(xy\)</span>坐标系中。</span><a class="headerlink" href="#id9" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
-<p>需要注意的是，这些 x 和 y 轴是 <em>任意的</em> ——我们可以选取任意一组单位基矢量 <span class="math notranslate nohighlight">\(\hat{x}\)</span> 和 <span class="math notranslate nohighlight">\(\hat{y}\)</span> ，使它们与旋转轴 <span class="math notranslate nohighlight">\(\hat{z}\)</span>构成相互垂直的集合，使其叉积 <span class="math notranslate nohighlight">\(\hat{x} \times \hat{y} = \hat{z}\)</span>。</p>
+<p>需要注意的是，这些 x 和 y 轴是 <em>任意的</em> ——我们可以选取任意一组单位基矢量 <span class="math notranslate nohighlight">\(\hat{x}\)</span> 和 <span class="math notranslate nohighlight">\(\hat{y}\)</span> ，使它们与旋转轴 <span class="math notranslate nohighlight">\(\hat{z}\)</span>构成相互垂直的集合，使得它们的叉积 <span class="math notranslate nohighlight">\(\hat{x} \times \hat{y} = \hat{z}\)</span>。</p>
 <p>对这些基矢量有两种常见选择。其一是静止坐标系，通常与某一定子相对齐。图中左侧 <a class="reference internal" href="#fig-foc-clarke"><span class="std std-numref">图 5.2</span></a> 是一个三相定子，其绕组相隔 120° 分布。这在磁链意义上等价于右侧所示、具有正交绕组 α 和 β 的两相定子。对于三相定子绕组中的任意电流组合 <span class="math notranslate nohighlight">\(I_A, I_B, I_C\)</span> ，转子所看到的同一磁场可以通过适当的电流组合 <span class="math notranslate nohighlight">\(I_\alpha\)</span> 和 <span class="math notranslate nohighlight">\(I_\beta\)</span> 流过两个用于产生定子磁场水平与垂直分量的“虚拟”线圈来获得。将三相量投影到这些虚拟正交线圈上的数学转换称为 Clarke 变换（克拉克变换），以它的提出者之一 Edith Clarke 命名。 <a class="footnote-reference brackets" href="#fn-foc-duesterhoeft1951" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a></p>
 <figure class="align-center" id="id10">
 <span id="fig-foc-clarke"></span><a class="reference internal image-reference" href="../../_images/foc_current_vector_coils.svg"><img alt="../../_images/foc_current_vector_coils.svg" src="../../_images/foc_current_vector_coils.svg" width="95%"/></a>
 <figcaption>
-<p><span class="caption-number">图 5.2 </span><span class="caption-text">利用 Clarke 变换在每相量与 αβ 坐标系之间转换 角度参考通常与电机的第一相（在 ABC 标记中为 A 相，在 UVW 标记中为 U 相）以及 α 绕组对齐。转子的位置为某个电角度 <span class="math notranslate nohighlight">\(\theta_r\)</span> ，相对于这些角度参考。</span><a class="headerlink" href="#id10" title="本图片的永久链接">¶</a></p>
+<p><span class="caption-number">图 5.2 </span><span class="caption-text">利用 Clarke 变换在每相量与 αβ 坐标系之间转换。角度参考通常与电机的第一相（在 ABC 标记中为 A 相，在 UVW 标记中为 U 相）以及 α 绕组对齐。转子的位置为某个电角度 <span class="math notranslate nohighlight">\(\theta_r\)</span> ，相对于这些角度参考。</span><a class="headerlink" href="#id10" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
 <p>Clarke 变换是一种线性变换，如公式 <a class="reference internal" href="#equation-eq-foc-clarke">5.3</a>所示，它可以作用于任意矢量 <span class="math notranslate nohighlight">\(X\)</span>，典型示例为电压 <span class="math notranslate nohighlight">\(V\)</span>、电流 <span class="math notranslate nohighlight">\(I\)</span>或磁链 <span class="math notranslate nohighlight">\(\psi\)</span>。</p>
