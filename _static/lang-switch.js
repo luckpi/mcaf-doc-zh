@@ -76,16 +76,20 @@
     });
 
     // Preferred: insert into the top navigation bar as a right-aligned <li>,
-    // next to index/next/previous links.
+    // after "index" and before "next"/"previous", with a "|" separator.
     var topNav = document.querySelector("div.related > ul, div.related ul");
     if (topNav) {
       var li = document.createElement("li");
       li.className = "right";
+      li.appendChild(document.createTextNode("| "));
       li.appendChild(a);
-      li.appendChild(document.createTextNode(" |"));
-      var firstRight = topNav.querySelector("li.right");
-      if (firstRight) {
-        topNav.insertBefore(li, firstRight);
+      // Insert before the second right-aligned li (i.e. "next"/"previous"),
+      // so the order is: index | 中文 next | previous |
+      var rightItems = topNav.querySelectorAll("li.right");
+      if (rightItems.length >= 2) {
+        topNav.insertBefore(li, rightItems[1]);
+      } else if (rightItems.length === 1) {
+        topNav.appendChild(li);
       } else {
         topNav.appendChild(li);
       }
