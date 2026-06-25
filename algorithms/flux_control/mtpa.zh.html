@@ -58,10 +58,10 @@
 </section>
 <section id="flow-chart-and-description">
 <h2><span class="section-number">5.5.2.2. </span>流程图和说明<a class="headerlink" href="#flow-chart-and-description" title="本标题的永久链接">¶</a></h2>
-<p>使电机以最高效率运行从而实现 MTPA 的 <span class="math notranslate nohighlight">\(I_{d}\)</span> 值由转矩方程推导出，由 <a class="reference internal" href="#equation-id-mtpa-equation">5.54</a>给出。这里， <span class="math notranslate nohighlight">\(\Psi_{\mathrm{PM}}\)</span> 为反电动势常数（单位为伏特/电气弧度/秒）， <span class="math notranslate nohighlight">\(L_{1}\)</span> 为差分电感，由 <span class="math notranslate nohighlight">\(L_{1} = \frac{L_d - L_q}{2}\)</span>给出。除了电机参数 <span class="math notranslate nohighlight">\(\Psi_{\mathrm{PM}}\)</span> 和 <span class="math notranslate nohighlight">\(L_{1}\)</span>外，确保 MTPA 所需的 d 轴电流（<span class="math notranslate nohighlight">\(I_{d\_mtpa}\)</span>）是 q 轴电流 <span class="math notranslate nohighlight">\(I_{q}\)</span>。</p>
+<p>使电机以最高效率运行从而实现 MTPA 的 <span class="math notranslate nohighlight">\(I_{d}\)</span> 值由转矩方程推导出，由 <a class="reference internal" href="#equation-id-mtpa-equation">5.54</a>给出。这里， <span class="math notranslate nohighlight">\(\Psi_{\mathrm{PM}}\)</span> 为反电动势常数（单位为伏特/电气弧度/秒）， <span class="math notranslate nohighlight">\(L_{1}\)</span> 为差分电感，由 <span class="math notranslate nohighlight">\(L_{1} = \frac{L_d - L_q}{2}\)</span>给出。除了电机参数 <span class="math notranslate nohighlight">\(\Psi_{\mathrm{PM}}\)</span> 和 <span class="math notranslate nohighlight">\(L_{1}\)</span>外，确保 MTPA 所需的 d 轴电流（<span class="math notranslate nohighlight">\(I_{d\_mtpa}\)</span>）是 q 轴电流 <span class="math notranslate nohighlight">\(I_{q}\)</span> 的函数。</p>
 <div class="math notranslate nohighlight" id="equation-id-mtpa-equation">
 <span class="eqno">(5.54)<a class="headerlink" href="#equation-id-mtpa-equation" title="本公式的永久链接">¶</a></span>\[    I_{d\_mtpa} = \frac{-\Psi_{\mathrm{PM}} + \sqrt{\Psi_{\mathrm{PM}}{}^2 + (4L_1I_q)^2}}{4L_1}\]</div>
-<p><a class="reference internal" href="#fig-mtpa-implementation"><span class="std std-numref">图 5.87</span></a> 的函数。</p>
+<p><a class="reference internal" href="#fig-mtpa-implementation"><span class="std std-numref">图 5.87</span></a> 展示了 MTPA 算法的流程图。</p>
 <figure class="align-center" id="id1">
 <span id="fig-mtpa-implementation"></span><a class="reference internal image-reference" href="../../_images/mtpa_implementation.png"><img alt="../../_images/mtpa_implementation.png" src="../../_images/mtpa_implementation.png" style="width: 600px;"/></a>
 <figcaption>

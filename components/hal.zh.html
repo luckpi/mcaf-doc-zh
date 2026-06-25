@@ -60,7 +60,7 @@
 <p>MCAF 的大部分代码在几个不同的中断服务程序中执行。以下中断按从高到低的优先级列出，供 MCAF 使用。参见 <a class="reference internal" href="../architecture/schedopt.zh.html#scheduling-requirements"><span class="std std-ref">调度要求</span></a> 一节了解更多信息。</p>
 <ul class="simple">
 <li><p>主 ADC ISR——执行 <a class="reference internal" href="statemach.zh.html#component-statemachine"><span class="std std-ref">状态机</span></a> 和几个其他关键 MCAF 组件，每个 PWM 周期执行一次。</p></li>
-<li><p>单通道 ADC ISR——每个 PWM 周期对直流母线电流采样两次。仅在 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-单通道"><span class="std std-ref">单通道电流测量</span></a> 时执行。</p></li>
+<li><p>单通道 ADC ISR——每个 PWM 周期对直流母线电流采样两次。仅在 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-single-channel"><span class="std std-ref">单通道电流测量</span></a> 时执行。</p></li>
 <li><p>定时器 ISR——执行 <a class="reference internal" href="#board-service-module"><span class="std std-ref">板级服务</span></a> 任务和 <a class="reference internal" href="main.zh.html#component-main"><span class="std std-ref">主应用程序</span></a> 周期性地。</p></li>
 </ul>
 </section>
@@ -176,7 +176,7 @@
 <p><span class="caption-number">图 4.16 </span><span class="caption-text">单次更新和双次更新。虚线表示 PWM 生成器更新的机会。</span><a class="headerlink" href="#id7" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
-<p>通常建议 MCAF 使用双次更新以减少采样到更新延迟，但某些控制方法需要其他 PWM 更新选项。 <a class="reference internal" href="../algorithms/zsmt.zh.html#algorithm-zsmt"><span class="std std-ref">ZS/MT</span></a> 在中心对齐 PWM 模式下需要单次更新。对于其他估算器， <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-单通道"><span class="std std-ref">单通道</span></a> 电流测量在双沿中心对齐 PWM 模式下需要单次更新，而对于 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-双通道"><span class="std std-ref">双通道</span></a> 或 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-三通道"><span class="std std-ref">三通道</span></a> 电流测量，配置双次更新中心对齐 PWM 模式以减少采样到更新延迟。</p>
+<p>通常建议 MCAF 使用双次更新以减少采样到更新延迟，但某些控制方法需要其他 PWM 更新选项。 <a class="reference internal" href="../algorithms/zsmt.zh.html#algorithm-zsmt"><span class="std std-ref">ZS/MT</span></a> 在中心对齐 PWM 模式下需要单次更新。对于其他估算器， <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-single-channel"><span class="std std-ref">单通道</span></a> 电流测量在双沿中心对齐 PWM 模式下需要单次更新，而对于 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-dual-channel"><span class="std std-ref">双通道</span></a> 或 <a class="reference internal" href="../algorithms/foc/current_measure.zh.html#algorithm-current-triple-channel"><span class="std std-ref">三通道</span></a> 电流测量，配置双次更新中心对齐 PWM 模式以减少采样到更新延迟。</p>
 <p>注意：在 dsPIC33E 设备中，双次更新默认启用，不需要也不允许更改外设配置。对于 dsPIC33E，请检查设备勘误。某些设备的早期硅片版本实现单次更新行为而非双次更新行为。</p>
 </section>
 <section id="board-service-module">
