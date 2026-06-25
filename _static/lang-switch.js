@@ -72,7 +72,7 @@
     if (topNav) {
       var li = document.createElement("li");
       li.className = "right";
-      li.appendChild(document.createTextNode("| "));
+      li.appendChild(document.createTextNode("|"));
       li.appendChild(a);
       var firstRight = topNav.querySelector("li.right");
       if (firstRight) {
