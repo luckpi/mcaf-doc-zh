@@ -228,7 +228,7 @@
 <p>仅支持一个 UART 实例，该 UART 将由 MCAF 专用于实时诊断。</p>
 </div>
 </dd>
-<dt><strong>添加新的自定义 ADC 通道</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.adc.custom</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<dt><strong>添加新的自定义 ADC 通道</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.adc.custom</span></code> 下按以下格式指定自定义 ADC 通道配置：</p>
 <pre class="literal-block">custom:
   <em>&lt;channelName&gt;</em>:
     channel: ANx
@@ -254,7 +254,7 @@
 <p>自定义名称 <code class="docutils literal notranslate"><span class="pre">&lt;channelName&gt;</span></code> 应为有效的 C 标识符（不含空格或除下划线外的特殊字符）。</p>
 </div>
 </dd>
-<dt><strong>添加新的自定义 GPIO</strong></dt><dd><p>在 <a class="reference internal" href="custom_board_definitions.zh.html#board-schema-gpio"><span class="std std-ref">自定义 GPIO 通道</span></a> 下指定 MCAF <code class="docutils literal notranslate"><span class="pre">peripherals.gpio</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<dt><strong>添加新的自定义 GPIO</strong></dt><dd><p>在 <a class="reference internal" href="custom_board_definitions.zh.html#board-schema-gpio"><span class="std std-ref">自定义 GPIO 通道</span></a> 下指定 MCAF <code class="docutils literal notranslate"><span class="pre">peripherals.gpio</span></code> 下按以下格式指定自定义 GPIO 配置：</p>
 <pre class="literal-block"><em>&lt;customGpioName&gt;</em>:
   pin: <em>&lt;pin name&gt;</em>
   direction: <em>&lt;input/output&gt;</em>
@@ -284,7 +284,7 @@
 <p>自定义名称 <code class="docutils literal notranslate"><span class="pre">&lt;customGpioName&gt;</span></code> 必须为有效的 C 标识符（不含空格或除下划线外的特殊字符）。</p>
 </div>
 </dd>
-<dt><strong>添加内部比较器配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.comparator</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<dt><strong>添加内部比较器配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.comparator</span></code> 下按以下格式指定内部比较器配置：</p>
 <pre class="literal-block">source: CMP&lt;instance&gt;&lt;muxinput&gt;
 inverted: <em>&lt;true/false&gt;</em>
 threshold: <em>&lt;fraction&gt;</em></pre>
@@ -302,7 +302,7 @@ threshold: <em>&lt;fraction&gt;</em></pre>
 <p>目前，motorBench 仅允许指定一个内部比较器。</p>
 </div>
 </dd>
-<dt><strong>添加内部运放配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.opamp</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<dt><strong>添加内部运放配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.opamp</span></code> 下按以下格式指定内部运放配置：</p>
 <pre class="literal-block">enabled:
   - <em>&lt;numbertoenable&gt;</em>
   - <em>&lt;numbertoenable&gt;</em>
@@ -316,7 +316,7 @@ threshold: <em>&lt;fraction&gt;</em></pre>
 </pre></div>
 </div>
 </dd>
-<dt><strong>添加 QEI 配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.qei</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<dt><strong>添加 QEI 配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.qei</span></code> 下按以下格式指定 QEI 外设配置：</p>
 <pre class="literal-block">pins:
   A: <em>&lt;port for phase-A&gt;</em>
   B: <em>&lt;port for phase-B&gt;</em>
@@ -336,7 +336,7 @@ threshold: <em>&lt;fraction&gt;</em></pre>
 <p>目前，motorBench 仅允许指定一个 QEI 外设实例。</p>
 </div>
 </dd>
-<dt><strong>添加逆变桥温度传感器配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.adc.other</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<dt><strong>添加逆变桥温度传感器配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.adc.other</span></code> 下按以下格式指定温度传感器引脚映射：</p>
 <pre class="literal-block">bridgeTemperature:
   channel: ANx
   signed: <em>&lt;true/false&gt;</em>
@@ -371,7 +371,7 @@ threshold: <em>&lt;fraction&gt;</em></pre>
 </div>
 </div>
 </dd>
-<dt><strong>添加 SiP 器件配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">characteristics</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<dt><strong>添加 SiP 器件配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">characteristics</span></code> 下按以下格式指定 SiP 器件配置：</p>
 <pre class="literal-block">device: dsPIC33CDV[C/L][64/256]M[P/C]XXX
   gateDriver:
     device: MCP8021
@@ -411,7 +411,7 @@ threshold: <em>&lt;fraction&gt;</em></pre>
 <p>注：所有 SiP 器件均配备单一栅极驱动器选项 MCP8021，且微控制器与栅极驱动器器件之间的引脚连接为硬连线。</p>
 </div>
 </dd>
-<dt><strong>添加 MCP8021 栅极驱动器配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">characteristics</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<dt><strong>添加 MCP8021 栅极驱动器配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">characteristics</span></code> 下按以下格式指定 MCP8021 栅极驱动器配置：</p>
 <pre class="literal-block">gateDriver:
   device: MCP8021
   configuration:
@@ -449,7 +449,7 @@ threshold: <em>&lt;fraction&gt;</em></pre>
 </div>
 </div>
 </dd>
-<dt><strong>添加 MCP8022 栅极驱动器配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">characteristics</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<dt><strong>添加 MCP8022 栅极驱动器配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">characteristics</span></code> 下按以下格式指定 MCP8022 栅极驱动器配置：</p>
 <pre class="literal-block">gateDriver:
   device: MCP8022
   configuration:
@@ -489,7 +489,7 @@ threshold: <em>&lt;fraction&gt;</em></pre>
 </div>
 </div>
 </dd>
-<dt><strong>添加 MCP8027 栅极驱动器配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">characteristics</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<dt><strong>添加 MCP8027 栅极驱动器配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">characteristics</span></code> 下按以下格式指定 MCP8027 栅极驱动器配置：</p>
 <pre class="literal-block">gateDriver:
   device: MCP8027
   configuration:
@@ -531,7 +531,7 @@ threshold: <em>&lt;fraction&gt;</em></pre>
 </div>
 </div>
 </dd>
-<dt><strong>为 PWMxH 和 PWMxL 互换的板添加 PWM 交换配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.pwm.outputSwap</span></code> 下指定 RX 和 TX 信号的引脚映射，格式如下：</p>
+<dt><strong>为 PWMxH 和 PWMxL 互换的板添加 PWM 交换配置</strong></dt><dd><p>在 <code class="docutils literal notranslate"><span class="pre">peripherals.pwm.outputSwap</span></code> 下按以下格式添加 PWM 交换配置：</p>
 <pre class="literal-block">peripherals:
   pwm:
     outputSwap:

@@ -89,7 +89,7 @@
 <span class="cp">#define KII              643    </span><span class="c1">// Q15(  0.01962) = +613.24024 V/A/s    = +613.20687 V/A/s   + 0.0054%</span>
 </pre></div>
 </div>
-<p>在许多其他任务中，我们正在努力改进代码中的文档，以阐明这些常量是如何计算的，或者至少它们依赖于哪些因子。在某些情况下，这些计算是 motorBench<sup>®</sup> Development Suite 的 自定义页面上设置。</p>
+<p>在许多其他任务中，我们正在努力改进代码中的文档，以阐明这些常量是如何计算的，或者至少它们依赖于哪些因子。在某些情况下，这些计算是 motorBench<sup>®</sup> Development Suite 内部的专有公式。</p>
 </li>
 <li><p><strong>硬件抽象层的一部分</strong>：在 <code class="docutils literal notranslate"><span class="pre">hal/</span></code> 目录中。这些旨在与 MCC 自动生成的输出保持一致，并最终被其替换。</p></li>
 <li><p><strong>“显而易见”的值（位于 C 源文件中）</strong> 在 <code class="docutils literal notranslate"><span class="pre">parameters/</span></code> 目录之外的 C 源文件中，包括下面的一些示例。在这些情况下，将它们隐藏在抽象的符号常量后面反而会模糊而非澄清其用法。如果您发现某个示例中它们似乎不合适，请告知我们，我们将考虑替代方案。</p>

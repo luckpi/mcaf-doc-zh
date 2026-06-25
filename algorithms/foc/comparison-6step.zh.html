@@ -217,7 +217,7 @@
 </ul>
 </div></blockquote>
 </li>
-<li><p>2 或 4 个有源切换晶体管：为两个有源相的上桥臂开关选择互补的 PWM 占空比，例如 A 相 15% 占空比、B 相 85% 占空比。若依靠二极管承载续流电流，两个晶体管即足够。（见 <a class="reference internal" href="#fig-foc6-6step-switching-patterns"><span class="std std-numref">图 5.48</span></a>顶行。）</p></li>
+<li><p>2 或 4 个有源切换晶体管：为两个有源相的上桥臂开关选择互补的 PWM 占空比，例如 A 相 15% 占空比、B 相 85% 占空比。若依靠二极管承载续流电流，两个晶体管即足够。（见 <a class="reference internal" href="#fig-foc6-6step-switching-patterns"><span class="std std-numref">图 5.48</span></a>底行。）</p></li>
 </ul>
 <p>FOC 的对应情形为 2、3、4 或 6 个有源切换晶体管，如 <a class="reference internal" href="#fig-foc6-foc-switching-patterns"><span class="std std-numref">图 5.49</span></a>所示。（通过选取电压最低的电机相并导通其下桥臂晶体管，可使两个晶体管不参与有源切换；剩余有源切换晶体管的数量取决于特定半桥是否使用同步整流。）</p>
 <figure class="align-center" id="id15">
@@ -253,7 +253,7 @@
 </section>
 <section id="current-range">
 <span id="foc-6step-current-range"></span><h3><span class="section-number">5.1.7.5.2. </span>电流范围<a class="headerlink" href="#current-range" title="本标题的永久链接">¶</a></h3>
-<p>对于相同的瞬时转矩，六步和 FOC 所需的电流范围相同。（见 <a class="reference internal" href="#fig-foc6-equiv-inst-torque"><span class="std std-numref">图 5.47</span></a>顶行。）</p>
+<p>对于相同的瞬时转矩，六步和 FOC 所需的电流范围相同。（见 <a class="reference internal" href="#fig-foc6-equiv-inst-torque"><span class="std std-numref">图 5.47</span></a>。）</p>
 <p>如果不需要等效瞬时转矩，而是想知道在相同平均转矩下电流范围如何比较，则情况发生变化。（见 <a class="reference internal" href="#fig-foc6-equiv-avg-torque"><span class="std std-numref">图 5.46</span></a>。）对于相同的平均转矩，可为六步和 FOC 写出等效的电流幅值。在六步中，电流 I<sub>6</sub> 流入电机的一个端子并从另一个端子流出。如果 FOC 电流幅值为 I<sub>q</sub> ，则：</p>
 <div class="math notranslate nohighlight" id="equation-algorithms-foc-comparison-6step-0">
 <span class="eqno">(5.21)<a class="headerlink" href="#equation-algorithms-foc-comparison-6step-0" title="本公式的永久链接">¶</a></span>\[\begin{aligned}

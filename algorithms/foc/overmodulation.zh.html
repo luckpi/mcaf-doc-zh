@@ -99,7 +99,7 @@
 </figure>
 <p>当调制指数超过 1.0 时，有几点需要注意：</p>
 <ul>
-<li><p>的平均值 <span class="math notranslate nohighlight">\(V_q\)</span> 是调制指数的非线性函数；它确实会超过 1.0（这正是过调制的意义所在），但渐近地趋于一个最大值 <span class="math notranslate nohighlight">\(\frac{2}{\sqrt{3}}\cdot\frac{3}{\pi} = 2\sqrt{3}/\pi \approx 1.1027\)</span></p>
+<li><p><span class="math notranslate nohighlight">\(V_q\)</span> 的平均值是调制指数的非线性函数；它确实会超过 1.0（这正是过调制的意义所在），但渐近地趋于一个最大值 <span class="math notranslate nohighlight">\(\frac{2}{\sqrt{3}}\cdot\frac{3}{\pi} = 2\sqrt{3}/\pi \approx 1.1027\)</span></p>
 <p>（其中 <span class="math notranslate nohighlight">\(2/\sqrt{3}\)</span> 为原点到六边形各点的距离， <span class="math notranslate nohighlight">\(3/\pi\)</span> 因子表示 <span class="math notranslate nohighlight">\(\cos\theta\)</span> 在范围内的平均值 <span class="math notranslate nohighlight">\(\theta \in [-\frac{\pi}{6}, \frac{\pi}{6}]\)</span>）</p>
 </li>
 <li><p>增量增益迅速下降，从 m = 1.0 时的 1 降至 m = 1.15 时的 0.1 以下。</p></li>
@@ -111,13 +111,13 @@ V_{d,rms} &amp;= \mathrm{RMS}\left(\tfrac{2}{\sqrt{3}}\sin \theta, -\tfrac{\pi}{
 \end{aligned}\]</div>
 </li>
 <li><p>q 轴 RMS 畸变迅速上升，在 <span class="math notranslate nohighlight">\(m=1.15\)</span>时达到约 0.0467，在 <span class="math notranslate nohighlight">\(m=\sqrt{3} \approx 1.732\)</span>附近达到约 0.0588 的最大值，随后在调制指数很大时渐近下降至 0.04627。</p></li>
-<li><p>d 轴 RMS 畸变上升缓慢，在 <span class="math notranslate nohighlight">\(m=1.15\)</span>。</p></li>
+<li><p>d 轴 RMS 畸变上升缓慢，在 <span class="math notranslate nohighlight">\(m=1.15\)</span> 时仅达到约 0.0208。</p></li>
 </ul>
 <p>所有这些因素使过调制在中等调制指数下具有吸引力，而在极端调制指数下则不然。理论上可获得 10.27% 的最大电压提升，但为此需要极端的调制指数，因此在实际中，通过将最大调制指数限制在 1.05–1.25 范围内，我们大约只能获得 3%–7% 的“额外”电压能力。</p>
 </section>
 <section id="coordinating-overmodulation-and-controller-limits">
 <h2><span class="section-number">5.1.4.4. </span>协调过调制与控制器限幅<a class="headerlink" href="#coordinating-overmodulation-and-controller-limits" title="本标题的永久链接">¶</a></h2>
-<p>平均值的非线性依赖 <span class="math notranslate nohighlight">\(V_q\)</span> 于调制指数，使得将过调制应用于矢量电流控制器变得有些有趣。 <a class="reference internal" href="#fig-overmodulation4"><span class="std std-numref">图 5.15</span></a> 展示了过调制在 dq 坐标系中可达到的限幅（本质上是一个随换相角旋转的六边形）以及 MCAF 电流控制器施加的限幅，即对各轴独立限幅的矩形区域。</p>
+<p><span class="math notranslate nohighlight">\(V_q\)</span> 平均值对调制指数的非线性依赖，使得将过调制应用于矢量电流控制器变得有些有趣。 <a class="reference internal" href="#fig-overmodulation4"><span class="std std-numref">图 5.15</span></a> 展示了过调制在 dq 坐标系中可达到的限幅（本质上是一个随换相角旋转的六边形）以及 MCAF 电流控制器施加的限幅，即对各轴独立限幅的矩形区域。</p>
 <figure class="align-center" id="id4">
 <span id="fig-overmodulation4"></span><a class="reference internal image-reference" href="../../_images/overmodulation_voltagelimit.png"><img alt="../../_images/overmodulation_voltagelimit.png" src="../../_images/overmodulation_voltagelimit.png" style="width: 600px;"/></a>
 <figcaption>

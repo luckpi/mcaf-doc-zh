@@ -54,7 +54,7 @@
 <li><p>什么构成一个整定良好的电流控制器？</p></li>
 <li><p>如何在 MCAF 中调整电流控制环增益？</p></li>
 <li><p>如何使用 motorBench<sup>®</sup> Development Suite 的 Tune（整定）页面中的自动整定 来简化增益整定？</p></li>
-<li><p>motorBench 中默认的motorBench<sup>®</sup> Development Suite 中默认的电流控制环整定准则 是否足以满足大多数系统的要求？</p></li>
+<li><p>motorBench<sup>®</sup> Development Suite 中默认的电流控制环整定准则 是否足以满足大多数系统的要求？</p></li>
 </ul>
 <section id="background">
 <h2><span class="section-number">5.1.6.1. </span>背景<a class="headerlink" href="#background" title="本标题的永久链接">¶</a></h2>
@@ -325,7 +325,7 @@
 </section>
 <section id="default-values-of-performance-criteria">
 <h3><span class="section-number">5.1.6.4.3. </span>性能准则的默认值<a class="headerlink" href="#default-values-of-performance-criteria" title="本标题的永久链接">¶</a></h3>
-<p>motorBench 中motorBench<sup>®</sup> Development Suite 1.15–2.35 版本中为电流环选择的默认值，即 <span class="math notranslate nohighlight">\(\phi_m = 80^\circ,\;\phi_z = 45^\circ\)</span>，对非常宽范围的电机都是稳定的。但它们也极其保守，导致电流环带宽相当低。</p>
+<p>motorBench<sup>®</sup> Development Suite 1.15–2.35 版本中为电流环选择的默认值，即 <span class="math notranslate nohighlight">\(\phi_m = 80^\circ,\;\phi_z = 45^\circ\)</span>，对非常宽范围的电机都是稳定的。但它们也极其保守，导致电流环带宽相当低。</p>
 <p>Microchip 人员正在重新评估这些默认值以给出更高性能的建议。在此期间，如果可以进行仔细的阶跃响应测试，可考虑将相位裕量降至 50°–70° 范围，并将交叉频率处 PI 相位滞后降至 8°–20° 范围。 <strong>未经测试，不要将这些值降到默认值以下。</strong> 未经仔细研究，不建议将 PI 相位滞后降到 5° 以下。</p>
 <p>自动整定使用这些性能准则，而非 PI 增益或环路带宽，作为一种归一化指标，它在较宽范围的电机和驱动组合中具有一定的适用性。此处整定良好情形（<span class="math notranslate nohighlight">\(\phi_m = 45^\circ,\;\phi_z = 12^\circ\)</span>）中所示的 Nidec Hurst DMA0204024B101 的相位裕量和交叉频率处 PI 相位滞后的确切值是否适用于所有电机？否。每个电机和驱动组合都有不同的特性，且常常存在可能需要更高或更低设置的微妙二阶效应。</p>
 <p>如果您的电机似乎难以整定，请 <a class="reference internal" href="../../faq.zh.html#faq-support"><span class="std std-ref">联系 Microchip</span></a> 以便我们改进建议。</p>
@@ -333,7 +333,7 @@
 </section>
 <section id="adjusting-current-control-gains-in-mcaf">
 <h2><span class="section-number">5.1.6.5. </span>在 MCAF 中调整电流控制增益<a class="headerlink" href="#adjusting-current-control-gains-in-mcaf" title="本标题的永久链接">¶</a></h2>
-<p>在 MCAF 中调整电流控制增益的最佳方式是在 motorBench <span class="math notranslate nohighlight">\(\phi_m\)</span> ，交叉频率处 PI 相位滞后 <span class="math notranslate nohighlight">\(\phi_z\)</span>的 Tune（整定）页面中更改性能准则（相位裕量<sup>®</sup> Development Suite）。但这可能需要反复迭代生成代码。</p>
+<p>在 MCAF 中调整电流控制增益的最佳方式是在 motorBench<sup>®</sup> Development Suite 的 Tune（整定）页面中更改性能准则（相位裕量 <span class="math notranslate nohighlight">\(\phi_m\)</span> 和交叉频率处 PI 相位滞后 <span class="math notranslate nohighlight">\(\phi_z\)</span>）。但这可能需要反复迭代生成代码。</p>
 <p>要更快地细调电流环，可在运行时直接更改电流环增益，即使用实时诊断工具调整 d 轴和 q 轴电流环的比例和积分增益，所调整的 MCAF 变量如 <a class="reference internal" href="#code-ituning-variables"><span class="std std-numref">代码清单 5.1</span></a>。</p>
 <div class="literal-block-wrapper docutils container" id="code-ituning-variables">
 <div class="code-block-caption"><span class="caption-number">代码清单 5.1 </span><span class="caption-text"> </span><a class="headerlink" href="#code-ituning-variables" title="本代码块的永久链接">¶</a></div>
@@ -388,7 +388,7 @@ motor.iqCtrl.ki
 <li><p><span class="math notranslate nohighlight">\(K_p\)</span> = (24500/2263) × 0.41437 = 4.4861 V/A</p></li>
 <li><p><span class="math notranslate nohighlight">\(K_i\)</span> = (3300/167) × 611.57 = 12085 V/As</p></li>
 </ul>
-<p>然后在 motorBench <span class="math notranslate nohighlight">\(\phi_m\)</span> ，交叉频率处 PI 相位滞后 <span class="math notranslate nohighlight">\(\phi_z\)</span> 的 Tune（整定）页面中调整电流环的相位裕量<sup>®</sup> Development Suite，以接近这些值。（同样，减小相位裕量应同时增大 <span class="math notranslate nohighlight">\(K_p\)</span> 和 <span class="math notranslate nohighlight">\(K_i\)</span>；减小交叉频率处 PI 相位滞后会增大 <span class="math notranslate nohighlight">\(K_p\)</span> 并减小 <span class="math notranslate nohighlight">\(K_i\)</span>.)</p>
+<p>然后在 motorBench<sup>®</sup> Development Suite 的 Tune（整定）页面中调整电流环的相位裕量 <span class="math notranslate nohighlight">\(\phi_m\)</span> 和交叉频率处 PI 相位滞后 <span class="math notranslate nohighlight">\(\phi_z\)</span>，以接近这些值。（同样，减小相位裕量应同时增大 <span class="math notranslate nohighlight">\(K_p\)</span> 和 <span class="math notranslate nohighlight">\(K_i\)</span>；减小交叉频率处 PI 相位滞后会增大 <span class="math notranslate nohighlight">\(K_p\)</span> 并减小 <span class="math notranslate nohighlight">\(K_i\)</span>。）</p>
 </section>
 </section>
 <section id="commutation-angle-issues-during-current-loop-tuning">
