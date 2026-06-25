@@ -3,7 +3,7 @@
   "use strict";
   var STORAGE_KEY = "mcaf-lang";
   var pref;
-  try { pref = localStorage.getItem(STORAGE_KEY) || "en"; } catch (e) { pref = "en"; }
+  try { pref = localStorage.getItem(STORAGE_KEY) || "zh"; } catch (e) { pref = "zh"; }
 
   function isZhPage() {
     return /\.zh\.html(\?|$|#)/.test(location.pathname) || /\.zh\.html(\?|$|#)/.test(location.href);
