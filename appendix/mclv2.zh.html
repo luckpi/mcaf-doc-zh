@@ -69,7 +69,7 @@
 <p><span class="caption-number">图 7.3 </span><span class="caption-text"> </span><a class="headerlink" href="#id3" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
-<p>这些走线电阻在室温下的近似值（通过将限流电源连接到各对电路节点，测量电源输出的电流和各点电压来测量，例如将电流注入采样电阻 <span class="math notranslate nohighlight">\(R_{sa}\)</span> 并从采样电阻 <span class="math notranslate nohighlight">\(R_{s,dc}\)</span>的节点 ⑦ 引出，以测量 <span class="math notranslate nohighlight">\(R_{p1}\)</span>， <span class="math notranslate nohighlight">\(R_{p2}\)</span>和 <span class="math notranslate nohighlight">\(R_{p3}\)</span>）为</p>
+<p>这些走线电阻在室温下的近似值（通过将限流电源连接到各对电路节点，测量电源输出的电流和各点电压来测量，例如将电流注入采样电阻 <span class="math notranslate nohighlight">\(R_{sa}\)</span> 并从采样电阻 <span class="math notranslate nohighlight">\(R_{s,dc}\)</span>的节点 ⑥ 引出，以测量 <span class="math notranslate nohighlight">\(R_{p1}\)</span>， <span class="math notranslate nohighlight">\(R_{p2}\)</span>和 <span class="math notranslate nohighlight">\(R_{p3}\)</span>）为</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\(R_{p1} \approx 3.3\ \text{m}\Omega\)</span></p></li>
 <li><p><span class="math notranslate nohighlight">\(R_{p2} \approx 2.9\ \text{m}\Omega\)</span></p></li>
@@ -78,7 +78,7 @@
 <li><p><span class="math notranslate nohighlight">\(R_{p5} \approx 58\  \text{m}\Omega\)</span></p></li>
 <li><p><span class="math notranslate nohighlight">\(R_{p6} \approx 63\  \text{m}\Omega\)</span></p></li>
 </ul>
-<p>这实际上意味着节点 ⑧ 处的电压 <span class="math notranslate nohighlight">\(V_{7}\)</span> 在节点 ⑦ 处是三个电压的加权平均值 <span class="math notranslate nohighlight">\(V_a\)</span> 在节点 ② 处，<span class="math notranslate nohighlight">\(V_b\)</span> 在节点 ③ 处，和<span class="math notranslate nohighlight">\(V_{dc}\)</span> 在节点 ⑤ 处：<span class="math notranslate nohighlight">\(V_7 = K_aV_a + K_bV_b + K_{dc}V_{dc}\)</span>。还使用测试电流测量了近似权重 <span class="math notranslate nohighlight">\(K_a \approx 0.25\)</span>， <span class="math notranslate nohighlight">\(K_b \approx 0.39\)</span>和 <span class="math notranslate nohighlight">\(K_{dc} \approx 0.36\)</span>。</p>
+<p>这实际上意味着节点 ⑦ 处的电压 <span class="math notranslate nohighlight">\(V_{7}\)</span> 是三个电压的加权平均值 <span class="math notranslate nohighlight">\(V_a\)</span> 在节点 ② 处，<span class="math notranslate nohighlight">\(V_b\)</span> 在节点 ③ 处，和<span class="math notranslate nohighlight">\(V_{dc}\)</span> 在节点 ⑤ 处：<span class="math notranslate nohighlight">\(V_7 = K_aV_a + K_bV_b + K_{dc}V_{dc}\)</span>。还使用测试电流测量了近似权重 <span class="math notranslate nohighlight">\(K_a \approx 0.25\)</span>， <span class="math notranslate nohighlight">\(K_b \approx 0.39\)</span>和 <span class="math notranslate nohighlight">\(K_{dc} \approx 0.36\)</span>。</p>
 <p>如果我们在所有低侧开关导通时采样电流，且 <span class="math notranslate nohighlight">\(I_a + I_b + I_c\)</span> 为 0，则 <span class="math notranslate nohighlight">\(R_{p3}\)</span> 上的电压降为 0，另外两个电压降为 <span class="math notranslate nohighlight">\(I_aR_{p1}\)</span> 和 <span class="math notranslate nohighlight">\((I_a + I_b)R_{p2}\)</span>。我们可以分析电路以确定对电流检测的影响，如果我们将采样电阻写为标称电阻 <span class="math notranslate nohighlight">\(R_s\)</span> 带有容差 <span class="math notranslate nohighlight">\(R_{sa} = R_s(1+\delta_a)\)</span> 和 <span class="math notranslate nohighlight">\(R_{sb} = R_s(1+\delta_b)\)</span>，则可将结果简化为：</p>
 <div class="math notranslate nohighlight" id="equation-appendix-mclv2-0">
 <span class="eqno">(7.1)<a class="headerlink" href="#equation-appendix-mclv2-0" title="本公式的永久链接">¶</a></span>\[\begin{aligned}

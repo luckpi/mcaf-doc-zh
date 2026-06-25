@@ -200,7 +200,7 @@
 <li><p>移除了 <a class="reference internal" href="../implementation/integration.zh.html#integration"><span class="std std-ref">集成</span></a> 节</p></li>
 <li><p>更新了 <a class="reference internal" href="../implementation/ui-customization.zh.html#impl-customization"><span class="std std-ref">可定制参数</span></a> 节</p></li>
 <li><p>更新了 <a class="reference internal" href="../implementation/resource-usage.zh.html#resource-usage"><span class="std std-ref">资源使用</span></a> 节</p></li>
-<li><p>更新了 <a class="reference internal" href="../components/diagnostics.zh.html#diag-kernel"><span class="std std-ref">诊断内核</span></a> 节以描述“none”选项并移除 RTMD 支持</p></li>
+<li><p>更新了 <a class="reference internal" href="../components/diagnostics.zh.html#diag-kernel"><span class="std std-ref">诊断内核</span></a> 节以描述“none”选项并移除 RTDM 支持</p></li>
 <li><p>更新 <a class="reference internal" href="../components/hal.zh.html#hal-pwm-update-options"><span class="std std-ref">HAL 节</span></a> 以澄清双更新和单更新 PWM 的估计器和硬件要求</p></li>
 <li><p>更新了 <a class="reference internal" href="../components/mcapi.zh.html#mcapi-fault-flags"><span class="std std-ref">MCAPI 故障标志</span></a> 表</p></li>
 <li><p>更新了监督算法节以添加 <a class="reference internal" href="../components/supervisory.zh.html#fault-clearing"><span class="std std-ref">故障清除逻辑</span></a></p></li>
@@ -484,7 +484,7 @@
 <section id="id3">
 <h4><span class="section-number">7.5.2.2.6. </span>核心 FOC<a class="headerlink" href="#id3" title="本标题的永久链接">¶</a></h4>
 <ul class="simple">
-<li><p>PLL 现在使用 <code class="docutils literal notranslate"><span class="pre">motor.valphabetaOut</span></code> rather than <code class="docutils literal notranslate"><span class="pre">motor.valphabeta</span></code>。（DB_MC-1164）这些状态变量之间的区别在于 <code class="docutils literal notranslate"><span class="pre">motor.valphabeta</span></code> 表示在 <span class="math notranslate nohighlight">\(V_{\alpha\beta}\)</span> prior to <a class="reference internal" href="../components/foc.zh.html#foc-zsm"><span class="std std-ref">零序调制</span></a>, whereas <code class="docutils literal notranslate"><span class="pre">motor.valphabetaOut</span></code> 表示基于 PWM 占空比计算的实际 <span class="math notranslate nohighlight">\(V_{\alpha\beta}\)</span> 的最佳估计。两者在电流控制器 进入 <a class="reference internal" href="../algorithms/foc/overmodulation.zh.html#algorithm-overmodulation"><span class="std std-ref">过调制</span></a>之前是相同的。另请参见 <code class="docutils literal notranslate"><span class="pre">MCAF_ComputeVAlphaBetaAtOutput()</span></code>。</p></li>
+<li><p>PLL 现在使用 <code class="docutils literal notranslate"><span class="pre">motor.valphabetaOut</span></code> rather than <code class="docutils literal notranslate"><span class="pre">motor.valphabeta</span></code>。（DB_MC-1164）这些状态变量之间的区别在于 <code class="docutils literal notranslate"><span class="pre">motor.valphabeta</span></code> 表示在 <span class="math notranslate nohighlight">\(V_{\alpha\beta}\)</span> 在...之前 <a class="reference internal" href="../components/foc.zh.html#foc-zsm"><span class="std std-ref">零序调制</span></a>, 而 <code class="docutils literal notranslate"><span class="pre">motor.valphabetaOut</span></code> 表示基于 PWM 占空比计算的实际 <span class="math notranslate nohighlight">\(V_{\alpha\beta}\)</span> 的最佳估计。两者在电流控制器 进入 <a class="reference internal" href="../algorithms/foc/overmodulation.zh.html#algorithm-overmodulation"><span class="std std-ref">过调制</span></a>之前是相同的。另请参见 <code class="docutils literal notranslate"><span class="pre">MCAF_ComputeVAlphaBetaAtOutput()</span></code>。</p></li>
 </ul>
 </section>
 <section id="id4">
