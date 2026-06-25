@@ -83,7 +83,7 @@
 <div class="math notranslate nohighlight" id="equation-l0l1">
 <span class="eqno">(5.32)<a class="headerlink" href="#equation-l0l1" title="本公式的永久链接">¶</a></span>\[L_0 = \frac{L_d + L_q}{2},  L_1 = \frac{L_d - L_q}{2}\]</div>
 <ul class="simple">
-<li><p>两点平均：如上所述，首先从 <span class="math notranslate nohighlight">\(- E_d\)</span> 计算 <span class="math notranslate nohighlight">\(E_{\alpha}\)</span> 和 <span class="math notranslate nohighlight">\(E_{\beta}\)</span> 得到，并送入两点平均模块。此模块有助于平滑比例-积分（PI）控制器的输入（<span class="math notranslate nohighlight">\(G_{PI}(s)\)</span>).</p></li>
+<li><p>两点平均：如上所述，首先由 <span class="math notranslate nohighlight">\(E_{\alpha}\)</span> 和 <span class="math notranslate nohighlight">\(E_{\beta}\)</span> 计算出 <span class="math notranslate nohighlight">\(- E_d\)</span>，并送入两点平均模块。此模块有助于平滑比例-积分（PI）控制器的输入（<span class="math notranslate nohighlight">\(G_{PI}(s)\)</span>）。</p></li>
 <li><p><span class="math notranslate nohighlight">\(G_{PI}(s)\)</span> : 该模块表示一个 PI 控制器，它是 ATPLL 估计器的核心。在稳态下，PI 控制器的输入（即： <span class="math notranslate nohighlight">\(- E_d\)</span>）减小到零，从而将估计速度和角度的稳态误差也减小到零。 <span class="math notranslate nohighlight">\(G_{PI}(s)\)</span> 的 s 域表示如下：</p></li>
 </ul>
 <div class="math notranslate nohighlight" id="equation-algorithms-atpll-0">

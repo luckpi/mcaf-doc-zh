@@ -262,7 +262,7 @@ I_6 &amp;= \frac{\pi}{2\sqrt{3}}I_q \cr
 I_q &amp;\approx 1.103 I_6
 \end{aligned}\]</div>
 <p>对于同一电机，FOC 所需的峰值电流检测范围比六步高约 10.3%。即便六步效率较低也是如此：电流 I<sub>6</sub> 流入一个端子并从另一个端子流出，其等效的三相电流矢量幅值为 <span class="math notranslate nohighlight">\(\frac{2}{\sqrt{3}}I_6 \approx 1.1547 I_6\)</span>，因此六步电流检测能以更低的峰值电流要求得以规避。</p>
-<p>在 FOC 中，电流幅值 I 对应的最坏换相角下的 I<sub>q</sub> 是 I<sub>q</sub> 流入（或流出）一个电机端子，而该电流的一半从另外两个端子流出（或流入）的情况。该电流幅值对应的最佳换相角是 <span class="math notranslate nohighlight">\(\frac{\sqrt{3}}{2}I_q\)</span> 流入一个电机端子并从另一个端子流出、第三个端子电流为零的情况。然而电流传感器必须覆盖 ±I 的完整范围。</p>
+<p>在 FOC 中，电流幅值 I 对应的最坏换相角下的 I<sub>q</sub> 是 I<sub>q</sub> 流入（或流出）一个电机端子，而该电流的一半从另外两个端子流出（或流入）的情况。该电流幅值对应的最佳换相角是 <span class="math notranslate nohighlight">\(\frac{\sqrt{3}}{2}I_q\)</span> 流入一个电机端子并从另一个端子流出、第三个端子电流为零的情况。然而电流传感器必须覆盖 ±I_q 的完整范围。</p>
 <p>参见 <a class="reference internal" href="#fig-foc6-equiv-avg-torque"><span class="std std-numref">图 5.46</span></a> 的图形描述；在 30/90/150/210/270/330 度的点处，FOC 电流幅值比等效平均转矩下的六步电流低 4.5%（系数为 <span class="math notranslate nohighlight">\(3/\pi\)</span>），但 FOC 波形在正弦波峰值处需要更高的电流范围。</p>
 <p>在实际中，这意味着电流检测电路、过流电路以及（在较小程度上）栅极驱动都需要设计成能覆盖完整的瞬时相电流，因此如果决定因素是平均转矩而非瞬时转矩，六步的要求略低。</p>
 <p>由于热原因其额定值更取决于方均根电流的系统部件（如连接器、导线、功率级和电机本身），在六步下比在 FOC 下需要更高的额定值。（见 <a class="reference internal" href="#foc-6step-efficiency"><span class="std std-ref">效率</span></a>）</p>

@@ -66,7 +66,7 @@
 </section>
 <section id="minimal-impact-pwm">
 <span id="algorithm-stopping-min-impact"></span><span id="index-1"></span><h2><span class="section-number">5.3.2. </span>最小影响 PWM<a class="headerlink" href="#minimal-impact-pwm" title="本标题的永久链接">¶</a></h2>
-<p>在最小影响 PWM — 也称“开环”停止或“自由停转” — 中，PWM 输出被改变为 <a class="reference internal" href="../components/hal.zh.html#hardware-pwm-minimal-impact"><span class="std std-ref">最小影响状态</span></a>。这本质上是三相桥的开路状态；对于自举栅驱动，下桥致开关管以低占空比维持，以保持自举电容器的电荷。</p>
+<p>在最小影响 PWM — 也称“开环”停止或“自由停转” — 中，PWM 输出被改变为 <a class="reference internal" href="../components/hal.zh.html#hardware-pwm-minimal-impact"><span class="std std-ref">最小影响状态</span></a>。这本质上是三相桥的开路状态；对于自举栅驱动，低侧开关管以低占空比维持，以保持自举电容器的电荷。</p>
 <p>电流测量可能丢失，无传感器估计器可能无法提供有效的换相角度和电机速度估计。</p>
 <p><strong>停止完成：</strong> 由于速度估计可能不可用，开环停止等待固定的自由停转时间间隔 <span class="math notranslate nohighlight">\(t_{\rm coast}\)</span>，假设初始速度为最坏情况下的最大值（以防角度估计器错误或系统从复位中恢复）。在自由停转间隔结束时，停止完成标志被设置，此时电机速度很可能低于 <a class="reference internal" href="../implementation/ui-customization.zh.html#customize-operation-coastdown-end-velocity"><span class="std std-ref">自由停转速度阈值</span></a>。</p>
 <p>在这些条件下，作用于电机的唯一转矩假定来自黏性阻尼 <span class="math notranslate nohighlight">\(B\)</span> 和摩擦 <span class="math notranslate nohighlight">\(T_{\mathrm{fr}}\)</span> 作用于转子惯性 <span class="math notranslate nohighlight">\(J\)</span> ，使电机自由停转至静止，如 <a class="reference internal" href="#fig-coastdown-1"><span class="std std-numref">图 5.54</span></a> 所示，并在公式 <a class="reference internal" href="#equation-eq-coastdown-1">5.22</a>：</p>
@@ -87,7 +87,7 @@ J\frac{d\omega_m}{dt} &amp;= -B\omega_m - T_{\mathrm{fr}}\operatorname{sgn}\omeg
 <p><strong>注意</strong>：最小影响 PWM 不应 <strong>不应</strong> 在以下任何条件下使用：</p>
 <ul class="simple">
 <li><p>电机具有高惯性（至少需要几秒钟才能自由停转）且电机参数不确定</p></li>
-<li><p>电机受到来自环境的再生转矩作用，可维持电机速度（例如：电动自行车、发电机、受风车影响的风扇等）</p></li>
+<li><p>电机受到来自环境的再生转矩作用，可维持电机速度（例如：电动自行车、发电机、处于风车工况的风扇等）</p></li>
 </ul>
 </section>
 <section id="closed-loop-methods">

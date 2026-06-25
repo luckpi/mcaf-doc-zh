@@ -51,21 +51,21 @@
 <p><a class="reference internal" href="#impl-sampling-rate-revhist"><span class="std std-ref">自 MCAF R6</span></a>起，可通过 motorBench<sup>®</sup> Development Suite 的 Configure 页面支持采样率和 PWM 频率的更改。在 MCAF R8 及更高版本中，这些设置位于 System Parameters 节下。（在 MCAF R6 和 R7 中，它们位于 Board 节下。）</p>
 <p><a class="reference internal" href="#fig-custom-board-system-parameters"><span class="std std-numref">图 6.3</span></a> 显示了 Configure 页面的截图以及控制这些速率的三个设置：</p>
 <ul>
-<li><p><strong>电流控制环采样时间因子</strong> — 控制大部分电机控制算法的执行速率，包括电流控制器、参考变换以及位置和速度估计器。</p>
+<li><p><strong>电流控制环采样时间系数</strong> — 控制大部分电机控制算法的执行速率，包括电流控制器、参考变换以及位置和速度估计器。</p>
 <div class="admonition note">
 <p class="admonition-title">注</p>
-<p>电流控制环每 <span class="math notranslate nohighlight">\(N\)</span> 个 PWM 周期执行一次，其中 <span class="math notranslate nohighlight">\(N\)</span> 为电流控制环采样时间因子。MCAF R8 不支持修改此参数。</p>
+<p>电流控制环每 <span class="math notranslate nohighlight">\(N\)</span> 个 PWM 周期执行一次，其中 <span class="math notranslate nohighlight">\(N\)</span> 为电流控制环采样时间系数。MCAF R8 不支持修改此参数。</p>
 </div>
 </li>
-<li><p><strong>速度控制环采样时间因子</strong> — 控制速度控制器的执行速率</p>
+<li><p><strong>速度控制环采样时间系数</strong> — 控制速度控制器的执行速率</p>
 <div class="admonition note">
 <p class="admonition-title">注</p>
-<p>速度控制环每 <span class="math notranslate nohighlight">\(N\)</span> 次电流控制环更新执行一次，其中 <span class="math notranslate nohighlight">\(N\)</span> 为速度控制环采样时间因子。</p>
+<p>速度控制环每 <span class="math notranslate nohighlight">\(N\)</span> 次电流控制环更新执行一次，其中 <span class="math notranslate nohighlight">\(N\)</span> 为速度控制环采样时间系数。</p>
 </div>
 </li>
 <li><p><strong>PWM 频率</strong> — 控制 PWM 开关频率 <span class="math notranslate nohighlight">\(f_{\text{PWM}}\)</span></p></li>
 </ul>
-<p>例如，如果 PWM 频率为 50 kHz，电流环采样时间因子为 2，速度环采样时间因子为 10，则电流环将以 25 kHz 更新，速度环以 2.5 kHz 更新。</p>
+<p>例如，如果 PWM 频率为 50 kHz，电流环采样时间系数为 2，速度环采样时间系数为 10，则电流环将以 25 kHz 更新，速度环以 2.5 kHz 更新。</p>
 <figure class="align-center" id="id1">
 <span id="fig-custom-board-system-parameters"></span><img alt="../_images/custom-board-system-parameters.png" src="../_images/custom-board-system-parameters.png"/>
 <figcaption>

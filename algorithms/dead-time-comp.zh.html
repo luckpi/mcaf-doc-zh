@@ -62,7 +62,7 @@
 <p><span class="caption-number">图 5.93 </span><span class="caption-text">三相桥，由驱动电机端子 A、B 和 C 的三个半桥组成。每个半桥有一个高侧和低侧晶体管，可以将相应的电机端子连接到直流母线的正极或负极。</span><a class="headerlink" href="#id3" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
-<p>死区如 <a class="reference internal" href="#fig-dtc-pwmdeadtime"><span class="std std-numref">图 5.94</span></a>所示，表示为 <span class="math notranslate nohighlight">\(\delta_1\)</span> 占整个 PWM 周期的比例 <span class="math notranslate nohighlight">\(T_\text{PWM}\)</span>。它用于适应开关转换所需的时间，并允许一个晶体管在另一个开始导通之前完全关断。这避免了直通，即直流母线两端发生暂时短路并在两个晶体管中引起 两个晶体管中产生高功耗。</p>
+<p>死区如 <a class="reference internal" href="#fig-dtc-pwmdeadtime"><span class="std std-numref">图 5.94</span></a>所示，表示为 <span class="math notranslate nohighlight">\(\delta_1\)</span> 占整个 PWM 周期的比例 <span class="math notranslate nohighlight">\(T_\text{PWM}\)</span>。它用于适应开关转换所需的时间，并允许一个晶体管在另一个开始导通之前完全关断。这避免了直通，即直流母线两端发生暂时短路并在两个晶体管中产生高功耗。</p>
 <figure class="align-center" id="id4">
 <span id="fig-dtc-pwmdeadtime"></span><img alt="../_images/pwm-with-deadtime.svg" src="../_images/pwm-with-deadtime.svg"/><figcaption>
 <p><span class="caption-number">图 5.94 </span><span class="caption-text">电机某一半桥的栅驱动信号示例</span><a class="headerlink" href="#id4" title="本图片的永久链接">¶</a></p>

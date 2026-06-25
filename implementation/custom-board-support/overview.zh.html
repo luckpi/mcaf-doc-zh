@@ -97,20 +97,20 @@
 <td><p>MCC 库支持的 MCP8021/MCP8022/MCP8027</p></td>
 </tr>
 <tr class="row-even"><td rowspan="10"><p>模拟</p></td>
-<td><p>母线电压测量</p></td>
+<td><p>DC 母线电压测量</p></td>
 <td class="centered vcentered"><p><img alt="yes" class="no-scaled-link" height="20px" src="../../_images/icon-green-check.svg" width="20px"/></p></td>
 <td><p>MCAF 母线电压补偿所需</p></td>
 </tr>
 <tr class="row-odd"><td><p>相电流——两相</p></td>
 <td></td>
 <td rowspan="3"><p>双通道和三通道测量需要 A 相和 B 相（三通道还需要 C 相）。</p>
-<p>单通道测量需要母线电流测量。</p>
+<p>单通道测量需要DC 母线电流测量。</p>
 </td>
 </tr>
 <tr class="row-even"><td><p>相电流——三相</p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>母线电流</p></td>
+<tr class="row-odd"><td><p>DC 母线电流</p></td>
 <td></td>
 </tr>
 <tr class="row-even"><td><p>相电压——三相</p></td>
@@ -186,11 +186,11 @@
 <h2><span class="section-number">6.6.2.2. </span>假设<a class="headerlink" href="#assumptions" title="本标题的永久链接">¶</a></h2>
 <section id="current-measurement">
 <h3><span class="section-number">6.6.2.2.1. </span>电流测量<a class="headerlink" href="#current-measurement" title="本标题的永久链接">¶</a></h3>
-<p>MCAF 要求相电流和母线电流测量电路向 ADC 提供具有 <span class="math notranslate nohighlight">\(AV_\text{dd}/2\)</span> 直流偏置的模拟输入，以便能测量从负满量程（<span class="math notranslate nohighlight">\(-I_\text{fs}\)</span>）到正满量程（<span class="math notranslate nohighlight">\(I_\text{fs}\)</span>）范围内的电流，如 <a class="reference internal" href="#fig-custom-board-current"><span class="std std-numref">图 6.8</span></a>。</p>
+<p>MCAF 要求相电流和DC 母线电流测量电路向 ADC 提供具有 <span class="math notranslate nohighlight">\(AV_\text{dd}/2\)</span> 直流偏置的模拟输入，以便能测量从负满量程（<span class="math notranslate nohighlight">\(-I_\text{fs}\)</span>）到正满量程（<span class="math notranslate nohighlight">\(I_\text{fs}\)</span>）范围内的电流，如 <a class="reference internal" href="#fig-custom-board-current"><span class="std std-numref">图 6.8</span></a>。</p>
 <figure class="align-center" id="id6">
 <span id="fig-custom-board-current"></span><a class="reference internal image-reference" href="../../_images/custom-board-current-spec.svg"><img alt="../../_images/custom-board-current-spec.svg" src="../../_images/custom-board-current-spec.svg" width="360px"/></a>
 <figcaption>
-<p><span class="caption-number">图 6.8 </span><span class="caption-text">ADC 输入与被测相/母线电流的规格关系</span><a class="headerlink" href="#id6" title="本图片的永久链接">¶</a></p>
+<p><span class="caption-number">图 6.8 </span><span class="caption-text">ADC 输入与被测相/DC 母线电流的规格关系</span><a class="headerlink" href="#id6" title="本图片的永久链接">¶</a></p>
 </figcaption>
 </figure>
 <div class="admonition note">
@@ -200,12 +200,12 @@
 </div>
 <div class="admonition note">
 <p class="admonition-title">注</p>
-<p>MCAF 根据板卡定义文件中给出的满量程相电流来确定板卡的电流比例。板卡定义文件中的满量程母线电流对代码生成过程的任何部分都没有影响。</p>
+<p>MCAF 根据板卡定义文件中给出的满量程相电流来确定板卡的电流比例。板卡定义文件中的满量程DC 母线电流对代码生成过程的任何部分都没有影响。</p>
 </div>
 </section>
 <section id="voltage-measurement">
 <h3><span class="section-number">6.6.2.2.2. </span>电压测量<a class="headerlink" href="#voltage-measurement" title="本标题的永久链接">¶</a></h3>
-<p>MCAF 要求母线电压测量电路向 ADC 提供零直流偏置的模拟输入，以便能测量从 0V 到正满量程（<span class="math notranslate nohighlight">\(V_\text{fs}\)</span>）范围内的电流，如 <a class="reference internal" href="#fig-custom-board-voltage"><span class="std std-numref">图 6.9</span></a>。</p>
+<p>MCAF 要求DC 母线电压测量电路向 ADC 提供零直流偏置的模拟输入，以便能测量从 0V 到正满量程（<span class="math notranslate nohighlight">\(V_\text{fs}\)</span>）范围内的电流，如 <a class="reference internal" href="#fig-custom-board-voltage"><span class="std std-numref">图 6.9</span></a>。</p>
 <figure class="align-center" id="id7">
 <span id="fig-custom-board-voltage"></span><a class="reference internal image-reference" href="../../_images/custom-board-voltage-spec.svg"><img alt="../../_images/custom-board-voltage-spec.svg" src="../../_images/custom-board-voltage-spec.svg" width="360px"/></a>
 <figcaption>

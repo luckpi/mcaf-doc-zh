@@ -101,7 +101,7 @@
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MCSM_FAULT</span></code></p></td>
 <td><p>电机控制器已识别到故障状态，在此状态下无法安全地进行正常控制活动。</p>
 <p>电机控制器的执行器被置于 <a class="reference internal" href="hal.zh.html#hardware-pwm"><span class="std std-ref">“最小影响”</span></a> 状态，该状态在故障条件下被认为是可接受的：通常上桥臂晶体管关断，下桥臂晶体管关断或设置为小占空比。</p>
-<p>这是一个“锁定”状态：进入时锁定描述故障的错误代码，并显示此代码，直到来自 <code class="docutils literal notranslate"><span class="pre">CLEAR_FAULT</span></code> 条件的外部干预发生。</p>
+<p>这是一个“锁定”状态：进入时锁定描述故障的错误代码，并显示此代码，直到来自 <code class="docutils literal notranslate"><span class="pre">CLEAR_FAULT</span></code> 条件。</p>
 </td>
 <td><p>通常没有假设。电机可能正在旋转或未旋转。电机可能已损坏，晶体管可能已损坏，电压和电流可能超出范围等。</p></td>
 </tr>
@@ -351,7 +351,7 @@
 <h3><span class="section-number">4.3.4.2. </span>其他实现说明<a class="headerlink" href="#other-implementation-notes" title="本标题的永久链接">¶</a></h3>
 <p>每个状态中的状态机函数以及转换函数，除主状态机更新函数 <code class="docutils literal notranslate"><span class="pre">MCAF_FSM_Dispatch()</span></code>外，不应被调用。MCAF 中使用的方法是将这些函数作为内联函数提出，以实现代码模块化和可维护性，但不是运行时模块化（在运行时将其视为一个大函数）。</p>
 <p> <code class="docutils literal notranslate"><span class="pre">STOPPING</span></code> → <code class="docutils literal notranslate"><span class="pre">RUNNING</span></code> 转换是在 MCAF R7 中添加的，同时添加了 <a class="reference internal" href="../algorithms/stopping.zh.html#algorithm-stopping-closed-loop"><span class="std std-ref">闭环停止</span></a>。</p>
-<p> <code class="docutils literal notranslate"><span class="pre">RESTART</span></code> → <code class="docutils literal notranslate"><span class="pre">STOPPED</span></code> 转换是在 MCAF R7 中添加的，同时添加了 <code class="docutils literal notranslate"><span class="pre">AT_REST</span></code> 条件的外部干预发生。 <strong>注意：</strong> 确定 <code class="docutils literal notranslate"><span class="pre">AT_REST</span></code> 有效性的精确条件仍在研究中，可能会在 MCAF 的未来版本中发生变化。</p>
+<p> <code class="docutils literal notranslate"><span class="pre">RESTART</span></code> → <code class="docutils literal notranslate"><span class="pre">STOPPED</span></code> 转换是在 MCAF R7 中添加的，同时添加了 <code class="docutils literal notranslate"><span class="pre">AT_REST</span></code> 条件。 <strong>注意：</strong> 确定 <code class="docutils literal notranslate"><span class="pre">AT_REST</span></code> 有效性的精确条件仍在研究中，可能会在 MCAF 的未来版本中发生变化。</p>
 </section>
 <section id="modules">
 <h3><span class="section-number">4.3.4.3. </span>模块<a class="headerlink" href="#modules" title="本标题的永久链接">¶</a></h3>
