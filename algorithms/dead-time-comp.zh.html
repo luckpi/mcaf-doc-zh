@@ -81,7 +81,7 @@
 <section id="output-voltage-during-dead-time">
 <span id="dtc-outputvoltage"></span><h3><span class="section-number">5.7.3.1. </span>死区期间的输出电压<a class="headerlink" href="#output-voltage-during-dead-time" title="本标题的永久链接">¶</a></h3>
 <p>MCAF 中的矢量控制使用平均值建模。控制变量可以用采样时间内的平均值表示，采样时间由离散数量的半周期组成。MCAF R1 – R9 均使用 1 个完整 PWM 周期作为采样时间。PWM 周期内半桥的平均输出电压为 <span class="math notranslate nohighlight">\(D'V_{dc} = (D+\delta)V_{dc}\)</span> 其中 <span class="math notranslate nohighlight">\(D'\)</span> 为有效占空比， <span class="math notranslate nohighlight">\(D\)</span> 为期望占空比， <span class="math notranslate nohighlight">\(\delta\)</span> 为有效占空比误差。此误差由死区引起，称为死区畸变。</p>
-<p>在死区期间，每个半桥输出实际上处于高阻状态，由功率级的续流二极管在直流母线电压轨处钳位。（MOSFET 具有固有体二极管；IGBT 没有，需要反并联二极管）反并联二极管）</p>
+<p>在死区期间，每个半桥输出实际上处于高阻状态，由功率级的续流二极管在直流母线电压轨处钳位。（MOSFET 具有固有体二极管；IGBT 没有，需要反并联二极管）</p>
 <p>这导致死区期间的输出电压随输出电流而变化。在电机驱动中，半桥负载是感性的，因此输出电压为以下之一，如 <a class="reference internal" href="#fig-dtc-deadtime-distortion1"><span class="std std-numref">图 5.95</span></a>：</p>
 <figure class="align-center" id="id5">
 <span id="fig-dtc-deadtime-distortion1"></span><a class="reference internal image-reference" href="../_images/pwm-deadtime-distortion.svg"><img alt="../_images/pwm-deadtime-distortion.svg" src="../_images/pwm-deadtime-distortion.svg" width="70%"/></a>

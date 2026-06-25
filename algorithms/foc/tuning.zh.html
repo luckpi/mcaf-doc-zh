@@ -54,7 +54,7 @@
 <li><p>什么构成一个整定良好的电流控制器？</p></li>
 <li><p>如何在 MCAF 中调整电流控制环增益？</p></li>
 <li><p>如何使用 motorBench<sup>®</sup> Development Suite 的 Tune（整定）页面中的自动整定 来简化增益整定？</p></li>
-<li><p>motorBench 中默认的电流控制环motorBench<sup>®</sup> Development Suite 的整定准则 是否足以满足大多数系统的要求？</p></li>
+<li><p>motorBench 中默认的motorBench<sup>®</sup> Development Suite 中默认的电流控制环整定准则 是否足以满足大多数系统的要求？</p></li>
 </ul>
 <section id="background">
 <h2><span class="section-number">5.1.6.1. </span>背景<a class="headerlink" href="#background" title="本标题的永久链接">¶</a></h2>
@@ -325,7 +325,7 @@
 </section>
 <section id="default-values-of-performance-criteria">
 <h3><span class="section-number">5.1.6.4.3. </span>性能准则的默认值<a class="headerlink" href="#default-values-of-performance-criteria" title="本标题的永久链接">¶</a></h3>
-<p>motorBench 中为电流环选择的motorBench<sup>®</sup> Development Suite 1.15–2.35 版本的默认值，即 <span class="math notranslate nohighlight">\(\phi_m = 80^\circ,\;\phi_z = 45^\circ\)</span>，对非常宽范围的电机都是稳定的。但它们也极其保守，导致电流环带宽相当低。</p>
+<p>motorBench 中motorBench<sup>®</sup> Development Suite 1.15–2.35 版本中为电流环选择的默认值，即 <span class="math notranslate nohighlight">\(\phi_m = 80^\circ,\;\phi_z = 45^\circ\)</span>，对非常宽范围的电机都是稳定的。但它们也极其保守，导致电流环带宽相当低。</p>
 <p>Microchip 人员正在重新评估这些默认值以给出更高性能的建议。在此期间，如果可以进行仔细的阶跃响应测试，可考虑将相位裕量降至 50°–70° 范围，并将交叉频率处 PI 相位滞后降至 8°–20° 范围。 <strong>未经测试，不要将这些值降到默认值以下。</strong> 未经仔细研究，不建议将 PI 相位滞后降到 5° 以下。</p>
 <p>自动整定使用这些性能准则，而非 PI 增益或环路带宽，作为一种归一化指标，它在较宽范围的电机和驱动组合中具有一定的适用性。此处整定良好情形（<span class="math notranslate nohighlight">\(\phi_m = 45^\circ,\;\phi_z = 12^\circ\)</span>）中所示的 Nidec Hurst DMA0204024B101 的相位裕量和交叉频率处 PI 相位滞后的确切值是否适用于所有电机？否。每个电机和驱动组合都有不同的特性，且常常存在可能需要更高或更低设置的微妙二阶效应。</p>
 <p>如果您的电机似乎难以整定，请 <a class="reference internal" href="../../faq.zh.html#faq-support"><span class="std std-ref">联系 Microchip</span></a> 以便我们改进建议。</p>

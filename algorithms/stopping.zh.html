@@ -51,7 +51,7 @@
 <section id="overview">
 <h2><span class="section-number">5.3.1. </span>概述<a class="headerlink" href="#overview" title="本标题的永久链接">¶</a></h2>
 <p>“停止”是在正常运行之后使电机完全停止的过程，目的是使电机断电并静止于 <a class="reference internal" href="../components/statemach.zh.html#component-statemachine-states"><span class="std std-ref">STOPPED 状态</span></a>。</p>
-<p>MCAF 包含 <a class="reference internal" href="../implementation/ui-customization.zh.html#customize-operation-stopping-type"><span class="std std-ref">几种不同的停止选项</span></a> 可在 motorBench 的 Customize（自定义）页面中选择<sup>®</sup> Development Suite（开发套件）：</p>
+<p>MCAF 包含 <a class="reference internal" href="../implementation/ui-customization.zh.html#customize-operation-stopping-type"><span class="std std-ref">几种不同的停止选项</span></a> 可在 motorBench<sup>®</sup> Development Suite 的 Customize（自定义）页面中选择（开发套件）：</p>
 <ul class="simple">
 <li><p>最小影响 PWM（“开环”停止或“自由停转”）</p></li>
 <li><p>闭环电流</p></li>
@@ -84,7 +84,7 @@ J\frac{d\omega_m}{dt} &amp;= -B\omega_m - T_{\mathrm{fr}}\operatorname{sgn}\omeg
 <span class="eqno">(5.23)<a class="headerlink" href="#equation-eq-coastdown-2" title="本公式的永久链接">¶</a></span>\[\omega_m = -\omega_{\mathrm{fr}}+(\omega_i+\omega_{\mathrm{fr}})e^{-t/\tau}\]</div>
 <p>其中 <span class="math notranslate nohighlight">\(\omega_i\)</span> 为初始速度， <span class="math notranslate nohighlight">\(\omega_{\mathrm{fr}}=T_{\mathrm{fr}}/B\)</span>，以及时间常数 <span class="math notranslate nohighlight">\(\tau = J/B\)</span>。</p>
 <p>自由停转时间 <span class="math notranslate nohighlight">\(t_{\mathrm{coast}}\)</span> 由公式 <a class="reference internal" href="#equation-eq-coastdown-2">5.23</a> 估计，以确定电机速度 <span class="math notranslate nohighlight">\(\omega_m\)</span> 低于自由停转速度阈值的时间 <span class="math notranslate nohighlight">\(\omega_f\)</span>。</p>
-<p><strong>注意</strong>：最小影响 PWM 不应 <strong>不应</strong> 在以下任何条件下使用：</p>
+<p><strong>注意</strong>：最小影响 PWM 不应 在以下任何条件下使用：</p>
 <ul class="simple">
 <li><p>电机具有高惯性（至少需要几秒钟才能自由停转）且电机参数不确定</p></li>
 <li><p>电机受到来自环境的再生转矩作用，可维持电机速度（例如：电动自行车、发电机、处于风车工况的风扇等）</p></li>
