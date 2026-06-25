@@ -76,13 +76,8 @@
       if (firstRight) {
         // Append " |" to the index li
         firstRight.appendChild(document.createTextNode(" |"));
-        // The index li has margin-right:10px which creates a gap;
-        // move that margin to our new li so the gap appears after it instead.
-        var mr = firstRight.getAttribute("style");
-        if (mr && mr.indexOf("margin-right") !== -1) {
-          firstRight.removeAttribute("style");
-          li.setAttribute("style", mr);
-        }
+        // Remove margin-right from index li to avoid gap
+        firstRight.removeAttribute("style");
         topNav.insertBefore(li, firstRight);
       } else {
         topNav.appendChild(li);
